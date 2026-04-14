@@ -1,10 +1,11 @@
 using System;
-using System.Linq;
 using KwintBaseHarmony.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace KwintBaseHarmony.Tests.Infrastructure;
 
@@ -18,24 +19,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            var dbContextDescriptor = services.SingleOrDefault(descriptor =>
-                descriptor.ServiceType == typeof(DbContextOptions<CompositionContext>));
-
-            if (dbContextDescriptor is not null)
-            {
-                services.Remove(dbContextDescriptor);
-            }
-
-            var contextDescriptor = services.SingleOrDefault(descriptor =>
-                descriptor.ServiceType == typeof(CompositionContext));
-
-            if (contextDescriptor is not null)
-            {
-                services.Remove(contextDescriptor);
-            }
+            services.RemoveAll<DbContextOptions<CompositionContext>>();
+            services.RemoveAll<CompositionContext>();
+            services.RemoveAll<IDbContextOptionsConfiguration<CompositionContext>>();
 
             services.AddDbContext<CompositionContext>(options =>
                 options.UseInMemoryDatabase(_databaseName));
+
+            using var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<CompositionContext>();
+            dbContext.Database.EnsureCreated();
         });
     }
 }
