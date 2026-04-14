@@ -1,4 +1,16 @@
 describe("KwintBaseHarmony studio interactions", () => {
+  it("updates notation immediately when the pitch field changes", () => {
+    cy.visit("/");
+    cy.wait("@healthCheck");
+
+    cy.get("#pitch").clear().type("67");
+
+    cy.get("#selected-note-label").should("contain", "G4");
+    cy.get("#notation-summary").should("contain", "G4");
+    cy.get('.piano-key[data-midi="67"]').should("have.class", "is-active");
+    cy.get("#notation-staff svg").should("exist");
+  });
+
   it("syncs the virtual piano with the pitch field", () => {
     cy.visit("/");
     cy.wait("@healthCheck");

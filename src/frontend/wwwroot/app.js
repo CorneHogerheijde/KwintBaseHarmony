@@ -190,6 +190,7 @@ clearJsonEditorButton.addEventListener("click", () => {
 
 pitchInput.addEventListener("input", () => {
   syncSelectedPitchDisplay(pitchInput.value);
+  updateNotation();
 });
 
 pitchInput.addEventListener("change", () => {

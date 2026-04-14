@@ -1,6 +1,7 @@
 using Dapr.Client;
 using Dapr.Workflow;
 using KwintBaseHarmony.Data;
+using KwintBaseHarmony.Infrastructure;
 using KwintBaseHarmony.Services;
 using KwintBaseHarmony.Models;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +60,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-if (!app.Environment.IsEnvironment("Testing"))
+if (!app.Environment.IsEnvironment("Testing")
+    && HttpsRedirectionPolicy.ShouldUseHttpsRedirection(app.Configuration))
 {
     app.UseHttpsRedirection();
 }
