@@ -1,64 +1,6 @@
-function buildComposition(overrides = {}) {
-  const id = overrides.id ?? "9de798ef-0f73-4920-8ef2-4e3e9e9a1e10";
-  const studentId = overrides.studentId ?? "student-001";
-  const title = overrides.title ?? "Cypress Composition";
-  const difficulty = overrides.difficulty ?? "beginner";
-  const completionPercentage = overrides.completionPercentage ?? 0;
-  const notesByLayer = overrides.notesByLayer ?? {};
-  const completedLayers = new Set(overrides.completedLayers ?? []);
+import { buildComposition } from "../support/composition-fixtures";
 
-  return {
-    id,
-    studentId,
-    title,
-    difficulty,
-    completionPercentage,
-    createdAt: "2026-04-14T20:10:36.1954987Z",
-    updatedAt: "2026-04-14T20:10:36.195534Z",
-    layers: Array.from({ length: 7 }, (_, index) => {
-      const layerNumber = index + 1;
-
-      return {
-        layerNumber,
-        name: `Layer ${layerNumber}`,
-        concept: `Concept ${layerNumber}`,
-        completed: completedLayers.has(layerNumber),
-        timeSpentMs: 0,
-        userNotes: null,
-        notes: notesByLayer[layerNumber] ?? []
-      };
-    })
-  };
-}
-
-describe("KwintBaseHarmony studio", () => {
-  it("syncs the virtual piano with the pitch field", () => {
-    cy.visit("/");
-    cy.wait("@healthCheck");
-
-    cy.get("#selected-note-label").should("contain", "C4");
-    cy.get('.piano-key[data-midi="64"]').click();
-
-    cy.get("#pitch").should("have.value", "64");
-    cy.get("#selected-note-label").should("contain", "E4");
-    cy.get("#notation-summary").should("contain", "E4");
-    cy.get("#notation-staff svg").should("exist");
-    cy.get('.piano-key[data-midi="64"]').should("have.class", "is-active");
-    cy.get("#activity-log").should("contain", "Selected note from virtual piano");
-  });
-
-  it("switches notation clefs without losing the selected note", () => {
-    cy.visit("/");
-    cy.wait("@healthCheck");
-
-    cy.get("#notation-summary").should("contain", "treble clef");
-    cy.get("#notation-clef").select("Bass");
-
-    cy.get("#notation-summary").should("contain", "bass clef");
-    cy.get("#selected-note-label").should("contain", "C4");
-    cy.get("#notation-staff svg").should("exist");
-  });
-
+describe("KwintBaseHarmony studio composition flows", () => {
   it("creates a composition and renders all layers", () => {
     const composition = buildComposition({
       title: "Warmup in C",
