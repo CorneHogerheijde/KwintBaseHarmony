@@ -1,6 +1,6 @@
 # Running KwintBaseHarmony Locally
 
-This guide shows how to run the full project locally with Dapr, including the frontend and backend from a single command.
+This guide shows how to run the full project locally with Dapr on Windows and on Linux/macOS.
 
 ## Prerequisites
 
@@ -32,14 +32,25 @@ dapr init
 
 This sets up the local Dapr runtime, including Redis and placement, on the default localhost ports.
 
-### 3. Run Frontend + Backend with One Dapr Command
+### 3. Run Frontend + Backend with Dapr
+
+#### Windows (recommended)
+
+```powershell
+cd c:\Projects\bmad\KwintBaseHarmony
+pwsh ./scripts/start-dapr-local.ps1
+```
+
+This opens one PowerShell window for the backend and one for the frontend, each with its own Dapr sidecar.
+
+#### Linux/macOS
 
 ```bash
-cd c:\Projects\bmad\KwintBaseHarmony
+cd /path/to/KwintBaseHarmony
 dapr run -f .
 ```
 
-✅ **Done!** Dapr starts both apps defined in `dapr.yaml`.
+Use `dapr run -f .` only on Linux/macOS. On Windows, the multi-app run template path is unreliable with this repo.
 
 **Access points:**
 - **Frontend**: `http://localhost:5051`
@@ -123,9 +134,24 @@ The API is now available at:
 - **HTTPS**: `https://localhost:7049`
 - **Swagger UI**: `http://localhost:5000/swagger` ← Use this to test endpoints!
 
-### Option B: With Dapr Multi-App Run (Recommended for Production-like Testing)
+### Option B: With Dapr Sidecars (Recommended for Production-like Testing)
 
 **Prerequisites**: Dapr CLI installed [here](https://dapr.io/download/)
+
+#### Windows
+
+```powershell
+# 1. Ensure PostgreSQL is running
+docker-compose up -d postgres
+
+# 2. Initialize Dapr (one-time)
+dapr init
+
+# 3. Start backend + frontend in separate windows
+pwsh ./scripts/start-dapr-local.ps1
+```
+
+#### Linux/macOS
 
 ```bash
 # 1. Ensure PostgreSQL is running
@@ -162,7 +188,8 @@ On first run in Development environment, the database schema is automatically cr
 ## Dapr Configuration
 
 **Files**:
-- `dapr.yaml` at project root: multi-app run template used by `dapr run -f .`
+- `scripts/start-dapr-local.ps1`: Windows-safe launcher for backend + frontend with separate Dapr sidecars
+- `dapr.yaml` at project root: Linux/macOS multi-app run template used by `dapr run -f .`
 - `.dapr/config.yaml`: Dapr runtime configuration shared by the backend sidecar
 
 The runtime config file contains the standalone Dapr settings used for local development:
@@ -190,6 +217,13 @@ spec:
 - `runMode: standalone` — Works without Dapr cluster (for local development)
 
 **Usage:**
+
+Windows:
+```powershell
+pwsh ./scripts/start-dapr-local.ps1
+```
+
+Linux/macOS:
 ```bash
 dapr run -f .
 ```
@@ -384,8 +418,9 @@ Error: cannot find config file at /path/to/dapr.yaml
 
 **Fix:**
 - Ensure `dapr.yaml` exists at project root: `ls dapr.yaml` (should exist)
-- Run `dapr run -f .` from the project root, not `src/backend/`
-- Ensure frontend dependencies are installed in `src/frontend` before starting
+- On Windows, do not rely on `dapr run -f .`; use `pwsh ./scripts/start-dapr-local.ps1`
+- On Linux/macOS, run `dapr run -f .` from the project root, not `src/backend/`
+- Ensure Docker Desktop, `dapr init`, and PostgreSQL are running before starting
 
 ### "Redis connection refused" with Dapr
 

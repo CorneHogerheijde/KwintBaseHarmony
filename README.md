@@ -237,17 +237,30 @@ cd KwintBaseHarmony
 dapr init
 ```
 
-### 2. Frontend Setup
+For Windows, use the local launcher in `scripts/start-dapr-local.ps1` instead of `dapr run -f .`.
 
-```bash
-cd src/frontend
-dotnet run --no-launch-profile --urls http://localhost:5051
+### 2. Frontend + Backend with Dapr
+
+#### Windows
+
+```powershell
+pwsh ./scripts/start-dapr-local.ps1
 ```
 
-The frontend will be available at `http://localhost:5051`
-The frontend will also be available through the Dapr multi-app setup at `http://localhost:5051`
+#### Linux/macOS
 
-### 3. Backend Setup
+```bash
+dapr run -f .
+```
+
+Access points:
+- Frontend: `http://localhost:5051`
+- API: `http://localhost:5000`
+- Swagger: `http://localhost:5000/swagger`
+- Backend Dapr HTTP: `http://localhost:3500`
+- Frontend Dapr HTTP: `http://localhost:3510`
+
+### 3. Direct .NET Alternative
 
 ```bash
 cd src/backend
@@ -255,17 +268,11 @@ cd src/backend
 # Restore dependencies
 dotnet restore
 
-# Start with Dapr
-dapr run --app-id kwintbaseharmony-api \
-         --app-port 7000 \
-         --resources-path ./components \
-         -- dotnet run
-
-# Or without Dapr for testing
+# Start without Dapr for testing
 dotnet run
 ```
 
-The backend will be available at `http://localhost:7000`
+The backend will be available at `http://localhost:5000`
 
 ### 4. Testing Together
 
@@ -423,21 +430,30 @@ cd KwintBaseHarmony
 dapr init
 ```
 
-### 2. Frontend Setup
+For Windows, use the local launcher in `scripts/start-dapr-local.ps1` instead of `dapr run -f .`.
 
-```bash
-cd src/frontend
+### 2. Frontend + Backend with Dapr
 
-# Install dependencies
-npm install
+#### Windows
 
-# Start development server
-npm run dev
+```powershell
+pwsh ./scripts/start-dapr-local.ps1
 ```
 
-The frontend will be available at `http://localhost:5051`
+#### Linux/macOS
 
-### 3. Backend Setup
+```bash
+dapr run -f .
+```
+
+Access points:
+- Frontend: `http://localhost:5051`
+- API: `http://localhost:5000`
+- Swagger: `http://localhost:5000/swagger`
+- Backend Dapr HTTP: `http://localhost:3500`
+- Frontend Dapr HTTP: `http://localhost:3510`
+
+### 3. Direct .NET Alternative
 
 ```bash
 cd src/backend
@@ -445,17 +461,11 @@ cd src/backend
 # Restore dependencies
 dotnet restore
 
-# Start with Dapr
-dapr run --app-id kwintbaseharmony-api \
-         --app-port 7000 \
-         --resources-path ./components \
-         -- dotnet run
-
-# Or without Dapr for testing
+# Start without Dapr for testing
 dotnet run
 ```
 
-The backend will be available at `http://localhost:7000`
+The backend will be available at `http://localhost:5000`
 
 ### 4. Testing Together
 

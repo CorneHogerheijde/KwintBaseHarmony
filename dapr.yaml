@@ -1,3 +1,5 @@
+## Linux/macOS reference template.
+## On Windows, prefer scripts/start-dapr-local.ps1 instead of `dapr run -f .`.
 version: 1
 common:
   resourcesPath: ./src/backend/components
