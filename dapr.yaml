@@ -1,14 +1,27 @@
-apiVersion: dapr.io/v1alpha1
-kind: Configuration
-metadata:
-  name: kwintbaseharmony-config
-spec:
-  mtls:
-    enabled: false
-  tracing:
-    samplingRate: "1"
-    zipkin:
-      endpointAddress: "http://localhost:9411/api/v2/spans"
-  logging:
-    level: info
-  runMode: standalone
+version: 1
+common:
+  resourcesPath: ./src/backend/components
+apps:
+  - appID: kwintbaseharmony-api
+    appDirPath: ./src/backend
+    appProtocol: http
+    appPort: 5000
+    configFilePath: ../../.dapr/config.yaml
+    command:
+      - dotnet
+      - run
+      - --no-launch-profile
+      - --urls
+      - http://localhost:5000
+  - appID: kwintbaseharmony-frontend
+    appDirPath: ./src/frontend
+    appProtocol: http
+    appPort: 5051
+    daprHTTPPort: 3510
+    daprGRPCPort: 50011
+    command:
+      - dotnet
+      - run
+      - --no-launch-profile
+      - --urls
+      - http://localhost:5051

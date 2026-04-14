@@ -1,27 +1,27 @@
 # Running KwintBaseHarmony Locally
 
-This guide shows how to run the backend API with Dapr. **Currently, only the backend (WS1-1.3) is functional.**
+This guide shows how to run the full project locally with Dapr, including the frontend and backend from a single command.
 
 ## Prerequisites
 
-- **.NET SDK 8.0+** [Download](https://dotnet.microsoft.com/download)
+- **.NET SDK 10.0+** [Download](https://dotnet.microsoft.com/download)
 - **Docker & Docker Compose** [Download](https://www.docker.com/products/docker-desktop)
 - **Dapr CLI** [Download](https://dapr.io/download)
 - **Git**
 
 ## Quick Start (Recommended: Dapr + Docker)
 
-### 1. Start Infrastructure (PostgreSQL + Redis)
+### 1. Start Infrastructure (PostgreSQL)
 
 ```bash
 cd c:\Projects\bmad\KwintBaseHarmony
 
-# Start all services in Docker
-docker-compose up -d
+# Start PostgreSQL in Docker
+docker-compose up -d postgres
 
 # Verify running:
 docker ps
-# Should see: postgres, redis, placement, kwintbaseharmony-api-dapr
+# Should see: postgres
 ```
 
 ### 2. Initialize Dapr (One-Time)
@@ -30,24 +30,23 @@ docker ps
 dapr init
 ```
 
-This sets up Dapr components and Redis state store locally.
+This sets up the local Dapr runtime, including Redis and placement, on the default localhost ports.
 
-### 3. Run the Backend
+### 3. Run Frontend + Backend with One Dapr Command
 
 ```bash
-cd src/backend
-dapr run --app-id kwintbaseharmony-api \
-         --app-port 5000 \
-         --config ../dapr.yaml \
-         -- dotnet run
+cd c:\Projects\bmad\KwintBaseHarmony
+dapr run -f .
 ```
 
-✅ **Done!** Backend is running with Dapr sidecar.
+✅ **Done!** Dapr starts both apps defined in `dapr.yaml`.
 
 **Access points:**
+- **Frontend**: `http://localhost:5051`
 - **API**: `http://localhost:5000`
 - **Swagger**: `http://localhost:5000/swagger`
-- **Dapr HTTP**: `http://localhost:3500` (sidecar)
+- **Backend Dapr HTTP**: `http://localhost:3500`
+- **Frontend Dapr HTTP**: `http://localhost:3510`
 
 ---
 
@@ -77,7 +76,7 @@ dotnet run
 ### PostgreSQL Configuration
 
 PostgreSQL is configured in `docker-compose.yml`:
-- **Host**: `postgres` (or `localhost` from host machine)
+- **Host**: `localhost`
 - **Port**: `5432`
 - **Database**: `kwintbaseharmony`
 - **User**: `postgres`
@@ -124,33 +123,34 @@ The API is now available at:
 - **HTTPS**: `https://localhost:7049`
 - **Swagger UI**: `http://localhost:5000/swagger` ← Use this to test endpoints!
 
-### Option B: With Dapr Sidecar (Recommended for Production-like Testing)
+### Option B: With Dapr Multi-App Run (Recommended for Production-like Testing)
 
 **Prerequisites**: Dapr CLI installed [here](https://dapr.io/download/)
 
 ```bash
-# 1. Ensure Docker containers are running
-docker-compose up -d
+# 1. Ensure PostgreSQL is running
+docker-compose up -d postgres
 
 # 2. Initialize Dapr (one-time)
 dapr init
 
-# 3. Start the backend with Dapr sidecar
-cd src/backend
-dapr run --app-id kwintbaseharmony-api --app-port 5000 --config ../dapr.yaml -- dotnet run
+# 3. Start the full stack with Dapr
+dapr run -f .
 ```
 
 **What this does:**
-- Runs the .NET backend on port 5000
-- Loads `dapr.yaml` configuration (standalone mode, Redis state store)
-- Dapr sidecar listens on ports 3500 (HTTP) and 3501 (gRPC)
-- You can invoke Dapr APIs for state/pub-sub (Phase 2+)
+- Starts the ASP.NET Core frontend on port 5051
+- Starts the .NET backend on port 5000
+- Loads Dapr resources from `src/backend/components/`
+- Loads runtime configuration from `.dapr/config.yaml`
+- Starts one Dapr sidecar per app
 
 **Dapr Sidecar Endpoints:**
-- Dapr HTTP API: `http://localhost:3500`
+- Backend Dapr HTTP API: `http://localhost:3500`
+- Frontend Dapr HTTP API: `http://localhost:3510`
 - State management: `http://localhost:3500/v1.0/state`
 - Pub/Sub: `http://localhost:3500/v1.0/publish`
-- Invoke service: `http://localhost:3500/v1.0/invoke/{service-id}/method/{method}`
+- Invoke backend service: `http://localhost:3500/v1.0/invoke/kwintbaseharmony-api/method/{method}`
 
 ### Database Auto-Migration
 
@@ -161,9 +161,11 @@ On first run in Development environment, the database schema is automatically cr
 
 ## Dapr Configuration
 
-**File**: `dapr.yaml` at project root
+**Files**:
+- `dapr.yaml` at project root: multi-app run template used by `dapr run -f .`
+- `.dapr/config.yaml`: Dapr runtime configuration shared by the backend sidecar
 
-This file configures Dapr for local development:
+The runtime config file contains the standalone Dapr settings used for local development:
 
 ```yaml
 apiVersion: dapr.io/v1alpha1
@@ -189,12 +191,12 @@ spec:
 
 **Usage:**
 ```bash
-dapr run --config dapr.yaml -- dotnet run
+dapr run -f .
 ```
 
 **Components** (state, secrets, pub/sub):
 - Located in `src/backend/components/`
-- `state.yaml` — Redis state store for workflow/actor storage
+- `state.yaml` — Redis state store for workflow/actor storage via the local Dapr Redis instance on `localhost:6379`
 - Add more components as needed (databases, message brokers, etc.)
 
 ## Testing the API
@@ -382,8 +384,8 @@ Error: cannot find config file at /path/to/dapr.yaml
 
 **Fix:**
 - Ensure `dapr.yaml` exists at project root: `ls dapr.yaml` (should exist)
-- Run `dapr run` from the project root, not `src/backend/`
-- Full command: `dapr run --app-id kwintbaseharmony-api --app-port 5000 --config dapr.yaml -- dotnet run`
+- Run `dapr run -f .` from the project root, not `src/backend/`
+- Ensure frontend dependencies are installed in `src/frontend` before starting
 
 ### "Redis connection refused" with Dapr
 

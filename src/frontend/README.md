@@ -1,47 +1,22 @@
 # KwintBaseHarmony Frontend
 
-React + TypeScript frontend for KwintBaseHarmony music harmony learning app.
+ASP.NET Core static frontend for KwintBaseHarmony, modeled after the `NoteStreamApp` approach from `dapr-workflow-concerto`.
 
 ## Setup
 
 ```bash
-npm install
-npm run dev
+dotnet run --no-launch-profile --urls http://localhost:5051
 ```
+
+The frontend serves static files from `wwwroot` on `http://localhost:5051` and talks to the backend API on `http://localhost:5000`.
 
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── PianoKeyboard.tsx      # Interactive piano UI
-│   ├── NotationDisplay.tsx    # Musical notation rendering
-│   ├── PuzzleUI.tsx           # Puzzle interface
-│   └── ...
-├── pages/
-│   ├── Welcome.tsx            # Startup screen
-│   ├── PuzzlePage.tsx         # Main puzzle interface
-│   └── ...
-├── services/
-│   ├── api.ts                 # Backend API calls
-│   ├── audio.ts               # Tone.js audio engine
-│   └── ...
-├── App.tsx
-└── main.tsx
-```
-
-## Key Dependencies
-
-- **Tone.js** — Web Audio API for synthesizer
-- **Vexflow** — Musical notation rendering
-- **Axios** — HTTP client for backend communication
-- **Tailwind CSS** — Styling
-
-## Development
-
-```bash
-npm run dev      # Start development server
-npm run build    # Production build
-npm run preview  # Preview production build
-npm run lint     # Run linter
+Program.cs                          # Static file host and lightweight health endpoint
+KwintBaseHarmony.Frontend.csproj    # Frontend project file
+wwwroot/
+├── index.html                      # Dashboard shell
+├── styles.css                      # Frontend styles
+└── app.js                          # Vanilla JS API client and UI logic
 ```

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+      - bugfix/**
+      - docs/**
+      - refactor/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: |
+            KwintBaseHarmony.sln
+            src/backend/KwintBaseHarmony.csproj
+            src/frontend/KwintBaseHarmony.Frontend.csproj
+            tests/KwintBaseHarmony.Tests.csproj
+
+      - name: Restore dependencies
+        run: dotnet restore KwintBaseHarmony.sln
+
+      - name: Build solution
+        run: dotnet build KwintBaseHarmony.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test KwintBaseHarmony.sln --configuration Release --no-build --verbosity normal

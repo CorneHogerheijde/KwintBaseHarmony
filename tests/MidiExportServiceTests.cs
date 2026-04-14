@@ -52,9 +52,9 @@ public class MidiExportServiceTests
         // Act
         var midiData = await _service.CompositionToMidiAsync(composition);
 
-        // Assert - MIDI data should contain note on/off events for all notes
+        // Assert - MIDI data should contain note-on events for the notes in the composition.
         Assert.NotEmpty(midiData);
-        Assert.True(midiData.Length > 100); // Should have reasonable size for 5 notes
+        Assert.True(midiData.Count(value => value == 0x90) >= totalNotes);
     }
 
     [Fact]

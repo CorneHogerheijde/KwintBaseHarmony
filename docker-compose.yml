@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL database
   postgres:
@@ -19,44 +17,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # Redis for Dapr state management
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    networks:
-      - dapr-network
-
-  # Dapr sidecar for the backend service
-  kwintbaseharmony-api-dapr:
-    image: daprio/daprd:latest
-    command: 
-      - "./daprd"
-      - "-app-id=kwintbaseharmony-api"
-      - "-app-port=7000"
-      - "-placement-host-address=placement:50006"
-      - "-resources-path=/components"
-    volumes:
-      - "./src/backend/components:/components"
-    ports:
-      - "3500:3500"    # Dapr HTTP
-      - "3501:3501"    # Dapr gRPC
-      - "7000:7000"    # App port
-    depends_on:
-      - redis
-      - placement
-    networks:
-      - dapr-network
-
-  # Dapr placement service for workflow support
-  placement:
-    image: daprio/dapr:latest
-    command: ./placement
-    ports:
-      - "50006:50006"
-    networks:
-      - dapr-network
 
 volumes:
   postgres_data:
