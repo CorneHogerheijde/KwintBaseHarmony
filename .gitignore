@@ -9,6 +9,9 @@
 # Node.js frontend artifacts
 **/node_modules/
 **/dist/
+**/cypress/screenshots/
+**/cypress/videos/
+**/cypress/downloads/
 
 # User-specific files
 *.rsuser

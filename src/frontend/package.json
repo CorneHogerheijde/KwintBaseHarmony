@@ -1,0 +1,13 @@
+{
+  "name": "kwintbaseharmony-frontend-tests",
+  "private": true,
+  "scripts": {
+    "dev": "dotnet run --project ./KwintBaseHarmony.Frontend.csproj --no-launch-profile --urls http://localhost:5051",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --browser electron",
+    "test:e2e": "node ./scripts/run-cypress.js"
+  },
+  "devDependencies": {
+    "cypress": "^14.3.3"
+  }
+}
