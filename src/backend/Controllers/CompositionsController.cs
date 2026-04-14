@@ -32,8 +32,6 @@ public class CompositionsController : ControllerBase
     /// <param name="request">Composition details (studentId, title, difficulty)</param>
     /// <returns>201 Created with new composition</returns>
     [HttpPost]
-    [ProduceResponseType(StatusCodes.Status201Created)]
-    [ProduceResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompositionResponse>> CreateComposition([FromBody] CreateCompositionRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.StudentId))
@@ -60,8 +58,6 @@ public class CompositionsController : ControllerBase
     /// <param name="id">Composition ID</param>
     /// <returns>200 OK with composition data</returns>
     [HttpGet("{id}")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CompositionResponse>> GetComposition(Guid id)
     {
         var composition = await _compositionService.GetByIdAsync(id);
@@ -77,7 +73,6 @@ public class CompositionsController : ControllerBase
     /// <param name="studentId">Student ID</param>
     /// <returns>200 OK with list of compositions</returns>
     [HttpGet("student/{studentId}")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<CompositionResponse>>> GetStudentCompositions(string studentId)
     {
         var compositions = await _compositionService.GetByStudentIdAsync(studentId);
@@ -91,9 +86,6 @@ public class CompositionsController : ControllerBase
     /// <param name="request">Update details</param>
     /// <returns>200 OK with updated composition</returns>
     [HttpPut("{id}")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
-    [ProduceResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompositionResponse>> UpdateComposition(Guid id, [FromBody] UpdateCompositionRequest request)
     {
         var composition = await _compositionService.GetByIdAsync(id);
@@ -121,8 +113,6 @@ public class CompositionsController : ControllerBase
     /// <param name="id">Composition ID</param>
     /// <returns>204 No Content</returns>
     [HttpDelete("{id}")]
-    [ProduceResponseType(StatusCodes.Status204NoContent)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteComposition(Guid id)
     {
         var deleted = await _compositionService.DeleteAsync(id);
@@ -142,9 +132,6 @@ public class CompositionsController : ControllerBase
     /// <param name="request">Note details (pitch, duration, timing, velocity)</param>
     /// <returns>201 Created with updated composition</returns>
     [HttpPost("{id}/layers/{layerNumber:int}/notes")]
-    [ProduceResponseType(StatusCodes.Status201Created)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
-    [ProduceResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompositionResponse>> AddNoteToLayer(
         Guid id,
         int layerNumber,
@@ -186,9 +173,6 @@ public class CompositionsController : ControllerBase
     /// <param name="layerNumber">Layer number (1-7)</param>
     /// <returns>200 OK with updated composition</returns>
     [HttpPost("{id}/layers/{layerNumber:int}/complete")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
-    [ProduceResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompositionResponse>> CompleteLayer(Guid id, int layerNumber)
     {
         if (layerNumber < 1 || layerNumber > 7)
@@ -211,8 +195,6 @@ public class CompositionsController : ControllerBase
     /// <returns>200 OK with MIDI file bytes</returns>
     [HttpGet("{id}/export/midi")]
     [Produces("audio/midi")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> ExportMidi(Guid id)
     {
         var composition = await _compositionService.GetByIdAsync(id);
@@ -234,8 +216,6 @@ public class CompositionsController : ControllerBase
     /// <returns>200 OK with JSON representation</returns>
     [HttpGet("{id}/export/json")]
     [Produces("application/json")]
-    [ProduceResponseType(StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<string>> ExportJson(Guid id)
     {
         var composition = await _compositionService.GetByIdAsync(id);
@@ -255,8 +235,6 @@ public class CompositionsController : ControllerBase
     /// <param name="request">JSON string to import</param>
     /// <returns>201 Created with imported composition</returns>
     [HttpPost("import/json")]
-    [ProduceResponseType(StatusCodes.Status201Created)]
-    [ProduceResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompositionResponse>> ImportJson([FromBody] ImportJsonRequest request)
     {
         try
