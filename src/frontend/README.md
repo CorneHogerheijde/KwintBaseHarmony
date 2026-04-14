@@ -10,6 +10,17 @@ dotnet run --no-launch-profile --urls http://localhost:5051
 
 The frontend serves static files from `wwwroot` on `http://localhost:5051` and talks to the backend API on `http://localhost:5000`.
 
+## Current Interaction Surface
+
+The frontend currently provides:
+
+- composition create/load/export flows against the minimal API
+- a virtual piano keyboard that syncs with the note pitch field
+- in-browser note preview for quick harmonic exploration before saving notes
+- a live notation preview with treble/bass clef switching
+- Web MIDI note input that updates the selected pitch when a keyboard is connected
+- JSON import/export round-tripping for composition inspection
+
 ## Cypress E2E Tests
 
 Frontend end-to-end tests live alongside the static app and use Cypress with mocked backend responses so they can validate the browser flow without requiring the API to be running.

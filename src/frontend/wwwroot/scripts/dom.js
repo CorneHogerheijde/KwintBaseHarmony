@@ -1,0 +1,25 @@
+export const apiBaseUrl = "http://localhost:5000/api/compositions";
+
+export const activityLog = document.getElementById("activity-log");
+export const statusPill = document.getElementById("api-status");
+export const summary = document.getElementById("composition-summary");
+export const layersContainer = document.getElementById("layers");
+export const createForm = document.getElementById("create-composition-form");
+export const loadForm = document.getElementById("load-composition-form");
+export const addNoteForm = document.getElementById("add-note-form");
+export const pitchInput = document.getElementById("pitch");
+export const refreshStatusButton = document.getElementById("refresh-status");
+export const exportJsonButton = document.getElementById("download-json");
+export const exportMidiButton = document.getElementById("download-midi");
+export const compositionIdInput = document.getElementById("composition-id-input");
+export const loadJsonIntoEditorButton = document.getElementById("load-json-into-editor");
+export const importJsonButton = document.getElementById("import-json");
+export const clearJsonEditorButton = document.getElementById("clear-json-editor");
+export const jsonEditor = document.getElementById("json-editor");
+export const pianoKeyboard = document.getElementById("piano-keyboard");
+export const selectedNoteLabel = document.getElementById("selected-note-label");
+export const previewSelectedNoteButton = document.getElementById("preview-selected-note");
+export const midiStatus = document.getElementById("midi-status");
+export const notationStaff = document.getElementById("notation-staff");
+export const notationClefSelect = document.getElementById("notation-clef");
+export const notationSummary = document.getElementById("notation-summary");

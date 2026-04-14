@@ -1,151 +1,55 @@
-const apiBaseUrl = "http://localhost:5000/api/compositions";
-
-const activityLog = document.getElementById("activity-log");
-const statusPill = document.getElementById("api-status");
-const summary = document.getElementById("composition-summary");
-const layersContainer = document.getElementById("layers");
-const createForm = document.getElementById("create-composition-form");
-const loadForm = document.getElementById("load-composition-form");
-const addNoteForm = document.getElementById("add-note-form");
-const refreshStatusButton = document.getElementById("refresh-status");
-const exportJsonButton = document.getElementById("download-json");
-const exportMidiButton = document.getElementById("download-midi");
-const compositionIdInput = document.getElementById("composition-id-input");
-const loadJsonIntoEditorButton = document.getElementById("load-json-into-editor");
-const importJsonButton = document.getElementById("import-json");
-const clearJsonEditorButton = document.getElementById("clear-json-editor");
-const jsonEditor = document.getElementById("json-editor");
+import {
+  addNoteForm,
+  apiBaseUrl,
+  clearJsonEditorButton,
+  compositionIdInput,
+  createForm,
+  exportJsonButton,
+  exportMidiButton,
+  importJsonButton,
+  jsonEditor,
+  loadForm,
+  loadJsonIntoEditorButton,
+  notationClefSelect,
+  pitchInput,
+  previewSelectedNoteButton,
+  refreshStatusButton
+} from "./scripts/dom.js";
+import { playPreviewNote } from "./scripts/audio.js";
+import { request, checkBackendStatus } from "./scripts/api.js";
+import { getEditorJson, setCurrentComposition, setEditorJson } from "./scripts/composition-ui.js";
+import { log } from "./scripts/logging.js";
+import { setupMidiInput } from "./scripts/midi.js";
+import { midiToLabel, normalizeMidi } from "./scripts/music.js";
+import { renderNotation } from "./scripts/notation.js";
+import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.js";
 
 let currentComposition = null;
 
-function log(message, payload) {
-  const line = payload ? `${message}\n${JSON.stringify(payload, null, 2)}` : message;
-  activityLog.textContent = `${new Date().toLocaleTimeString()} ${line}\n\n${activityLog.textContent}`.trim();
+function updateNotation() {
+  renderNotation(Number(pitchInput.value), currentComposition);
 }
 
-function setStatus(message, isHealthy) {
-  statusPill.textContent = message;
-  statusPill.style.background = isHealthy ? "rgba(18, 110, 90, 0.1)" : "rgba(187, 94, 48, 0.14)";
-  statusPill.style.color = isHealthy ? "#0b4e40" : "#8b3a16";
-}
-
-function setCurrentComposition(composition) {
+function applyCurrentComposition(composition) {
   currentComposition = composition;
-  compositionIdInput.value = composition?.id ?? "";
-  exportJsonButton.disabled = !composition;
-  exportMidiButton.disabled = !composition;
-  loadJsonIntoEditorButton.disabled = !composition;
-
-  if (!composition) {
-    summary.textContent = "No composition loaded.";
-    layersContainer.className = "layer-list empty-state";
-    layersContainer.textContent = "Load a composition to inspect its layers.";
-    return;
-  }
-
-  summary.textContent = `${composition.title} for ${composition.studentId} · ${composition.difficulty} · ${composition.completionPercentage}% complete`;
-  renderLayers(composition.layers);
+  setCurrentComposition(composition, updateNotation);
 }
 
-function renderLayers(layers) {
-  if (!layers || layers.length === 0) {
-    layersContainer.className = "layer-list empty-state";
-    layersContainer.textContent = "This composition has no layers yet.";
-    return;
-  }
+function setSelectedPitch(midi, { preview = false } = {}) {
+  const normalized = normalizeMidi(midi);
+  pitchInput.value = normalized;
+  syncSelectedPitchDisplay(normalized);
+  updateNotation();
 
-  layersContainer.className = "layer-list";
-  layersContainer.innerHTML = "";
-
-  for (const layer of layers) {
-    const card = document.createElement("article");
-    card.className = "layer-card";
-
-    const header = document.createElement("header");
-    const titleGroup = document.createElement("div");
-    const title = document.createElement("h3");
-    const concept = document.createElement("p");
-    const status = document.createElement("strong");
-
-    title.textContent = `Layer ${layer.layerNumber}: ${layer.name}`;
-    concept.className = "layer-meta";
-    concept.textContent = layer.concept ?? "No concept description.";
-    status.textContent = layer.completed ? "Completed" : "In progress";
-
-    titleGroup.append(title, concept);
-    header.append(titleGroup, status);
-    card.appendChild(header);
-
-    if (layer.notes.length === 0) {
-      const emptyState = document.createElement("div");
-      emptyState.className = "empty-state";
-      emptyState.textContent = "No notes recorded.";
-      card.appendChild(emptyState);
-    } else {
-      const noteChipList = document.createElement("div");
-      noteChipList.className = "note-chip-list";
-
-      for (const note of layer.notes) {
-        const chip = document.createElement("span");
-        chip.className = "note-chip";
-        chip.textContent = `Pitch ${note.pitch} · ${note.durationMs}ms · t=${note.timingMs}`;
-        noteChipList.appendChild(chip);
-      }
-
-      card.appendChild(noteChipList);
-    }
-
-    layersContainer.appendChild(card);
-  }
-}
-
-async function request(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers ?? {})
-    },
-    ...options
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed with status ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type") ?? "";
-  if (contentType.includes("application/json")) {
-    return response.json();
-  }
-
-  return response.text();
-}
-
-async function checkBackendStatus() {
-  try {
-    const response = await fetch("http://localhost:5000/health", { method: "GET", mode: "cors" });
-    if (!response.ok) {
-      throw new Error(`Health check returned ${response.status}`);
-    }
-
-    setStatus("Backend reachable on http://localhost:5000", true);
-  } catch {
-    setStatus("Backend not reachable on http://localhost:5000", false);
+  if (preview) {
+    playPreviewNote(normalized, log);
   }
 }
 
 async function loadCompositionById(id) {
   const composition = await request(`/${id}`);
-  setCurrentComposition(composition);
+  applyCurrentComposition(composition);
   log("Loaded composition", composition);
-}
-
-function getEditorJson() {
-  return jsonEditor.value.trim();
-}
-
-function setEditorJson(value) {
-  jsonEditor.value = value;
 }
 
 async function exportCurrentCompositionJson({ logResult = true } = {}) {
@@ -182,7 +86,7 @@ createForm.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload)
     });
-    setCurrentComposition(composition);
+    applyCurrentComposition(composition);
     log("Created composition", composition);
   } catch (error) {
     log("Failed to create composition", { error: error.message });
@@ -200,7 +104,7 @@ loadForm.addEventListener("submit", async (event) => {
   try {
     await loadCompositionById(id);
   } catch (error) {
-    setCurrentComposition(null);
+    applyCurrentComposition(null);
     log("Failed to load composition", { error: error.message, id });
   }
 });
@@ -228,7 +132,7 @@ addNoteForm.addEventListener("submit", async (event) => {
       method: "POST",
       body: JSON.stringify(payload)
     });
-    setCurrentComposition(updated);
+    applyCurrentComposition(updated);
     log(`Added note to layer ${layerNumber}`, payload);
   } catch (error) {
     log("Failed to add note", { error: error.message, payload });
@@ -257,6 +161,12 @@ exportMidiButton.addEventListener("click", async () => {
   log("Opened MIDI export", { url });
 });
 
+previewSelectedNoteButton.addEventListener("click", () => {
+  const midi = Number(pitchInput.value);
+  playPreviewNote(midi, log);
+  log("Previewed selected note", { midi, note: midiToLabel(midi) });
+});
+
 refreshStatusButton.addEventListener("click", () => {
   void checkBackendStatus();
 });
@@ -276,6 +186,18 @@ loadJsonIntoEditorButton.addEventListener("click", async () => {
 clearJsonEditorButton.addEventListener("click", () => {
   setEditorJson("");
   log("Cleared JSON editor.");
+});
+
+pitchInput.addEventListener("input", () => {
+  syncSelectedPitchDisplay(pitchInput.value);
+});
+
+pitchInput.addEventListener("change", () => {
+  setSelectedPitch(pitchInput.value);
+});
+
+notationClefSelect.addEventListener("change", () => {
+  updateNotation();
 });
 
 importJsonButton.addEventListener("click", async () => {
@@ -298,7 +220,7 @@ importJsonButton.addEventListener("click", async () => {
       body: JSON.stringify({ json })
     });
 
-    setCurrentComposition(imported);
+    applyCurrentComposition(imported);
     await exportCurrentCompositionJson({ logResult: false });
     log("Imported composition JSON from editor", { compositionId: imported.id });
   } catch (error) {
@@ -306,4 +228,10 @@ importJsonButton.addEventListener("click", async () => {
   }
 });
 
+renderPianoKeyboard((midi) => {
+  setSelectedPitch(midi, { preview: true });
+  log("Selected note from virtual piano", { midi, note: midiToLabel(midi) });
+});
+setSelectedPitch(pitchInput.value);
+void setupMidiInput((note) => setSelectedPitch(note, { preview: true }), log);
 void checkBackendStatus();

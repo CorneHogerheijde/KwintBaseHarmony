@@ -63,6 +63,42 @@
 
             <section class="panel panel-wide">
                 <div class="panel-header">
+                    <h2>Virtual Piano</h2>
+                    <p>Choose pitches by ear and touch instead of relying only on MIDI numbers.</p>
+                </div>
+                <div class="piano-toolbar">
+                    <div>
+                        <p class="piano-caption">Selected note</p>
+                        <strong id="selected-note-label" class="selected-note-label">C4 · MIDI 60</strong>
+                    </div>
+                    <div class="toolbar-actions">
+                        <span id="midi-status" class="midi-status">Checking MIDI availability...</span>
+                        <button id="preview-selected-note" type="button" class="secondary-button">Preview Selected Note</button>
+                    </div>
+                </div>
+                <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+            </section>
+
+            <section class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Notation Preview</h2>
+                    <p>See the currently selected pitch and recent composition notes on a staff.</p>
+                </div>
+                <div class="notation-toolbar">
+                    <label class="clef-picker" for="notation-clef">
+                        Clef
+                        <select id="notation-clef" name="notationClef">
+                            <option value="treble">Treble</option>
+                            <option value="bass">Bass</option>
+                        </select>
+                    </label>
+                    <p id="notation-summary" class="notation-summary">Previewing C4 on the treble clef.</p>
+                </div>
+                <div id="notation-staff" class="notation-staff" aria-label="Musical notation preview"></div>
+            </section>
+
+            <section class="panel panel-wide">
+                <div class="panel-header">
                     <h2>Add Note</h2>
                     <p>Append a MIDI note to a layer on the currently loaded composition.</p>
                 </div>
@@ -123,6 +159,6 @@
         </main>
     </div>
 
-    <script src="/app.js"></script>
+    <script type="module" src="/app.js"></script>
 </body>
 </html>
