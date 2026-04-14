@@ -95,6 +95,90 @@ KwintBaseHarmony/
 - **Modular Pieces**: Combine small pieces into larger compositions
 - **AI-Powered Analysis**: Analyze existing songs to show harmony concepts in real music
 
+## Contributing & Development Workflow
+
+**All development must follow a pull request (PR) workflow.** Direct commits to `main` are not permitted.
+
+### PR Workflow
+
+1. **Create a feature branch** from `main`:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/ws1-1-4-rest-api  # Use descriptive branch names
+   ```
+
+2. **Work on your feature**, committing regularly:
+   ```bash
+   git add .
+   git commit -m "Clear, descriptive commit message"
+   ```
+
+3. **Push your branch** to remote:
+   ```bash
+   git push origin feature/ws1-1-4-rest-api
+   ```
+
+4. **Create a Pull Request** on GitHub:
+   - Provide clear description of changes
+   - Link related spec documents or issues
+   - Specify which workstream/story this implements
+   - Note any breaking changes or dependencies
+
+5. **Code Review**:
+   - At least one reviewer must approve before merge
+   - Address feedback, push corrections to same branch
+   - Keep commits clean and logical
+
+6. **Merge to main**:
+   - Use "Squash and merge" for feature branches (keeps history clean)
+   - Delete branch after merge
+   - Build/tests must pass before merge
+
+### Branch Naming Conventions
+
+Use descriptive branch names following this pattern:
+- `feature/ws{X}-{Y}-{Z}-{slug}` — New feature (e.g., `feature/ws1-1-4-rest-api`)
+- `bugfix/brief-description` — Bug fix (e.g., `bugfix/midi-export-timing`)
+- `docs/update-readme` — Documentation (e.g., `docs/add-pr-workflow`)
+- `refactor/service-simplification` — Code refactoring
+
+### Commit Message Guidelines
+
+Write clear, actionable commit messages:
+```
+[WS1-1.4] Add composition CRUD endpoints
+
+- POST /api/compositions (create new)
+- GET /api/compositions/:id (retrieve)
+- PUT /api/compositions/:id (update)
+- DELETE /api/compositions/:id
+- Tested with xUnit integration tests
+
+Closes #15
+```
+
+### Status Before PR Merge
+
+Before submitting a PR, ensure:
+- ✅ Code compiles (`dotnet build`)
+- ✅ Unit tests pass (`dotnet test`)
+- ✅ No console warnings (address or document)
+- ✅ Code follows project conventions
+- ✅ Commits are logically organized
+- ✅ Branch is up-to-date with `main`
+
+### Workstream Tags
+
+Tag commits and PRs with workstream labels:
+- `WS1` — Learning Architecture
+- `WS2` — Multi-Modal Interaction
+- `WS3` — Integration & Testing
+
+Example: `[WS1-1.3] Complete data model with EF persistence`
+
+---
+
 ## Getting Started (Development)
 
 See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementation roadmap.
