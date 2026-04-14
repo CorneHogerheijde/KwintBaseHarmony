@@ -101,20 +101,418 @@ See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementa
 
 **Quick Start Requirements:**
 - Music theory consultant (validate pedagogy)
-- Full-stack developer (frontend + audio)
+- Full-stack developer (frontend + backend)
 - UX designer (calm, intuitive interface)
 
-**Technology Stack (Proposed):**
-- Frontend: React or Vue
-- Audio: Tone.js or Web Audio API
-- Notation: Vexflow or Opensheetmusic.js
-- Data: JSON + MIDI
+---
+
+## Architecture: React Frontend + .NET Dapr Backend
+
+### Technology Stack
+
+**Frontend:**
+- ⚛️ **React 18** — Interactive UI framework
+- 📘 **TypeScript** — Type safety
+- 🎹 **Tone.js** — Web Audio API abstraction
+- 🎼 **Vexflow** — Musical notation rendering
+- 🎨 **Tailwind CSS** — Utility-first styling
+- 📦 **Vite** — Modern build tool
+
+**Backend:**
+- 🔵 **.NET 8** — Backend runtime
+- 🔄 **Dapr Runtime** — Distributed application runtime
+- 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
+- 🎵 **NAudio** — Audio engine integration
+- 📚 **Entity Framework Core** — Data persistence
+
+**Development & Deployment:**
+- 🐳 **Docker** — Containerization
+- 🎯 **Dapr CLI** — Local development environment
+- 📊 **BMAD** — Project methodology and brainstorming framework
+
+---
+
+## Quick Setup
+
+### Prerequisites
+
+- **Node.js** 18+ (frontend)
+- **.NET 8 SDK** (backend)
+- **Dapr CLI** (installed and initialized)
+- **Docker** (for Dapr containers)
+- **Git**
+
+### 1. Clone & Initial Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/CorneHogerheijde/KwintBaseHarmony.git
+cd KwintBaseHarmony
+
+# Initialize Dapr
+dapr init
+```
+
+### 2. Frontend Setup
+
+```bash
+cd src/frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+### 3. Backend Setup
+
+```bash
+cd src/backend
+
+# Restore dependencies
+dotnet restore
+
+# Start with Dapr
+dapr run --app-id kwintbaseharmony-api \
+         --app-port 7000 \
+         --resources-path ./components \
+         -- dotnet run
+
+# Or without Dapr for testing
+dotnet run
+```
+
+The backend will be available at `http://localhost:7000`
+
+### 4. Testing Together
+
+Once both are running:
+
+1. Open frontend at `http://localhost:5173`
+2. The frontend will connect to the backend API
+3. Piano keyboard should be interactive
+4. Ready to start the first puzzle!
+
+---
+
+## Dapr Workflow Integration
+
+**How Dapr Workflows orchestrate user interactions:**
+
+1. **Puzzle Workflow** — Orchestrates the puzzle flow
+   - User selects notes on piano
+   - Workflow validates against expected answer
+   - Audio + notation feedback triggered
+   - Next puzzle initiated
+
+2. **Composition Workflow** — Manages multi-step composition
+   - Each layer (root+5th, +3rd, etc.) is a workflow step
+   - State persisted between sessions
+   - Allows pausing/resuming
+
+3. **User Input Processing** — Dapr Workflow handles:
+   - Note input sequences
+   - Validation logic
+   - Feedback generation
+   - State transitions
+
+**Reference:** [Dapr Workflow Concerto Example](https://github.com/diagrid-labs/dapr-workflow-concerto)
+
+---
+
+## Project Structure
+
+```
+KwintBaseHarmony/
+├── README.md                          # This file
+├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
+├── LICENSE                            # MIT License
+├── .gitignore
+├── docker-compose.yml                 # Local Dapr environment
+│
+├── src/
+│   ├── frontend/                      # React + TypeScript
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── components/            # React components
+│   │   │   │   ├── PianoKeyboard.tsx
+│   │   │   │   ├── NotationDisplay.tsx
+│   │   │   │   ├── PuzzleUI.tsx
+│   │   │   │   └── ...
+│   │   │   ├── pages/
+│   │   │   │   ├── Welcome.tsx
+│   │   │   │   ├── PuzzlePage.tsx
+│   │   │   │   └── ...
+│   │   │   ├── App.tsx
+│   │   │   └── main.tsx
+│   │   ├── package.json
+│   │   └── vite.config.ts
+│   │
+│   └── backend/                       # .NET 8 + Dapr
+│       ├── Program.cs                 # Dapr setup
+│       ├── Controllers/
+│       │   ├── PuzzleController.cs
+│       │   ├── CompositionController.cs
+│       │   └── ...
+│       ├── Workflows/
+│       │   ├── PuzzleWorkflow.cs
+│       │   ├── CompositionWorkflow.cs
+│       │   └── ...
+│       ├── Models/
+│       │   ├── Puzzle.cs
+│       │   ├── Note.cs
+│       │   └── ...
+│       ├── Components/
+│       │   ├── pubsub.yaml            # Dapr pub/sub config
+│       │   ├── state.yaml             # Dapr state store config
+│       │   └── ...
+│       ├── KwintBaseHarmony.csproj
+│       └── appsettings.json
+│
+└── _outputs/
+    ├── brainstorming/
+    ├── planning-artifacts/
+    ├── implementation-artifacts/
+    └── test-artifacts/
+```
+
+---
+
+## Development Tools & Methodology
+
+### BMAD (Brainstorming Method & Design)
+
+This project uses **BMAD** for structured ideation and development planning:
+
+- **Brainstorming Sessions** — Used to generate the 9 core ideas
+- **Architecture Design** — Documented in DEVELOPMENT_PLAN.md
+- **Workflow Organization** — Tracks progress and dependencies
+- **Skill Development** — Continuous improvement methodology
+
+Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
+
+### Development Workflow
+
+1. **Ideation** → BMAD brainstorming sessions
+2. **Planning** → DEVELOPMENT_PLAN workstreams
+3. **Implementation** → Code in organized workstreams
+4. **Testing** → Internal musician feedback loops
+5. **Iteration** → Refinement based on real-world usage
+
+---
 
 ## Resources
 
 - **Kwintessence Book Reference**: Layer-by-layer harmonic pedagogy
-- **Brainstorming Session**: `_bmad-output/brainstorming/brainstorming-session-2026-04-14.md`
+- **Brainstorming Session**: `_outputs/brainstorming/brainstorming-session-2026-04-14.md`
 - **Development Plan**: `DEVELOPMENT_PLAN.md`
+- **Dapr Documentation**: https://docs.dapr.io
+- **Dapr Workflow Example**: https://github.com/diagrid-labs/dapr-workflow-concerto
+- **BMAD Method**: Brainstorming & design methodology used for this project
+
+---
+- 🎨 **Tailwind CSS** — Utility-first styling
+- 📦 **Vite** — Modern build tool
+
+**Backend:**
+- 🔵 **.NET 8** — Backend runtime
+- 🔄 **Dapr Runtime** — Distributed application runtime
+- 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
+- 🎵 **NAudio** — Audio engine integration
+- 📚 **Entity Framework Core** — Data persistence
+
+**Development & Deployment:**
+- 🐳 **Docker** — Containerization
+- 🎯 **Dapr CLI** — Local development environment
+- 📊 **BMAD** — Project methodology and brainstorming framework
+
+---
+
+## Quick Setup
+
+### Prerequisites
+
+- **Node.js** 18+ (frontend)
+- **.NET 8 SDK** (backend)
+- **Dapr CLI** (installed and initialized)
+- **Docker** (for Dapr containers)
+- **Git**
+
+### 1. Clone & Initial Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/CorneHogerheijde/KwintBaseHarmony.git
+cd KwintBaseHarmony
+
+# Initialize Dapr
+dapr init
+```
+
+### 2. Frontend Setup
+
+```bash
+cd src/frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+### 3. Backend Setup
+
+```bash
+cd src/backend
+
+# Restore dependencies
+dotnet restore
+
+# Start with Dapr
+dapr run --app-id kwintbaseharmony-api \
+         --app-port 7000 \
+         --resources-path ./components \
+         -- dotnet run
+
+# Or without Dapr for testing
+dotnet run
+```
+
+The backend will be available at `http://localhost:7000`
+
+### 4. Testing Together
+
+Once both are running:
+
+1. Open frontend at `http://localhost:5173`
+2. The frontend will connect to the backend API
+3. Piano keyboard should be interactive
+4. Ready to start the first puzzle!
+
+---
+
+## Dapr Workflow Integration
+
+**How Dapr Workflows orchestrate user interactions:**
+
+1. **Puzzle Workflow** — Orchestrates the puzzle flow
+   - User selects notes on piano
+   - Workflow validates against expected answer
+   - Audio + notation feedback triggered
+   - Next puzzle initiated
+
+2. **Composition Workflow** — Manages multi-step composition
+   - Each layer (root+5th, +3rd, etc.) is a workflow step
+   - State persisted between sessions
+   - Allows pausing/resuming
+
+3. **User Input Processing** — Dapr Workflow handles:
+   - Note input sequences
+   - Validation logic
+   - Feedback generation
+   - State transitions
+
+**Reference:** [Dapr Workflow Concerto Example](https://github.com/diagrid-labs/dapr-workflow-concerto)
+
+---
+
+## Project Structure
+
+```
+KwintBaseHarmony/
+├── README.md                          # This file
+├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
+├── LICENSE                            # MIT License
+├── .gitignore
+├── docker-compose.yml                 # Local Dapr environment
+│
+├── src/
+│   ├── frontend/                      # React + TypeScript
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── components/            # React components
+│   │   │   │   ├── PianoKeyboard.tsx
+│   │   │   │   ├── NotationDisplay.tsx
+│   │   │   │   ├── PuzzleUI.tsx
+│   │   │   │   └── ...
+│   │   │   ├── pages/
+│   │   │   │   ├── Welcome.tsx
+│   │   │   │   ├── PuzzlePage.tsx
+│   │   │   │   └── ...
+│   │   │   ├── App.tsx
+│   │   │   └── main.tsx
+│   │   ├── package.json
+│   │   └── vite.config.ts
+│   │
+│   └── backend/                       # .NET 8 + Dapr
+│       ├── Program.cs                 # Dapr setup
+│       ├── Controllers/
+│       │   ├── PuzzleController.cs
+│       │   ├── CompositionController.cs
+│       │   └── ...
+│       ├── Workflows/
+│       │   ├── PuzzleWorkflow.cs
+│       │   ├── CompositionWorkflow.cs
+│       │   └── ...
+│       ├── Models/
+│       │   ├── Puzzle.cs
+│       │   ├── Note.cs
+│       │   └── ...
+│       ├── Components/
+│       │   ├── pubsub.yaml            # Dapr pub/sub config
+│       │   ├── state.yaml             # Dapr state store config
+│       │   └── ...
+│       ├── KwintBaseHarmony.csproj
+│       └── appsettings.json
+│
+└── _outputs/
+    ├── brainstorming/
+    ├── planning-artifacts/
+    ├── implementation-artifacts/
+    └── test-artifacts/
+```
+
+---
+
+## Development Tools & Methodology
+
+### BMAD (Brainstorming Method & Design)
+
+This project uses **BMAD** for structured ideation and development planning:
+
+- **Brainstorming Sessions** — Used to generate the 9 core ideas
+- **Architecture Design** — Documented in DEVELOPMENT_PLAN.md
+- **Workflow Organization** — Tracks progress and dependencies
+- **Skill Development** — Continuous improvement methodology
+
+Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
+
+### Development Workflow
+
+1. **Ideation** → BMAD brainstorming sessions
+2. **Planning** → DEVELOPMENT_PLAN workstreams
+3. **Implementation** → Code in organized workstreams
+4. **Testing** → Internal musician feedback loops
+5. **Iteration** → Refinement based on real-world usage
+
+---
+
+## Resources
+
+- **Kwintessence Book Reference**: Layer-by-layer harmonic pedagogy
+- **Brainstorming Session**: `_outputs/brainstorming/brainstorming-session-2026-04-14.md`
+- **Development Plan**: `DEVELOPMENT_PLAN.md`
+- **Dapr Documentation**: https://docs.dapr.io
+- **Dapr Workflow Example**: https://github.com/diagrid-labs/dapr-workflow-concerto
+- **BMAD Method**: Brainstorming & design methodology used for this project
+
+---
 
 ## Contributing
 
