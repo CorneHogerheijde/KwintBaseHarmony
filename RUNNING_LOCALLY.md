@@ -1,46 +1,103 @@
 # Running KwintBaseHarmony Locally
 
-This guide shows how to run the backend API and test it locally. **Currently, only the backend (WS1-1.3) is functional.**
+This guide shows how to run the backend API with Dapr. **Currently, only the backend (WS1-1.3) is functional.**
 
 ## Prerequisites
 
 - **.NET SDK 8.0+** [Download](https://dotnet.microsoft.com/download)
-- **PostgreSQL 14+** (local install or Docker)
+- **Docker & Docker Compose** [Download](https://www.docker.com/products/docker-desktop)
+- **Dapr CLI** [Download](https://dapr.io/download)
 - **Git**
 
-## Setup
+## Quick Start (Recommended: Dapr + Docker)
 
-### 1. PostgreSQL Database
-
-**Option A: Docker (Recommended)**
-```bash
-# Add PostgreSQL to docker-compose.yml first, then:
-docker-compose up -d postgres
-
-# Verify it's running:
-docker ps
-```
-
-**Option B: Local PostgreSQL**
-1. Install PostgreSQL 14+ locally
-2. Create a database:
-   ```sql
-   CREATE DATABASE kwintbaseharmony;
-   ```
-3. Ensure `postgres` user can connect with password `postgres` (or update `appsettings.json`)
-
-### 2. Clone & Restore Dependencies
+### 1. Start Infrastructure (PostgreSQL + Redis)
 
 ```bash
 cd c:\Projects\bmad\KwintBaseHarmony
 
-# Restore NuGet packages
+# Start all services in Docker
+docker-compose up -d
+
+# Verify running:
+docker ps
+# Should see: postgres, redis, placement, kwintbaseharmony-api-dapr
+```
+
+### 2. Initialize Dapr (One-Time)
+
+```bash
+dapr init
+```
+
+This sets up Dapr components and Redis state store locally.
+
+### 3. Run the Backend
+
+```bash
+cd src/backend
+dapr run --app-id kwintbaseharmony-api \
+         --app-port 5000 \
+         --config ../dapr.yaml \
+         -- dotnet run
+```
+
+✅ **Done!** Backend is running with Dapr sidecar.
+
+**Access points:**
+- **API**: `http://localhost:5000`
+- **Swagger**: `http://localhost:5000/swagger`
+- **Dapr HTTP**: `http://localhost:3500` (sidecar)
+
+---
+
+## Alternative: Direct .NET (Without Dapr)
+
+If you prefer to skip Dapr for simple testing:
+
+### 1. Start PostgreSQL Only
+
+```bash
+docker-compose up -d postgres
+```
+
+### 2. Run .NET Backend
+
+```bash
+cd src/backend
+dotnet run
+```
+
+**Note**: No Dapr sidecar, no workflow support, but simpler setup.
+
+---
+
+## Setup (Already Done, Reference Only)
+
+### PostgreSQL Configuration
+
+PostgreSQL is configured in `docker-compose.yml`:
+- **Host**: `postgres` (or `localhost` from host machine)
+- **Port**: `5432`
+- **Database**: `kwintbaseharmony`
+- **User**: `postgres`
+- **Password**: `postgres`
+
+### Dapr Components
+
+Located in `src/backend/components/`:
+- `state.yaml` — Redis state store (for workflows, actor storage)
+- `postgres.yaml` — PostgreSQL reference (for future Dapr-native queries)
+
+### Restore Dependencies
+
+```bash
 dotnet restore
 ```
 
 ## Running the Backend
 
-### Start the .NET API Server
+### Option A: Direct (Simplest for Development)
 
 ```bash
 cd src/backend
@@ -67,12 +124,78 @@ The API is now available at:
 - **HTTPS**: `https://localhost:7049`
 - **Swagger UI**: `http://localhost:5000/swagger` ← Use this to test endpoints!
 
+### Option B: With Dapr Sidecar (Recommended for Production-like Testing)
+
+**Prerequisites**: Dapr CLI installed [here](https://dapr.io/download/)
+
+```bash
+# 1. Ensure Docker containers are running
+docker-compose up -d
+
+# 2. Initialize Dapr (one-time)
+dapr init
+
+# 3. Start the backend with Dapr sidecar
+cd src/backend
+dapr run --app-id kwintbaseharmony-api --app-port 5000 --config ../dapr.yaml -- dotnet run
+```
+
+**What this does:**
+- Runs the .NET backend on port 5000
+- Loads `dapr.yaml` configuration (standalone mode, Redis state store)
+- Dapr sidecar listens on ports 3500 (HTTP) and 3501 (gRPC)
+- You can invoke Dapr APIs for state/pub-sub (Phase 2+)
+
+**Dapr Sidecar Endpoints:**
+- Dapr HTTP API: `http://localhost:3500`
+- State management: `http://localhost:3500/v1.0/state`
+- Pub/Sub: `http://localhost:3500/v1.0/publish`
+- Invoke service: `http://localhost:3500/v1.0/invoke/{service-id}/method/{method}`
+
 ### Database Auto-Migration
 
 On first run in Development environment, the database schema is automatically created:
 - `Compositions` table
 - `Layers` table (with composite unique index)
 - `Notes` table (with playback-order index)
+
+## Dapr Configuration
+
+**File**: `dapr.yaml` at project root
+
+This file configures Dapr for local development:
+
+```yaml
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: kwintbaseharmony-config
+spec:
+  mtls:
+    enabled: false                    # Disabled for local dev
+  tracing:
+    samplingRate: "1"
+    zipkin:
+      endpointAddress: "..."          # For observability
+  logging:
+    level: info
+  runMode: standalone
+```
+
+**Key settings:**
+- `mtls.enabled: false` — No mutual TLS in dev (simplifies testing)
+- `logging.level: info` — Console logging
+- `runMode: standalone` — Works without Dapr cluster (for local development)
+
+**Usage:**
+```bash
+dapr run --config dapr.yaml -- dotnet run
+```
+
+**Components** (state, secrets, pub/sub):
+- Located in `src/backend/components/`
+- `state.yaml` — Redis state store for workflow/actor storage
+- Add more components as needed (databases, message brokers, etc.)
 
 ## Testing the API
 
@@ -250,6 +373,29 @@ Framework: 'Microsoft.NETCore.App', version '8.0.0'
 **Fix:**
 - Ensure .NET 8.0 SDK installed: `dotnet --list-sdks`
 - Or run tests on older .NET: `dotnet test --framework net6.0` (if supported)
+
+### Dapr sidecar fails to start
+
+```
+Error: cannot find config file at /path/to/dapr.yaml
+```
+
+**Fix:**
+- Ensure `dapr.yaml` exists at project root: `ls dapr.yaml` (should exist)
+- Run `dapr run` from the project root, not `src/backend/`
+- Full command: `dapr run --app-id kwintbaseharmony-api --app-port 5000 --config dapr.yaml -- dotnet run`
+
+### "Redis connection refused" with Dapr
+
+```
+Error: ERR failed to connect to state store: redis
+```
+
+**Fix:**
+- Ensure Redis is running: `docker-compose up -d redis`
+- Check `src/backend/components/state.yaml` has correct Redis address
+- Default: `redis:6379` (works with Docker Compose network)
+- For local Redis: Change to `localhost:6379`
 
 ## What's Working (WS1-1.3)
 

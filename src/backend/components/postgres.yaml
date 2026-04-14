@@ -1,0 +1,20 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: postgresdb
+spec:
+  type: postgresql
+  version: v1
+  metadata:
+  - name: host
+    value: postgres
+  - name: port
+    value: "5432"
+  - name: database
+    value: kwintbaseharmony
+  - name: username
+    value: postgres
+  - name: password
+    value: postgres
+  - name: sslmode
+    value: disable
