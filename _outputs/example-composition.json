@@ -1,0 +1,156 @@
+{
+  "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+  "studentId": "student-demo-001",
+  "createdAt": "2026-04-14T10:30:00Z",
+  "updatedAt": "2026-04-14T11:45:30Z",
+  "difficulty": "beginner",
+  "title": "My First Harmony - C Major",
+  "completionPercentage": 28.6,
+  "layers": [
+    {
+      "id": "228b03ae-ab8f-4be5-9e0c-cba0abd3f5e1",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 1,
+      "name": "Foundation (Root + 5th)",
+      "concept": "Understanding the perfect 5th—the stable foundation",
+      "completed": true,
+      "timeSpentMs": 47000,
+      "userNotes": "This felt really satisfying once I got it!",
+      "puzzleAnswersJson": "{\"puzzleId\": \"p1-logic-1\", \"answerCorrect\": true, \"attempts\": 2}",
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:47:00Z",
+      "notes": [
+        {
+          "id": "f7f1e01c-5d1e-40db-b1d3-e90e2d0e8b9a",
+          "layerId": "228b03ae-ab8f-4be5-9e0c-cba0abd3f5e1",
+          "pitch": 60,
+          "durationMs": 500,
+          "timingMs": 0,
+          "velocity": 100,
+          "createdAt": "2026-04-14T10:30:15Z"
+        },
+        {
+          "id": "a9b1c2d3-e4f5-6a7b-8c9d-0e1f2a3b4c5d",
+          "layerId": "228b03ae-ab8f-4be5-9e0c-cba0abd3f5e1",
+          "pitch": 67,
+          "durationMs": 500,
+          "timingMs": 0,
+          "velocity": 100,
+          "createdAt": "2026-04-14T10:30:16Z"
+        }
+      ]
+    },
+    {
+      "id": "6d9e6a74-2b2b-4c1f-a8e2-d3f8a9c1e2b0",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 2,
+      "name": "Adding the Third",
+      "concept": "Completing the major triad with the third",
+      "completed": true,
+      "timeSpentMs": 63000,
+      "userNotes": "The third really makes it sound like music!",
+      "puzzleAnswersJson": "{\"puzzleId\": \"p2-pattern-1\", \"answerCorrect\": true, \"attempts\": 1}",
+      "createdAt": "2026-04-14T10:48:00Z",
+      "updatedAt": "2026-04-14T11:09:00Z",
+      "notes": [
+        {
+          "id": "b8c9d0e1-f2a3-b4c5-d6e7-f8a9b0c1d2e3",
+          "layerId": "6d9e6a74-2b2b-4c1f-a8e2-d3f8a9c1e2b0",
+          "pitch": 60,
+          "durationMs": 500,
+          "timingMs": 0,
+          "velocity": 100,
+          "createdAt": "2026-04-14T10:48:30Z"
+        },
+        {
+          "id": "c9d0e1f2-a3b4-c5d6-e7f8-a9b0c1d2e3f4",
+          "layerId": "6d9e6a74-2b2b-4c1f-a8e2-d3f8a9c1e2b0",
+          "pitch": 64,
+          "durationMs": 500,
+          "timingMs": 0,
+          "velocity": 100,
+          "createdAt": "2026-04-14T10:48:31Z"
+        },
+        {
+          "id": "d0e1f2a3-b4c5-d6e7-f8a9-b0c1d2e3f4a5",
+          "layerId": "6d9e6a74-2b2b-4c1f-a8e2-d3f8a9c1e2b0",
+          "pitch": 67,
+          "durationMs": 500,
+          "timingMs": 0,
+          "velocity": 100,
+          "createdAt": "2026-04-14T10:48:32Z"
+        }
+      ]
+    },
+    {
+      "id": "e1f2a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 3,
+      "name": "The Major Triad",
+      "concept": "The complete three-note chord: root, third, fifth",
+      "completed": false,
+      "timeSpentMs": 0,
+      "userNotes": null,
+      "puzzleAnswersJson": null,
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:30:00Z",
+      "notes": []
+    },
+    {
+      "id": "f2a3b4c5-d6e7-f8a9-b0c1-d2e3f4a5b6c7",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 4,
+      "name": "Seventh Chord",
+      "concept": "Adding color with sevenths and extended intervals",
+      "completed": false,
+      "timeSpentMs": 0,
+      "userNotes": null,
+      "puzzleAnswersJson": null,
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:30:00Z",
+      "notes": []
+    },
+    {
+      "id": "a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 5,
+      "name": "Extensions",
+      "concept": "Extensions: ninths, elevenths, thirteenths",
+      "completed": false,
+      "timeSpentMs": 0,
+      "userNotes": null,
+      "puzzleAnswersJson": null,
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:30:00Z",
+      "notes": []
+    },
+    {
+      "id": "b4c5d6e7-f8a9-b0c1-d2e3-f4a5b6c7d8e9",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 6,
+      "name": "Alterations",
+      "concept": "Alterations and chromatic movement",
+      "completed": false,
+      "timeSpentMs": 0,
+      "userNotes": null,
+      "puzzleAnswersJson": null,
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:30:00Z",
+      "notes": []
+    },
+    {
+      "id": "c5d6e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9fa",
+      "compositionId": "550e8400-e29b-41d4-a716-446655440000",
+      "layerNumber": 7,
+      "name": "Final Composition",
+      "concept": "Bringing it all together: your complete composition",
+      "completed": false,
+      "timeSpentMs": 0,
+      "userNotes": null,
+      "puzzleAnswersJson": null,
+      "createdAt": "2026-04-14T10:30:00Z",
+      "updatedAt": "2026-04-14T10:30:00Z",
+      "notes": []
+    }
+  ]
+}

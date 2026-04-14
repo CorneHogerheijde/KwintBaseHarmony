@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KwintBaseHarmony")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+441bcad02b475376e9b7fb15f9a9cee1dad57e91")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc865537d531f24ea76992a78f65f54b5d5f475a")]
 [assembly: System.Reflection.AssemblyProductAttribute("KwintBaseHarmony")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KwintBaseHarmony")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
