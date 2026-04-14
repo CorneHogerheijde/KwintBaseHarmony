@@ -122,7 +122,9 @@ This project is in active development. For now, this is a personal/team project.
 
 ## License
 
-(To be decided)
+This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
+
+Copyright © 2026 Corné Hogerheijde
 
 ---
 
