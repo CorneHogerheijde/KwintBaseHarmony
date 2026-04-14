@@ -76,10 +76,51 @@ h1 {
 .hero-actions,
 .quick-actions,
 .inline-form,
-.json-toolbar {
+.json-toolbar,
+.piano-toolbar,
+.toolbar-actions,
+.notation-toolbar {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.piano-toolbar {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.toolbar-actions {
+  align-items: center;
+}
+
+.piano-caption {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.selected-note-label {
+  font-size: 1.1rem;
+}
+
+.midi-status,
+.notation-summary {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.notation-toolbar {
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.clef-picker {
+  width: min(180px, 100%);
 }
 
 .status-pill {
@@ -183,6 +224,68 @@ button:hover,
   gap: 14px;
 }
 
+.piano-keyboard {
+  display: grid;
+  grid-template-columns: repeat(25, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.notation-staff {
+  overflow-x: auto;
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--border);
+}
+
+.notation-staff svg {
+  display: block;
+  width: 100%;
+  min-width: 560px;
+}
+
+.piano-key {
+  min-height: 112px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  gap: 4px;
+  border-radius: 18px;
+}
+
+.piano-key.is-active {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(18, 110, 90, 0.22);
+}
+
+.white-key {
+  background: linear-gradient(180deg, #fffdf8 0%, #efe6d8 100%);
+  color: var(--text);
+}
+
+.black-key {
+  background: linear-gradient(180deg, #3e3129 0%, #1f1713 100%);
+  color: #f8efe2;
+  border-color: rgba(31, 23, 19, 0.8);
+}
+
+.white-key.is-active {
+  background: linear-gradient(180deg, #d7f1eb 0%, #9ed9cb 100%);
+}
+
+.black-key.is-active {
+  background: linear-gradient(180deg, #1a7460 0%, #0b4e40 100%);
+}
+
+.note-name {
+  font-weight: 700;
+}
+
+.midi-label {
+  font-size: 0.78rem;
+  opacity: 0.78;
+}
+
 .layer-card {
   padding: 18px;
   border-radius: 20px;
@@ -259,6 +362,10 @@ button:hover,
     grid-column: span 12;
   }
 
+  .piano-keyboard {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+
   .page-shell {
     width: min(100% - 20px, 1180px);
     padding-top: 20px;
@@ -267,5 +374,23 @@ button:hover,
   .hero,
   .panel {
     border-radius: 22px;
+  }
+}
+
+@media (max-width: 680px) {
+  .piano-toolbar {
+    align-items: start;
+  }
+
+  .notation-toolbar {
+    align-items: start;
+  }
+
+  .piano-keyboard {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .piano-key {
+    min-height: 92px;
   }
 }

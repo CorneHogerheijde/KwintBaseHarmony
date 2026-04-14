@@ -32,6 +32,33 @@ function buildComposition(overrides = {}) {
 }
 
 describe("KwintBaseHarmony studio", () => {
+  it("syncs the virtual piano with the pitch field", () => {
+    cy.visit("/");
+    cy.wait("@healthCheck");
+
+    cy.get("#selected-note-label").should("contain", "C4");
+    cy.get('.piano-key[data-midi="64"]').click();
+
+    cy.get("#pitch").should("have.value", "64");
+    cy.get("#selected-note-label").should("contain", "E4");
+    cy.get("#notation-summary").should("contain", "E4");
+    cy.get("#notation-staff svg").should("exist");
+    cy.get('.piano-key[data-midi="64"]').should("have.class", "is-active");
+    cy.get("#activity-log").should("contain", "Selected note from virtual piano");
+  });
+
+  it("switches notation clefs without losing the selected note", () => {
+    cy.visit("/");
+    cy.wait("@healthCheck");
+
+    cy.get("#notation-summary").should("contain", "treble clef");
+    cy.get("#notation-clef").select("Bass");
+
+    cy.get("#notation-summary").should("contain", "bass clef");
+    cy.get("#selected-note-label").should("contain", "C4");
+    cy.get("#notation-staff svg").should("exist");
+  });
+
   it("creates a composition and renders all layers", () => {
     const composition = buildComposition({
       title: "Warmup in C",
@@ -103,7 +130,7 @@ describe("KwintBaseHarmony studio", () => {
     cy.wait("@loadComposition");
     cy.get("#composition-summary").should("contain", "Loaded from API");
     cy.get("#layers .layer-card").first().should("contain", "Completed");
-    cy.get("#layers .note-chip").should("contain", "Pitch 60");
+    cy.get("#layers .note-chip").should("contain", "C4");
     cy.get("#activity-log").should("contain", "Loaded composition");
   });
 
