@@ -64,6 +64,8 @@ if (!app.Environment.IsEnvironment("Testing"))
     app.UseHttpsRedirection();
 }
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+
 // Map Dapr pub/sub endpoints
 app.MapSubscribeHandler();
 
@@ -84,10 +86,19 @@ compositions.MapPost("", async (
         return Results.BadRequest(new { error = "Title is required" });
     }
 
-    var composition = await compositionService.CreateAsync(
-        request.StudentId,
-        request.Title,
-        request.Difficulty ?? "beginner");
+    Composition composition;
+
+    try
+    {
+        composition = await compositionService.CreateAsync(
+            request.StudentId,
+            request.Title,
+            request.Difficulty ?? "beginner");
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.UnprocessableEntity(new { error = exception.Message });
+    }
 
     logger.LogInformation(
         "Created composition {CompositionId} for student {StudentId}",
@@ -133,7 +144,17 @@ compositions.MapPut("/{id:guid}", async (
         composition.Difficulty = request.Difficulty;
     }
 
-    var updated = await compositionService.UpdateAsync(composition);
+    Composition updated;
+
+    try
+    {
+        updated = await compositionService.UpdateAsync(composition);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+
     logger.LogInformation("Updated composition {CompositionId}", id);
 
     return Results.Ok(MapToResponse(updated));

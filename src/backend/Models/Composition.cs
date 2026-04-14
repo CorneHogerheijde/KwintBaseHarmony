@@ -10,6 +10,13 @@ namespace KwintBaseHarmony.Models;
 [Table("Compositions")]
 public class Composition
 {
+    private static readonly HashSet<string> AllowedDifficultyValues = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "beginner",
+        "intermediate",
+        "advanced"
+    };
+
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -61,6 +68,22 @@ public class Composition
     /// Collection of harmonic layers (5-7 layers per Kwintessence structure).
     /// </summary>
     public ICollection<Layer> Layers { get; set; } = new List<Layer>();
+
+    /// <summary>
+    /// Validates required metadata and normalizes difficulty values before persistence.
+    /// </summary>
+    public void ValidateMetadata()
+    {
+        Validator.ValidateObject(this, new ValidationContext(this), validateAllProperties: true);
+
+        if (!AllowedDifficultyValues.Contains(Difficulty))
+        {
+            throw new InvalidOperationException(
+                $"Difficulty must be one of: {string.Join(", ", AllowedDifficultyValues.OrderBy(value => value))}");
+        }
+
+        Difficulty = Difficulty.ToLowerInvariant();
+    }
 
     /// <summary>
     /// Validates that composition has exactly 5-7 layers.

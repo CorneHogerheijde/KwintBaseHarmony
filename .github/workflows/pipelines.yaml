@@ -30,23 +30,11 @@ jobs:
           cache-dependency-path: |
             KwintBaseHarmony.sln
             src/backend/KwintBaseHarmony.csproj
+            src/frontend/KwintBaseHarmony.Frontend.csproj
             tests/KwintBaseHarmony.Tests.csproj
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       - name: Restore dependencies
         run: dotnet restore KwintBaseHarmony.sln
-
-      - name: Install frontend dependencies
-        working-directory: src/frontend
-        run: npm install
-
-      - name: Build frontend
-        working-directory: src/frontend
-        run: npm run build
 
       - name: Build solution
         run: dotnet build KwintBaseHarmony.sln --configuration Release --no-restore

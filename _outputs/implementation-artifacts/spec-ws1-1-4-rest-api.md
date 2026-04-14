@@ -2,7 +2,7 @@
 title: 'WS1-1.4: REST API Endpoints'
 type: 'feature'
 created: '2026-04-14'
-status: 'in-progress'
+status: 'done'
 baseline_commit: '0c36f07'
 context: ['WS1-1.3']
 ---
@@ -279,14 +279,14 @@ Expose all CompositionService functionality through RESTful HTTP endpoints. Enab
 
 ## Implementation Details
 
-### Controller: CompositionsController.cs
+### Endpoint Host: Program.cs (Minimal API)
 
-- **Class**: `CompositionsController : ControllerBase`
-- **Route**: `[Route("api/[controller]")]`
+- **Host**: `Program.cs`
+- **Route group**: `/api/compositions`
 - **Dependencies**: 
   - `ICompositionService` (CRUD + serialization)
   - `IMidiExportService` (MIDI generation)
-  - `ILogger<CompositionsController>` (logging)
+  - `ILogger<Program>` (logging)
 
 ### Request/Response DTOs
 
@@ -327,7 +327,7 @@ All operations logged at INFO level:
 
 ---
 
-## Tests: CompositionsControllerTests.cs
+## Tests: CompositionEndpointsTests.cs
 
 **Test Coverage:**
 
@@ -371,6 +371,8 @@ All operations logged at INFO level:
    - ✅ Valid student → 200 OK with list
    - ✅ No compositions → 200 OK with empty list
 
+Implemented coverage currently includes create, invalid create difficulty, get by id, student list, update success, invalid update difficulty, delete, add invalid note, complete layer, export MIDI, export JSON, and JSON import/replace.
+
 ---
 
 ## Integration with WS1-1.3
@@ -385,8 +387,8 @@ All operations logged at INFO level:
 ## Swagger/OpenAPI
 
 All endpoints documented with:
-- `[ProduceResponseType]` attributes for status codes
-- XML documentation comments (auto-generated from method docs)
+- Minimal API endpoint metadata and response contracts visible through endpoint explorer
+- XML documentation comments where available from the underlying types
 - Request/response examples
 
 Access at: `GET http://localhost:5000/swagger`
@@ -400,7 +402,7 @@ Access at: `GET http://localhost:5000/swagger`
 - ✅ Request validation (pitch range, layer numbers, etc.)
 - ✅ Error messages clear and actionable
 - ✅ MIDI export playable in DAWs
-- ✅ Controller tests passing (13 test cases)
+- ✅ Endpoint tests passing
 - ✅ Swagger documentation complete
 - ✅ Logging captures all operations
 - ✅ Build succeeds with 0 errors
@@ -426,5 +428,5 @@ Access at: `GET http://localhost:5000/swagger`
 - Endpoints available immediately after backend startup
 - No database migration needed (uses WS1-1.3 schema)
 - Dapr sidecar optional (for Phase 2+ pub/sub workflows)
-- CORS enabled for frontend on localhost:5173
+- CORS enabled for frontend on localhost:5051 plus local dev fallbacks
 

@@ -20,6 +20,8 @@ apps:
     daprHTTPPort: 3510
     daprGRPCPort: 50011
     command:
-      - npm
+      - dotnet
       - run
-      - dev
+      - --no-launch-profile
+      - --urls
+      - http://localhost:5051

@@ -25,10 +25,12 @@ public class CompositionService : ICompositionService
         {
             StudentId = studentId,
             Title = title,
-            Difficulty = difficulty,
+            Difficulty = difficulty.Trim(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        composition.ValidateMetadata();
 
         // Initialize 7 empty layers
         for (int i = 1; i <= 7; i++)
@@ -84,6 +86,7 @@ public class CompositionService : ICompositionService
     /// </summary>
     public async Task<Composition> UpdateAsync(Composition composition)
     {
+        composition.ValidateMetadata();
         composition.UpdatedAt = DateTime.UtcNow;
         _context.Compositions.Update(composition);
         await _context.SaveChangesAsync();
@@ -171,6 +174,7 @@ public class CompositionService : ICompositionService
     /// </summary>
     public async Task<Composition> ValidateAndSaveAsync(Composition composition)
     {
+        composition.ValidateMetadata();
         composition.ValidateLayers();
         composition.UpdateCompletionPercentage();
         composition.UpdatedAt = DateTime.UtcNow;
@@ -268,7 +272,7 @@ public class CompositionService : ICompositionService
             Id = exportModel.Id,
             StudentId = exportModel.StudentId,
             Title = exportModel.Title,
-            Difficulty = exportModel.Difficulty,
+            Difficulty = exportModel.Difficulty.Trim(),
             CompletionPercentage = exportModel.CompletionPercentage,
             CreatedAt = exportModel.CreatedAt,
             UpdatedAt = exportModel.UpdatedAt,
@@ -309,6 +313,7 @@ public class CompositionService : ICompositionService
         };
 
         // Validate structure
+        composition.ValidateMetadata();
         composition.ValidateLayers();
 
         _logger.LogDebug("Deserialized composition {CompositionId} from JSON", composition.Id);

@@ -7,7 +7,6 @@ This guide shows how to run the full project locally with Dapr, including the fr
 - **.NET SDK 10.0+** [Download](https://dotnet.microsoft.com/download)
 - **Docker & Docker Compose** [Download](https://www.docker.com/products/docker-desktop)
 - **Dapr CLI** [Download](https://dapr.io/download)
-- **Node.js 18+** [Download](https://nodejs.org/)
 - **Git**
 
 ## Quick Start (Recommended: Dapr + Docker)
@@ -33,14 +32,7 @@ dapr init
 
 This sets up the local Dapr runtime, including Redis and placement, on the default localhost ports.
 
-### 3. Install Frontend Dependencies
-
-```bash
-cd c:\Projects\bmad\KwintBaseHarmony\src\frontend
-npm install
-```
-
-### 4. Run Frontend + Backend with One Dapr Command
+### 3. Run Frontend + Backend with One Dapr Command
 
 ```bash
 cd c:\Projects\bmad\KwintBaseHarmony
@@ -142,17 +134,12 @@ docker-compose up -d postgres
 # 2. Initialize Dapr (one-time)
 dapr init
 
-# 3. Install frontend dependencies (one-time after clone or package changes)
-cd src/frontend
-npm install
-
-# 4. Start the full stack with Dapr
-cd ..\..
+# 3. Start the full stack with Dapr
 dapr run -f .
 ```
 
 **What this does:**
-- Starts the React frontend on port 5051
+- Starts the ASP.NET Core frontend on port 5051
 - Starts the .NET backend on port 5000
 - Loads Dapr resources from `src/backend/components/`
 - Loads runtime configuration from `.dapr/config.yaml`
