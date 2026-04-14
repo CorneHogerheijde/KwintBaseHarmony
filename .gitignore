@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Node.js frontend artifacts
+**/node_modules/
+**/dist/
+
 # User-specific files
 *.rsuser
 *.suo

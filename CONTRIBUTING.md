@@ -41,7 +41,7 @@ git push origin feature/your-feature-name
 - Use meaningful variable/method names
 - Add XML documentation for public APIs
 - Ensure 0 compiler errors, address all warnings
-- Target .NET 8.0 minimum
+- Target .NET 10.0 minimum
 
 **Tests**
 - Unit tests for all service logic
@@ -91,10 +91,11 @@ Brief explanation of what this PR does.
 
 ### Review Process
 
-1. **Automated Checks** (future):
+1. **Automated Checks**:
    - Build verification
+   - Frontend build verification
    - Test suite execution
-   - Code quality scanning
+   - Dependency update automation via Dependabot
 
 2. **Human Review**:
    - At least 1 approval required

@@ -163,6 +163,7 @@ Closes #15
 Before submitting a PR, ensure:
 - ✅ Code compiles (`dotnet build`)
 - ✅ Unit tests pass (`dotnet test`)
+- ✅ GitHub Actions CI passes (`.github/workflows/pipelines.yaml`)
 - ✅ No console warnings (address or document)
 - ✅ Code follows project conventions
 - ✅ Commits are logically organized
@@ -203,7 +204,7 @@ See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementa
 - 📦 **Vite** — Modern build tool
 
 **Backend:**
-- 🔵 **.NET 8** — Backend runtime
+- 🔵 **.NET 10** — Backend runtime
 - 🔄 **Dapr Runtime** — Distributed application runtime
 - 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
 - 🎵 **NAudio** — Audio engine integration
@@ -221,7 +222,7 @@ See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementa
 ### Prerequisites
 
 - **Node.js** 18+ (frontend)
-- **.NET 8 SDK** (backend)
+- **.NET 10 SDK** (backend)
 - **Dapr CLI** (installed and initialized)
 - **Docker** (for Dapr containers)
 - **Git**
@@ -249,7 +250,8 @@ npm install
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
+The frontend will be available at `http://localhost:5051`
+The frontend will also be available through the Dapr multi-app setup at `http://localhost:5051`
 
 ### 3. Backend Setup
 
@@ -275,7 +277,7 @@ The backend will be available at `http://localhost:7000`
 
 Once both are running:
 
-1. Open frontend at `http://localhost:5173`
+1. Open frontend at `http://localhost:5051`
 2. The frontend will connect to the backend API
 3. Piano keyboard should be interactive
 4. Ready to start the first puzzle!
@@ -335,7 +337,7 @@ KwintBaseHarmony/
 │   │   ├── package.json
 │   │   └── vite.config.ts
 │   │
-│   └── backend/                       # .NET 8 + Dapr
+│   └── backend/                       # .NET 10 + Dapr
 │       ├── Program.cs                 # Dapr setup
 │       ├── Controllers/
 │       │   ├── PuzzleController.cs
@@ -402,7 +404,7 @@ Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
 - 📦 **Vite** — Modern build tool
 
 **Backend:**
-- 🔵 **.NET 8** — Backend runtime
+- 🔵 **.NET 10** — Backend runtime
 - 🔄 **Dapr Runtime** — Distributed application runtime
 - 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
 - 🎵 **NAudio** — Audio engine integration
@@ -420,7 +422,7 @@ Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
 ### Prerequisites
 
 - **Node.js** 18+ (frontend)
-- **.NET 8 SDK** (backend)
+- **.NET 10 SDK** (backend)
 - **Dapr CLI** (installed and initialized)
 - **Docker** (for Dapr containers)
 - **Git**
@@ -448,7 +450,7 @@ npm install
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
+The frontend will be available at `http://localhost:5051`
 
 ### 3. Backend Setup
 
@@ -474,7 +476,7 @@ The backend will be available at `http://localhost:7000`
 
 Once both are running:
 
-1. Open frontend at `http://localhost:5173`
+1. Open frontend at `http://localhost:5051`
 2. The frontend will connect to the backend API
 3. Piano keyboard should be interactive
 4. Ready to start the first puzzle!
@@ -534,7 +536,7 @@ KwintBaseHarmony/
 │   │   ├── package.json
 │   │   └── vite.config.ts
 │   │
-│   └── backend/                       # .NET 8 + Dapr
+│   └── backend/                       # .NET 10 + Dapr
 │       ├── Program.cs                 # Dapr setup
 │       ├── Controllers/
 │       │   ├── PuzzleController.cs

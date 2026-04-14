@@ -7,7 +7,7 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: postgres
+    value: localhost
   - name: port
     value: "5432"
   - name: database

@@ -9,6 +9,8 @@ npm install
 npm run dev
 ```
 
+The local development server is configured to run on `http://localhost:5051` so it matches the Dapr multi-app template in the project root.
+
 ## Project Structure
 
 ```
@@ -40,7 +42,7 @@ src/
 ## Development
 
 ```bash
-npm run dev      # Start development server
+npm run dev      # Start development server on http://localhost:5051
 npm run build    # Production build
 npm run preview  # Preview production build
 npm run lint     # Run linter
