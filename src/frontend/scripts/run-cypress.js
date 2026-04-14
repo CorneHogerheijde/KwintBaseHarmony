@@ -73,6 +73,24 @@ function runProcess(command, args, options = {}) {
   });
 }
 
+function waitForProcessExit(serverProcess, timeoutMs) {
+  return new Promise((resolve) => {
+    if (!serverProcess || serverProcess.exitCode !== null) {
+      resolve();
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      serverProcess.kill("SIGKILL");
+    }, timeoutMs);
+
+    serverProcess.once("exit", () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+  });
+}
+
 function stopServer(serverProcess) {
   if (!serverProcess || serverProcess.killed) {
     return Promise.resolve();
@@ -84,7 +102,7 @@ function stopServer(serverProcess) {
   }
 
   serverProcess.kill("SIGINT");
-  return Promise.resolve();
+  return waitForProcessExit(serverProcess, 5000);
 }
 
 async function main() {
