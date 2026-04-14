@@ -1,0 +1,377 @@
+# KwintBaseHarmony - Phase 1 Development Plan
+
+## Overview
+
+**Goal**: Build a functional MVP that demonstrates the core "harmony learning through composition puzzles" concept.
+
+**Timeline**: 4-6 weeks  
+**Target Users**: Initial testing with 3-5 musicians/music educators
+
+**Success Criteria**:
+- ✅ Students can compose a complete musical piece (5+ chord layers)
+- ✅ Audio feedback clearly teaches harmonic concepts
+- ✅ Multi-modal interaction (audio + keyboard + notation) works smoothly
+- ✅ Puzzle-based progression follows Kwintessence structure
+- ✅ Zero external pressure/gamification elements
+
+---
+
+## Phase 1: MVP Architecture
+
+### Three Interdependent Workstreams
+
+```
+Workstream 1: Learning Architecture
+    ↓
+    Defines: Layers, puzzles, composition data model
+    Delivers: Pedagogical backbone
+
+Workstream 2: Multi-Modal Interaction
+    ↓
+    Defines: Audio engine, keyboard UI, notation rendering
+    Delivers: User interaction layer
+    
+Workstream 3: Integration & Testing
+    ↓
+    Integrates: WS1 + WS2 into MVP prototype
+    Delivers: Functional product for real-world testing
+```
+
+---
+
+## Workstream 1: Learning Architecture
+
+### Objective
+Define the pedagogical progression, puzzle types, and how student choices get captured in the final composition.
+
+### Deliverables
+
+**1.1 Kwintessence Layer Documentation**
+- Document all 5-7 harmonic layers
+- For each layer: harmonic principle + "aha!" moment + complexity
+- JSON schema representing the structure
+
+**Example Structure:**
+```json
+{
+  "layer": 1,
+  "name": "Foundation",
+  "notes": ["root", "5th"],
+  "concept": "Understanding the perfect 5th—the stable foundation",
+  "puzzleTypes": ["pattern", "logic"],
+  "difficulty": 1
+}
+```
+
+**Timeline**: 2-3 days  
+**Owner**: Music theory consultant + developer  
+**Acceptance Criteria**:
+- All layers documented with clear pedagogical goals
+- JSON schema validates against examples
+- Musicians/educators confirm progression makes sense
+
+---
+
+**1.2 Puzzle Design for Each Layer**
+- Minimum 2-3 puzzle variations per layer
+- Each puzzle teaches a specific concept
+- Create worked examples for first 2 layers
+
+**Puzzle Types**:
+- **Logic**: "Which note completes this harmonic function?"
+- **Pattern**: "Match this progression pattern"
+- **Constraint**: "Given these limits, build this harmony"
+- **Symmetry**: "Mirror this progression"
+
+**Timeline**: 3-5 days  
+**Owner**: Music theory consultant  
+**Acceptance Criteria**:
+- At least 6 complete puzzle specifications
+- Clear learning objective for each
+- Playable examples for first 2 layers
+
+---
+
+**1.3 Composition Data Model**
+- How student choices get recorded
+- Final piece representation (MIDI? MusicXML? Custom?)
+- Playback mechanism
+
+**Timeline**: 2-3 days  
+**Owner**: Developer  
+**Acceptance Criteria**:
+- Data model chosen and documented
+- Example composition file created
+- Roundtrip tested (puzzle → data → playback)
+
+---
+
+### Success Metrics for Workstream 1
+- ✅ All harmonic layers documented with pedagogy context
+- ✅ 6+ playable puzzle examples
+- ✅ Composition data model chosen and validated
+- ✅ Music theory consultant signs off on pedagogical soundness
+
+---
+
+## Workstream 2: Multi-Modal Interaction
+
+### Objective
+Build the three simultaneous representation channels (audio + keyboard + notation) and ensure perfect synchronization.
+
+### Deliverables
+
+**2.1 Audio Engine**
+- Chord playback with natural timbre (not synthetic-sounding)
+- Support for all interval/chord types in curriculum
+- Responsive (sub-100ms latency)
+
+**Technology Choice**: Tone.js recommended
+- Good Web Audio abstractions
+- Built-in sampler support
+- Large community
+
+**Timeline**: 3-4 days  
+**Owner**: Developer (audio focus)  
+**Acceptance Criteria**:
+- Root+5th plays cleanly
+- Adding 3rd → chord sounds natural
+- C major chord recognizable as "correct"
+- No noticeable lag
+
+---
+
+**2.2 Piano Keyboard UI Component**
+- Interactive 88-key (or smaller) virtual piano
+- Visual feedback for pressed keys
+- Support both mouse/touch AND MIDI hardware input
+- Responsive, fluid interaction
+
+**Timeline**: 2-3 days  
+**Owner**: Frontend developer  
+**Acceptance Criteria**:
+- Click/tap to play notes works smoothly
+- Visual highlight on pressed keys
+- MIDI keyboard input recognized
+- No stuttering or lag under normal use
+
+---
+
+**2.3 Score Notation Display**
+- Display same notes as both keyboard AND staff notation
+- Single source of truth (notes) → all three channels update
+- Support treble/bass clef options
+- Real-time updates on interaction
+
+**Technology Choice**: Vexflow recommended
+- SVG rendering
+- Good note handling
+- Customizable appearance
+
+**Timeline**: 3-4 days  
+**Owner**: Developer + music theory input  
+**Acceptance Criteria**:
+- Notes display correctly on staff
+- Keyboard and staff stay in sync
+- Can switch between treble/bass clef
+- Updates instantly on note changes
+
+---
+
+**2.4 Real-Time Synchronization**
+- When one representation updates, all three update simultaneously
+- No perceptible lag between audio, keyboard, notation
+- Tested under stress conditions
+
+**Timeline**: 2-3 days  
+**Owner**: Developer  
+**Acceptance Criteria**:
+- Audio + keyboard + notation update within 50ms
+- No UI jank or reflow issues
+- Works on older devices smoothly
+
+---
+
+### Success Metrics for Workstream 2
+- ✅ Audio quality feels natural and responsive
+- ✅ Keyboard interaction is fluid (no lag)
+- ✅ Notation displays and updates correctly
+- ✅ All three channels perfectly synchronized
+- ✅ Works on mobile and desktop
+
+---
+
+## Workstream 3: MVP Integration & Testing
+
+### Objective
+Wire everything together and test the complete concept with musicians.
+
+### Deliverables
+
+**3.1 MVP Prototype Assembly**
+- Integrate WS1 pedagogy into WS2 interaction
+- Single learning path (one piece to compose)
+- All Kwintessence layers included
+- Core loop: Solve puzzle → Audio feedback → See on keyboard + notation
+
+**Timeline**: 2-3 days  
+**Owner**: Full development team  
+**Acceptance Criteria**:
+- Complete flow: start to finish works
+- No crashes or major bugs
+- Rough UI acceptable for testing
+- One piece is fully composable
+
+---
+
+**3.2 Internal Musician Testing**
+- Test with 3-5 musicians (mix of skill levels)
+- Observations:
+  - Does puzzle approach make intuitive sense?
+  - Does audio feedback teach?
+  - What confuses or breaks?
+  - How does it *feel* emotionally?
+
+**Test Protocol**:
+- 20-30 minute session per musician
+- Encourage thinking out loud
+- Observe without guiding
+- Debrief: "What worked? What didn't?"
+
+**Timeline**: 2-3 days  
+**Owner**: UX designer + music theory consultant
+
+**Acceptance Criteria**:
+- At least 3 complete test sessions conducted
+- Feedback documented and triaged
+- Critical issues identified and logged
+
+---
+
+**3.3 Feedback Triage & Prioritization**
+- Categorize feedback: critical issues, design improvements, nice-to-haves
+- Create action items for next iteration or Phase 2
+
+**Timeline**: 1 day  
+**Owner**: Product lead + team
+
+---
+
+### Success Metrics for Workstream 3
+- ✅ MVP prototype runs from start to finish
+- ✅ Core loop (puzzle → feedback) works smoothly
+- ✅ Real musicians tested and provided feedback
+- ✅ Critical issues identified and prioritized
+- ✅ Product team has clear direction for next steps
+
+---
+
+## Overall Phase 1 Timeline
+
+### Week 1-2: Architecture + Interaction
+- **WS1**: Layer definition + puzzle design (3-5 days)
+- **WS1**: Data model finalized (2-3 days)
+- **WS2**: Audio engine (3-4 days, parallel)
+- **WS2**: Keyboard UI (2-3 days)
+- **WS2**: Notation rendering (3-4 days)
+
+### Week 3-4: Integration + Testing
+- **WS2**: Synchronization (2-3 days)
+- **WS3**: MVP assembly (2-3 days)
+- **WS3**: Internal testing (2-3 days)
+- **WS3**: Feedback triage (1 day)
+
+**Total**: 4-5 weeks for functional MVP
+
+---
+
+## Team Requirements
+
+### Core Team (MVP)
+
+**Music Theory Consultant** (0.5 FTE)
+- Validate pedagogical soundness of puzzles
+- Ensure Kwintessence progression is respected
+- Guide audio/notation feedback design
+- Conduct internal musician testing
+
+**Full-Stack Developer** (1.0 FTE)
+- Lead architecture and integration
+- Audio engine implementation
+- Keyboard + notation components
+- Synchronization layer
+
+**UX Designer** (0.5 FTE)
+- Create calm, intuitive interface
+- Interaction design for puzzles
+- Visual hierarchy and feedback
+- Accessibility considerations
+
+### Advisors (On-call)
+- Product owner (vision, priority calls)
+- Musician/educator (early user perspective)
+
+---
+
+## Technology Stack (Proposed)
+
+### Frontend
+- **Framework**: React or Vue
+- **Build**: Vite (fast, modern)
+- **Styling**: Tailwind CSS (utilities for clean UI)
+
+### Audio
+- **Library**: Tone.js or Web Audio API
+- **Samples**: Freepats or similar for natural sound
+
+### Notation
+- **Library**: Vexflow or Opensheetmusic.js
+- **Alternative**: Custom renderer if needed
+
+### Data & Storage
+- **Local Storage**: Browser localStorage for now
+- **Composition Format**: JSON or MIDI
+- **State Management**: Zustand or Redux (keep it simple)
+
+### Development Environment
+- **Node.js**: v18+
+- **Package Manager**: npm or pnpm
+- **Git**: GitHub for version control
+
+---
+
+## Key Risks & Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|-----------|
+| Audio latency issues | Core experience feels broken | Choose proven library (Tone.js), test early |
+| Notation rendering complexity | Dev time overruns | Use established library (Vexflow), hire expert if needed |
+| Puzzle design doesn't teach effectively | MVP fails pedagogically | Music theory consultant validates continuously |
+| Synchronization bugs | Confusing UX | Build sync layer early, test relentlessly |
+| Scope creep during dev | Timeline slips | Ruthlessly cut Phase 2 features, MVP only |
+
+---
+
+## Definition of "MVP Complete"
+
+✅ **Functional**: One complete composition (5+ layers) is playable from start to finish  
+✅ **Sonic**: Audio engine produces clear, natural-sounding chords  
+✅ **Visual**: Keyboard + notation displays correctly and updates in real-time  
+✅ **Pedagogical**: Tested with musicians; puzzle approach makes sense and teaches  
+✅ **Intuitive**: No external documentation needed; users understand flow  
+✅ **Bug-Free**: No crashes on normal usage; identified issues are non-blocking  
+
+---
+
+## Next Steps (Immediate)
+
+1. **Finalize team** — Confirm music theory consultant, developer, designer availability
+2. **Set up dev environment** — Git repo, initial project structure, CI/CD (if desired)
+3. **Kick off WS1** — Begin layer documentation + puzzle design in parallel with WS2
+4. **Plan internal testing** — Recruit 3-5 musicians for Week 3-4 user testing
+
+---
+
+**Phase 1 Owner**: [Name TBD]  
+**Last Updated**: April 14, 2026  
+**Status**: Ready to begin development
