@@ -5,24 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KwintBaseHarmony.Services;
 
-/// <summary>
-/// Business logic service for Composition CRUD operations, validation, and serialization.
-/// Handles JSON encoding/decoding and database persistence.
-/// </summary>
-public interface ICompositionService
-{
-    Task<Composition> CreateAsync(string studentId, string title, string difficulty);
-    Task<Composition?> GetByIdAsync(Guid compositionId);
-    Task<List<Composition>> GetByStudentIdAsync(string studentId);
-    Task<Composition> UpdateAsync(Composition composition);
-    Task<bool> DeleteAsync(Guid compositionId);
-    Task<Composition> AddNoteToLayerAsync(Guid compositionId, int layerNumber, Note note);
-    Task<Composition> CompleteLayerAsync(Guid compositionId, int layerNumber);
-    Task<Composition> ValidateAndSaveAsync(Composition composition);
-    string SerializeToJson(Composition composition);
-    Composition DeserializeFromJson(string json);
-}
-
 public class CompositionService : ICompositionService
 {
     private readonly CompositionContext _context;
@@ -144,6 +126,7 @@ public class CompositionService : ICompositionService
         note.LayerId = layer.Id;
         note.CreatedAt = DateTime.UtcNow;
         layer.Notes.Add(note);
+        _context.Notes.Add(note);
         layer.UpdatedAt = DateTime.UtcNow;
         composition.UpdatedAt = DateTime.UtcNow;
 
@@ -192,7 +175,19 @@ public class CompositionService : ICompositionService
         composition.UpdateCompletionPercentage();
         composition.UpdatedAt = DateTime.UtcNow;
 
-        _context.Compositions.Update(composition);
+        var existingComposition = await _context.Compositions
+            .Include(existing => existing.Layers)
+            .ThenInclude(layer => layer.Notes)
+            .FirstOrDefaultAsync(existing => existing.Id == composition.Id);
+
+        if (existingComposition is not null)
+        {
+            _context.Compositions.Remove(existingComposition);
+            await _context.SaveChangesAsync();
+        }
+
+        _context.Compositions.Add(composition);
+
         await _context.SaveChangesAsync();
 
         _logger.LogInformation(
@@ -207,7 +202,42 @@ public class CompositionService : ICompositionService
     /// </summary>
     public string SerializeToJson(Composition composition)
     {
-        var json = JsonSerializer.Serialize(composition, new JsonSerializerOptions
+        var exportModel = new CompositionExportModel(
+            composition.Id,
+            composition.StudentId,
+            composition.Title,
+            composition.Difficulty,
+            composition.CompletionPercentage,
+            composition.CreatedAt,
+            composition.UpdatedAt,
+            composition.Layers
+                .OrderBy(layer => layer.LayerNumber)
+                .Select(layer => new LayerExportModel(
+                    layer.Id,
+                    layer.CompositionId,
+                    layer.LayerNumber,
+                    layer.Name,
+                    layer.Concept,
+                    layer.Completed,
+                    layer.TimeSpentMs,
+                    layer.UserNotes,
+                    layer.PuzzleAnswersJson,
+                    layer.CreatedAt,
+                    layer.UpdatedAt,
+                    layer.Notes
+                        .OrderBy(note => note.TimingMs)
+                        .Select(note => new NoteExportModel(
+                            note.Id,
+                            note.LayerId,
+                            note.Pitch,
+                            note.DurationMs,
+                            note.TimingMs,
+                            note.Velocity,
+                            note.CreatedAt))
+                        .ToList()))
+                .ToList());
+
+        var json = JsonSerializer.Serialize(exportModel, new JsonSerializerOptions
         {
             WriteIndented = true,
             PropertyNameCaseInsensitive = false,
@@ -230,8 +260,53 @@ public class CompositionService : ICompositionService
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        var composition = JsonSerializer.Deserialize<Composition>(json, options)
+        var exportModel = JsonSerializer.Deserialize<CompositionExportModel>(json, options)
             ?? throw new InvalidOperationException("Failed to deserialize JSON to Composition");
+
+        var composition = new Composition
+        {
+            Id = exportModel.Id,
+            StudentId = exportModel.StudentId,
+            Title = exportModel.Title,
+            Difficulty = exportModel.Difficulty,
+            CompletionPercentage = exportModel.CompletionPercentage,
+            CreatedAt = exportModel.CreatedAt,
+            UpdatedAt = exportModel.UpdatedAt,
+            Layers = exportModel.Layers
+                .Select(layerModel =>
+                {
+                    var layer = new Layer
+                    {
+                        Id = layerModel.Id,
+                        CompositionId = exportModel.Id,
+                        LayerNumber = layerModel.LayerNumber,
+                        Name = layerModel.Name,
+                        Concept = layerModel.Concept,
+                        Completed = layerModel.Completed,
+                        TimeSpentMs = layerModel.TimeSpentMs,
+                        UserNotes = layerModel.UserNotes,
+                        PuzzleAnswersJson = layerModel.PuzzleAnswersJson,
+                        CreatedAt = layerModel.CreatedAt,
+                        UpdatedAt = layerModel.UpdatedAt
+                    };
+
+                    layer.Notes = layerModel.Notes
+                        .Select(noteModel => new Note
+                        {
+                            Id = noteModel.Id,
+                            LayerId = layer.Id,
+                            Pitch = noteModel.Pitch,
+                            DurationMs = noteModel.DurationMs,
+                            TimingMs = noteModel.TimingMs,
+                            Velocity = noteModel.Velocity,
+                            CreatedAt = noteModel.CreatedAt
+                        })
+                        .ToList();
+
+                    return layer;
+                })
+                .ToList()
+        };
 
         // Validate structure
         composition.ValidateLayers();
@@ -263,4 +338,37 @@ public class CompositionService : ICompositionService
         7 => "Bringing it all together: your complete composition",
         _ => $"Layer {layerNumber} concept"
     };
+
+    private sealed record CompositionExportModel(
+        Guid Id,
+        string StudentId,
+        string Title,
+        string Difficulty,
+        decimal CompletionPercentage,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
+        List<LayerExportModel> Layers);
+
+    private sealed record LayerExportModel(
+        Guid Id,
+        Guid CompositionId,
+        int LayerNumber,
+        string Name,
+        string? Concept,
+        bool Completed,
+        long TimeSpentMs,
+        string? UserNotes,
+        string? PuzzleAnswersJson,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
+        List<NoteExportModel> Notes);
+
+    private sealed record NoteExportModel(
+        Guid Id,
+        Guid LayerId,
+        int Pitch,
+        int DurationMs,
+        int TimingMs,
+        int Velocity,
+        DateTime CreatedAt);
 }

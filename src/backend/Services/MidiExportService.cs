@@ -2,17 +2,6 @@ using KwintBaseHarmony.Models;
 
 namespace KwintBaseHarmony.Services;
 
-/// <summary>
-/// Service for exporting compositions to MIDI files.
-/// Phase 2: Full MIDI export using DryWetMidi or Naudio library.
-/// MVP: Returns placeholder MIDI byte array (valid MIDI header + end-of-track marker).
-/// </summary>
-public interface IMidiExportService
-{
-    Task<byte[]> CompositionToMidiAsync(Composition composition);
-    Task SaveMidiToFileAsync(Composition composition, string filePath);
-}
-
 public class MidiExportService : IMidiExportService
 {
     private readonly ILogger<MidiExportService> _logger;

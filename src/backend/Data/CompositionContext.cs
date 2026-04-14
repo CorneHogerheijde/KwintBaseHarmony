@@ -44,11 +44,11 @@ public class CompositionContext : DbContext
 
             // Index for efficient student queries
             entity.HasIndex(e => e.StudentId)
-                .HasName("IX_Compositions_StudentId");
+                .HasDatabaseName("IX_Compositions_StudentId");
 
             // Index for pagination and sorting by creation
             entity.HasIndex(e => e.CreatedAt)
-                .HasName("IX_Compositions_CreatedAt");
+                .HasDatabaseName("IX_Compositions_CreatedAt");
 
             // Relationships
             entity.HasMany(e => e.Layers)
@@ -77,7 +77,7 @@ public class CompositionContext : DbContext
 
             // Composite index for efficient layer lookups
             entity.HasIndex(e => new { e.CompositionId, e.LayerNumber })
-                .HasName("IX_Layers_CompositionId_LayerNumber")
+                .HasDatabaseName("IX_Layers_CompositionId_LayerNumber")
                 .IsUnique();
 
             // Relationships
@@ -107,11 +107,11 @@ public class CompositionContext : DbContext
 
             // Index for efficient note queries within a layer
             entity.HasIndex(e => e.LayerId)
-                .HasName("IX_Notes_LayerId");
+                .HasDatabaseName("IX_Notes_LayerId");
 
             // Index for timing-based queries (e.g., notes in playback order)
             entity.HasIndex(e => new { e.LayerId, e.TimingMs })
-                .HasName("IX_Notes_LayerId_TimingMs");
+                .HasDatabaseName("IX_Notes_LayerId_TimingMs");
         });
     }
 }
