@@ -33,6 +33,13 @@ jobs:
             src/frontend/KwintBaseHarmony.Frontend.csproj
             tests/KwintBaseHarmony.Tests.csproj
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+
       - name: Restore dependencies
         run: dotnet restore KwintBaseHarmony.sln
 
@@ -41,3 +48,11 @@ jobs:
 
       - name: Run tests
         run: dotnet test KwintBaseHarmony.sln --configuration Release --no-build --verbosity normal
+
+      - name: Install frontend test dependencies
+        working-directory: src/frontend
+        run: npm ci
+
+      - name: Run frontend Cypress tests
+        working-directory: src/frontend
+        run: npm run test:e2e
