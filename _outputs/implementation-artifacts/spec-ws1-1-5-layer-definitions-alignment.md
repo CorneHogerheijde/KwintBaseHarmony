@@ -26,7 +26,7 @@ The backend `CompositionService.GetDefaultLayerName()` and `GetDefaultLayerConce
 
 **Always:**
 - Match the canonical layer table from WS3-3.1 (sole source of truth)
-- Layer order 1-7 is fixed: Root → Fifth → Third → Seventh → Ninth → Sixth → Resolution
+- Layer order 1-7 is fixed: Root → Fifth → Third → Seventh → Secunde → Sixth → Resolution
 - Names and concepts must survive a composition roundtrip (JSON export/import)
 - No schema or migration changes needed — these are default string values only
 
@@ -42,7 +42,7 @@ The backend `CompositionService.GetDefaultLayerName()` and `GetDefaultLayerConce
 | 2 | The Fifth | Add the perfect fifth — G. It creates openness and stability above the root. |
 | 3 | The Third | Complete the triad by adding the third — E. This gives the chord its bright character. |
 | 4 | The Seventh | Add the major seventh — B. It brings sophistication and luminous tension. |
-| 5 | The Ninth | Add the ninth — D. The second degree, extending the harmony into a new voice. |
+| 5 | The Secunde | Add the secunde — D. The second degree, extending the harmony into a new voice. |
 | 6 | The Sixth | Add the major sixth — A. It brings warmth and a sense of longing. |
 | 7 | Resolution | Return to the root — C, one octave higher. Anchor the harmony and complete your composition. |
 
