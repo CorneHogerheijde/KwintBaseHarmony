@@ -130,6 +130,66 @@ public class CompositionEndpointsTests
     }
 
     [Fact]
+    public async Task CompleteLayer_WithAnalytics_PersistsTimeAndPuzzleAnswers()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-analytics-01",
+            title = "Analytics Test",
+            difficulty = "beginner"
+        });
+        var created = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(created);
+
+        var completeResponse = await client.PostAsJsonAsync(
+            $"/api/compositions/{created.Id}/layers/1/complete",
+            new { attempts = 3, firstTryCorrect = false, timeSpentMs = 42000 });
+
+        Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
+
+        var result = await completeResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(result);
+        var layer = result.Layers[0];
+        Assert.True(layer.Completed);
+        Assert.Equal(42000, layer.TimeSpentMs);
+        Assert.NotNull(layer.PuzzleAnswersJson);
+        var analytics = JsonSerializer.Deserialize<JsonElement>(layer.PuzzleAnswersJson!);
+        Assert.Equal(3, analytics.GetProperty("attempts").GetInt32());
+        Assert.False(analytics.GetProperty("firstTryCorrect").GetBoolean());
+    }
+
+    [Fact]
+    public async Task CompleteLayer_WithoutBody_ZerosAnalytics()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-analytics-02",
+            title = "Skip Layer Test",
+            difficulty = "beginner"
+        });
+        var created = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(created);
+
+        var completeResponse = await client.PostAsync(
+            $"/api/compositions/{created.Id}/layers/1/complete", content: null);
+
+        Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
+
+        var result = await completeResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(result);
+        var layer = result.Layers[0];
+        Assert.True(layer.Completed);
+        Assert.Equal(0, layer.TimeSpentMs);
+        Assert.Null(layer.PuzzleAnswersJson);
+    }
+
+    [Fact]
     public async Task GetStudentCompositions_ReturnsCompositionsForRequestedStudent()
     {
         using var factory = new CustomWebApplicationFactory();
@@ -406,7 +466,7 @@ public class CompositionEndpointsTests
 
     private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers);
 
-    private sealed record LayerResponseDto(int LayerNumber, string Name, string? Concept, bool Completed, long TimeSpentMs, string? UserNotes, List<NoteResponseDto> Notes);
+    private sealed record LayerResponseDto(int LayerNumber, string Name, string? Concept, bool Completed, long TimeSpentMs, string? UserNotes, string? PuzzleAnswersJson, List<NoteResponseDto> Notes);
 
     private sealed record NoteResponseDto(int Pitch, int DurationMs, int TimingMs, int Velocity, DateTime CreatedAt);
 }

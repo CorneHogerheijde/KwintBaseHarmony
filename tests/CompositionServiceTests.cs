@@ -127,8 +127,8 @@ public class CompositionServiceTests : IDisposable
         var composition = await _service.CreateAsync("student-123", "Test", "beginner");
         Assert.Equal(0, composition.CompletionPercentage);
 
-        // Act - complete layer 1
-        var result = await _service.CompleteLayerAsync(composition.Id, 1);
+        // Act - complete layer 1 (no analytics)
+        var result = await _service.CompleteLayerAsync(composition.Id, 1, null, null, null);
 
         // Assert
         Assert.True(result.Layers.First(l => l.LayerNumber == 1).Completed);
