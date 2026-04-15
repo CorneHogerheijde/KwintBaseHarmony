@@ -1,0 +1,17 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "git remote": true,
+        "git checkout": true,
+        "git add": true,
+        "git commit": true,
+        "git push": true,
+        "gh": true,
+        "dotnet build": true,
+        "/^cd C:\\\\Projects\\\\bmad\\\\KwintBaseHarmony\\\\src\\\\frontend; node scripts/run-cypress\\.js 2>&1 \\| Select-Object -Last 5$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "npx cypress": true,
+        "dotnet test": true
+    }
+}
