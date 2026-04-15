@@ -4,12 +4,11 @@ on:
   push:
     branches:
       - main
-      - feat/**
-      - feature/**
-      - bugfix/**
-      - docs/**
-      - refactor/**
   pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
