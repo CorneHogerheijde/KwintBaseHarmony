@@ -373,37 +373,38 @@ Wire everything together and test the complete concept with musicians.
 ---
 
 **Phase 1 Owner**: [Name TBD]  
-**Last Updated**: April 14, 2026  
-**Status**: Ready to begin development
+**Last Updated**: April 15, 2026  
+**Status**: Active Development
 
 
 ---
 
 ## Current Status
 
-### WS1 - Learning Architecture: In Progress
+### WS1 - Learning Architecture: ✅ Complete
 - **WS1-1.1 Layer Documentation**: ✅ Complete
-- **WS1-1.2 Puzzle Design**: ✅ Complete  
-- **WS1-1.3 Data Model & Persistence**: ✅ **DONE (2026-04-14)**
-  - All 3 entities created (Composition, Layer, Note)
-  - PostgreSQL EF Core persistence layer
-  - JSON serialization/deserialization for API
-  - MVP MIDI export (Phase 2: full DryWetMidi)
-  - 14 unit tests created (build pending runtime fix)
-  - Database auto-migration on startup
-  - Commit: Added to git
-  
-**Next**: WS1-1.4 (REST API endpoints for CRUD operations)
+- **WS1-1.2 Puzzle Design**: ✅ Complete
+- **WS1-1.3 Data Model & Persistence**: ✅ Complete (2026-04-14)
+  - All 3 entities (Composition, Layer, Note), PostgreSQL EF Core, MIDI export
+- **WS1-1.4 REST API Endpoints**: ✅ Complete (2026-04-14)
+  - Full CRUD, layer management, MIDI/JSON export, 31 unit + integration tests
 
-### WS2 - Multi-Modal Interaction: Not Started
-- **WS2-2.1 Audio Engine**: Pending
-- **WS2-2.2 Keyboard UI**: Pending
-- **WS2-2.3 Notation Display**: Pending
-- **WS2-2.4 Real-Time Sync**: Pending
+### WS2 - Multi-Modal Interaction: ✅ Complete
+- **WS2-2.1 Audio Engine**: ✅ Complete — Web Audio API, triangle + harmonic oscillator, ADSR envelope
+- **WS2-2.2 Keyboard UI**: ✅ Complete — interactive SVG piano (MIDI 48–72), click/MIDI input
+- **WS2-2.3 Notation Display**: ✅ Complete — custom SVG staff renderer, treble/bass clef, ledger lines
+- **WS2-2.4 Real-Time Sync**: ✅ Complete — piano, notation, and playback update from a single MIDI state
+  - Also: MIDI hardware input (`midi.js`), chord playback (`playback.js`), puzzle engine (`puzzle-engine.js`)
 
-### WS3 - Integration & Testing: Not Started
-- **WS3-3.1 MVP Assembly**: Pending
-- **WS3-3.2 Testing Framework**: Pending
+### WS3 - Integration & Testing: 🚧 In Progress
+- **WS3-3.1 MVP Assembly**: 🚧 In Progress (2026-04-15)
+  - Full puzzle flow wired end-to-end: home → create → puzzle → all 7 layers → completion panel
+  - Home page (`index.html` + `home.js`): create and resume composition flows
+  - Puzzle page (`puzzle.html` + `puzzle.js`): layer prompts, piano, notation, feedback, MIDI input, playback
+  - Dashboard (`dashboard.html`) and status page (`status.html`) operational
+  - Cypress E2E: home-flows (9 tests), puzzle-flows, studio-composition-flows, studio-interactions
+  - All Cypress tests passing
+- **WS3-3.2 Internal Musician Testing**: Pending — recruit 3-5 musicians
 - **WS3-3.3 Feedback Triage**: Pending
 
 ---
@@ -411,4 +412,6 @@ Wire everything together and test the complete concept with musicians.
 ## Latest Commits
 
 - **bc86553**: Initial spec baseline
-- **Latest**: WS1-1.3 complete - data model + persistence + MIDI export
+- **WS1 complete**: Data model + persistence + MIDI export + REST API (31 tests)
+- **WS2 complete**: Audio engine, piano keyboard, notation renderer, real-time sync, puzzle engine
+- **WS3 in progress**: Home flow Cypress E2E tests (9 tests), Azure infrastructure, CI/CD pipeline
