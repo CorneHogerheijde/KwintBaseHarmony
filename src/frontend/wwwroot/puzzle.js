@@ -4,7 +4,7 @@ import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.j
 import { renderNotation } from "./scripts/notation.js";
 import { playLayer, playEverythingSoFar } from "./scripts/playback.js";
 import {
-  puzzleLayers,
+  getPuzzleLayers,
   isCorrectNote,
   getFirstIncompleteLayer
 } from "./scripts/puzzle-engine.js";
@@ -32,6 +32,7 @@ const pianoKeyboard = document.getElementById("piano-keyboard");
 // ── State ─────────────────────────────────────────────────────────────────────
 const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 let composition = null;
+let difficulty = "intermediate";
 let currentLayerNumber = null;
 let selectedMidi = 60;
 let correctNoteSelected = false;
@@ -113,7 +114,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     playPreviewNote(selectedMidi, () => {});
   }
 
-  correctNoteSelected = isCorrectNote(currentLayerNumber, selectedMidi);
+  correctNoteSelected = isCorrectNote(currentLayerNumber, selectedMidi, difficulty);
 
   if (correctNoteSelected) {
     showFeedback(`Correct! ${midiToLabel(selectedMidi)} is the right note. Click "Mark Layer Complete" to continue.`, true);
@@ -128,14 +129,21 @@ function renderLayer(layerNumber) {
   currentLayerNumber = layerNumber;
   correctNoteSelected = false;
 
-  const puzzleLayer = puzzleLayers.find((l) => l.number === layerNumber);
+  const layers = getPuzzleLayers(difficulty);
+  const puzzleLayer = layers.find((l) => l.number === layerNumber);
   if (!puzzleLayer) return;
 
   layerNameEl.textContent = `Layer ${layerNumber} of 7 — ${puzzleLayer.name}`;
   promptEl.textContent = puzzleLayer.prompt;
 
   hintEl.textContent = puzzleLayer.hint;
-  hintEl.classList.add("hidden");
+  if (puzzleLayer.autoHint) {
+    hintEl.classList.remove("hidden");
+    showAnswerBtn.hidden = true;
+  } else {
+    hintEl.classList.add("hidden");
+    showAnswerBtn.hidden = false;
+  }
 
   clearFeedback();
   clearHintKeys();
@@ -176,7 +184,7 @@ function renderCompletion() {
 
 // ── Advance to next layer (or completion) ─────────────────────────────────────
 function advanceToNextLayer() {
-  const nextLayerNumber = getFirstIncompleteLayer(composition);
+  const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty);
   if (nextLayerNumber === null) {
     renderCompletion();
   } else {
@@ -224,7 +232,8 @@ markCompleteBtn.addEventListener("click", async () => {
 });
 
 showAnswerBtn.addEventListener("click", () => {
-  const puzzleLayer = puzzleLayers.find((l) => l.number === currentLayerNumber);
+  const layers = getPuzzleLayers(difficulty);
+  const puzzleLayer = layers.find((l) => l.number === currentLayerNumber);
   if (!puzzleLayer) return;
 
   highlightHintKey(puzzleLayer.targetMidi);
@@ -237,7 +246,7 @@ skipLayerBtn.addEventListener("click", async () => {
   // If navigated back to an already-completed layer, act as "Back to Puzzle"
   const apiLayerForSkip = currentApiLayer();
   if (apiLayerForSkip?.completed) {
-    const nextLayerNumber = getFirstIncompleteLayer(composition);
+    const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty);
     if (nextLayerNumber === null) renderCompletion();
     else renderLayer(nextLayerNumber);
     return;
@@ -293,11 +302,12 @@ async function init() {
   }
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
+  difficulty = composition.difficulty ?? "intermediate";
 
   renderPianoKeyboard((midi) => onNoteSelected(midi, { preview: true }));
   onNoteSelected(60);
 
-  const firstLayer = getFirstIncompleteLayer(composition);
+  const firstLayer = getFirstIncompleteLayer(composition, difficulty);
   if (firstLayer === null) {
     renderCompletion();
   } else {

@@ -35,12 +35,16 @@ describe("Puzzle page — initial state", () => {
   });
 });
 
-describe("Puzzle page — Show Answer", () => {
+describe("Puzzle page — Show Answer (intermediate)", () => {
   beforeEach(() => {
-    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada" });
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada", difficulty: "intermediate" });
     cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
     cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
     cy.wait("@loadComposition");
+  });
+
+  it("shows the 'Show Answer' button for intermediate difficulty", () => {
+    cy.get("#show-answer-btn").should("not.have.attr", "hidden");
   });
 
   it("highlights the correct piano key and shows the hint text", () => {
@@ -53,6 +57,56 @@ describe("Puzzle page — Show Answer", () => {
     cy.get("#show-answer-btn").click();
     cy.get(`.piano-key[data-midi="${LAYER_1_WRONG_MIDI}"]`).click();
     cy.get(`.piano-key[data-midi="${LAYER_1_CORRECT_MIDI}"]`).should("have.class", "is-hint");
+  });
+});
+
+describe("Puzzle page — Beginner difficulty", () => {
+  beforeEach(() => {
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada", difficulty: "beginner" });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadComposition");
+  });
+
+  it("shows the hint automatically without clicking 'Show Answer'", () => {
+    cy.get("#puzzle-hint").should("not.have.class", "hidden");
+  });
+
+  it("hides the 'Show Answer' button", () => {
+    cy.get("#show-answer-btn").should("have.attr", "hidden");
+  });
+
+  it("accepts MIDI 60 (C4) as the correct answer for layer 1", () => {
+    cy.get(`.piano-key[data-midi="${LAYER_1_CORRECT_MIDI}"]`).click();
+    cy.get("#mark-complete-btn").should("not.be.disabled");
+    cy.get("#puzzle-feedback").should("contain", "Correct");
+  });
+});
+
+describe("Puzzle page — Advanced difficulty", () => {
+  // Advanced layer 1 target is C3 (MIDI 48)
+  const ADVANCED_LAYER_1_MIDI = 48;
+
+  beforeEach(() => {
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada", difficulty: "advanced" });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadComposition");
+  });
+
+  it("hides the hint by default", () => {
+    cy.get("#puzzle-hint").should("have.class", "hidden");
+  });
+
+  it("accepts MIDI 48 (C3) as the correct answer for layer 1", () => {
+    cy.get(`.piano-key[data-midi="${ADVANCED_LAYER_1_MIDI}"]`).click();
+    cy.get("#mark-complete-btn").should("not.be.disabled");
+    cy.get("#puzzle-feedback").should("contain", "Correct");
+  });
+
+  it("rejects MIDI 60 (C4 — correct for beginner/intermediate) for layer 1", () => {
+    cy.get(`.piano-key[data-midi="${LAYER_1_CORRECT_MIDI}"]`).click();
+    cy.get("#mark-complete-btn").should("be.disabled");
   });
 });
 
