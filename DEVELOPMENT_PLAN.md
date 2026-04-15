@@ -373,42 +373,86 @@ Wire everything together and test the complete concept with musicians.
 ---
 
 **Phase 1 Owner**: [Name TBD]  
-**Last Updated**: April 14, 2026  
-**Status**: Ready to begin development
+**Last Updated**: April 15, 2026  
+**Status**: Active Development
 
 
 ---
 
 ## Current Status
 
-### WS1 - Learning Architecture: In Progress
+### WS1 - Learning Architecture: ✅ Complete
 - **WS1-1.1 Layer Documentation**: ✅ Complete
-- **WS1-1.2 Puzzle Design**: ✅ Complete  
-- **WS1-1.3 Data Model & Persistence**: ✅ **DONE (2026-04-14)**
-  - All 3 entities created (Composition, Layer, Note)
-  - PostgreSQL EF Core persistence layer
-  - JSON serialization/deserialization for API
-  - MVP MIDI export (Phase 2: full DryWetMidi)
-  - 14 unit tests created (build pending runtime fix)
-  - Database auto-migration on startup
-  - Commit: Added to git
-  
-**Next**: WS1-1.4 (REST API endpoints for CRUD operations)
+- **WS1-1.2 Puzzle Design**: ✅ Complete
+- **WS1-1.3 Data Model & Persistence**: ✅ Complete (2026-04-14)
+  - All 3 entities (Composition, Layer, Note), PostgreSQL EF Core, MIDI export
+- **WS1-1.4 REST API Endpoints**: ✅ Complete (2026-04-14)
+  - Full CRUD, layer management, MIDI/JSON export, 31 unit + integration tests
 
-### WS2 - Multi-Modal Interaction: Not Started
-- **WS2-2.1 Audio Engine**: Pending
-- **WS2-2.2 Keyboard UI**: Pending
-- **WS2-2.3 Notation Display**: Pending
-- **WS2-2.4 Real-Time Sync**: Pending
+### WS2 - Multi-Modal Interaction: ✅ Complete
+- **WS2-2.1 Audio Engine**: ✅ Complete — Web Audio API, triangle + harmonic oscillator, ADSR envelope
+- **WS2-2.2 Keyboard UI**: ✅ Complete — interactive SVG piano (MIDI 48–72), click/MIDI input
+- **WS2-2.3 Notation Display**: ✅ Complete — custom SVG staff renderer, treble/bass clef, ledger lines
+- **WS2-2.4 Real-Time Sync**: ✅ Complete — piano, notation, and playback update from a single MIDI state
+  - Also: MIDI hardware input (`midi.js`), chord playback (`playback.js`), puzzle engine (`puzzle-engine.js`)
 
-### WS3 - Integration & Testing: Not Started
-- **WS3-3.1 MVP Assembly**: Pending
-- **WS3-3.2 Testing Framework**: Pending
-- **WS3-3.3 Feedback Triage**: Pending
+### WS3 - Integration & Testing: ✅ Complete
+- **WS3-3.1 MVP Assembly**: ✅ Complete (2026-04-15)
+  - Full puzzle flow wired end-to-end: home → create → puzzle → all 7 layers → completion panel
+  - Home page (`index.html` + `home.js`): create and resume composition flows
+  - Puzzle page (`puzzle.html` + `puzzle.js`): layer prompts, piano, notation, feedback, MIDI input, playback
+  - Dashboard (`dashboard.html`) and status page (`status.html`) operational
+  - 65 tests total: 31 backend (xUnit) + 34 frontend (Cypress E2E), all passing
+  - Azure Container Apps infra + CI/CD pipeline deployed
+- **WS3-3.2 Internal Musician Testing**: ✅ Complete (2026-04-15)
+  - Mix of skill levels tested (paired sessions, all 7 layers)
+  - Core loop validated: testers understood the concept and want to return
+  - Feedback documented (see Phase 2 backlog below)
+- **WS3-3.3 Feedback Triage**: ✅ Complete (2026-04-15)
+  - 5 items identified and prioritized into Phase 2 backlog
+
+---
+
+## Phase 1 Complete ✅
+
+**Completed**: April 15, 2026  
+**Tests**: 65 passing (31 backend + 34 Cypress E2E)  
+**Result**: MVP validated with real musicians. Core puzzle concept works. Two UX gaps (piano fidelity, difficulty differentiation) and three feature gaps identified for Phase 2.
+
+---
+
+## Phase 2 Backlog
+
+Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on the stated failure modes: *task clarity* and *UI discoverability*.
+
+### Priority 1 — Difficulty Differentiation
+**Problem**: Beginner/Intermediate/Advanced selection has no effect on the puzzle experience. Testers noticed.  
+**Solution**: Combine level-adaptive prompts/hints AND different target note complexity per level:
+- **Beginner**: verbose prompts, explicit hints always visible, simpler intervals
+- **Intermediate**: concise prompts, hints on request, standard intervals
+- **Advanced**: minimal prompts, no hints, wider interval range across octaves
+
+### Priority 2 — 88-Key Piano with Zoom/Pan
+**Problem**: Current 25-key keyboard (MIDI 48–72) doesn't resemble a real piano; musicians felt disoriented.  
+**Solution**: Full 88-key keyboard (MIDI 21–108) with horizontal zoom/pan. Viewport focuses on relevant octave per layer, but full range is scrollable.
+
+### Priority 3 — Improved Piano Visual
+**Problem**: Key proportions and labeling feel abstract.  
+**Solution**: Authentic black/white key proportions, note name labels on white keys (toggleable), slight 3D shadow on press. Likely resolved as part of Priority 2.
+
+### Priority 4 — Arpeggio Playback
+**Problem**: "Play Everything So Far" plays all notes as a simultaneous chord — not how harmony is typically experienced.  
+**Solution**: Add arpeggio mode: play accumulated notes one by one in layer order, with configurable tempo.
+
+### Priority 5 — Circle of Fifths Reference
+**Problem**: Testers lacked context for *why* the notes were chosen in this order.  
+**Solution**: Inline circle of fifths diagram that highlights the current layer's note and its relationship to the root. Links the puzzle to music theory.
 
 ---
 
 ## Latest Commits
 
 - **bc86553**: Initial spec baseline
-- **Latest**: WS1-1.3 complete - data model + persistence + MIDI export
+- **WS1 complete**: Data model + persistence + MIDI export + REST API (31 tests)
+- **WS2 complete**: Audio engine, piano keyboard, notation renderer, real-time sync, puzzle engine
+- **WS3 complete**: Home flow Cypress E2E tests (9 tests), Azure infrastructure, CI/CD pipeline, musician testing
