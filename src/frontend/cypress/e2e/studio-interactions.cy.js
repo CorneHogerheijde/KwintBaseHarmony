@@ -1,6 +1,6 @@
 describe("KwintBaseHarmony studio interactions", () => {
   it("updates notation immediately when the pitch field changes", () => {
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.get("#pitch").clear().type("67");
@@ -12,7 +12,7 @@ describe("KwintBaseHarmony studio interactions", () => {
   });
 
   it("syncs the virtual piano with the pitch field", () => {
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.get("#selected-note-label").should("contain", "C4");
@@ -27,7 +27,7 @@ describe("KwintBaseHarmony studio interactions", () => {
   });
 
   it("switches notation clefs without losing the selected note", () => {
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.get("#notation-summary").should("contain", "treble clef");

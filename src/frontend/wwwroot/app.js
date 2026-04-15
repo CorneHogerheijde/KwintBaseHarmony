@@ -13,7 +13,8 @@ import {
   notationClefSelect,
   pitchInput,
   previewSelectedNoteButton,
-  refreshStatusButton
+  refreshStatusButton,
+  startPuzzleButton
 } from "./scripts/dom.js";
 import { playPreviewNote } from "./scripts/audio.js";
 import { request, checkBackendStatus } from "./scripts/api.js";
@@ -32,6 +33,7 @@ function updateNotation() {
 
 function applyCurrentComposition(composition) {
   currentComposition = composition;
+  startPuzzleButton.disabled = !composition;
   setCurrentComposition(composition, updateNotation);
 }
 
@@ -167,7 +169,7 @@ previewSelectedNoteButton.addEventListener("click", () => {
   log("Previewed selected note", { midi, note: midiToLabel(midi) });
 });
 
-refreshStatusButton.addEventListener("click", () => {
+refreshStatusButton?.addEventListener("click", () => {
   void checkBackendStatus();
 });
 
@@ -236,3 +238,9 @@ renderPianoKeyboard((midi) => {
 setSelectedPitch(pitchInput.value);
 void setupMidiInput((note) => setSelectedPitch(note, { preview: true }), log);
 void checkBackendStatus();
+
+startPuzzleButton.addEventListener("click", () => {
+  if (currentComposition) {
+    window.location.href = `/puzzle.html?id=${currentComposition.id}`;
+  }
+});
