@@ -1,5 +1,5 @@
 using Dapr.Client;
-using Dapr.Workflow;
+// using Dapr.Workflow; // Uncomment when workflow orchestration is needed (Phase 2+)
 using KwintBaseHarmony.Data;
 using KwintBaseHarmony.Infrastructure;
 using KwintBaseHarmony.Services;
@@ -11,12 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Dapr client
 builder.Services.AddDaprClient();
 
-// Add Dapr Workflow
-builder.Services.AddDaprWorkflow(options =>
-{
-    // Register workflows and activities here
-    // options.RegisterWorkflow<PuzzleWorkflow>();
-});
+// Add Dapr Workflow — uncomment when workflow orchestration is needed (Phase 2+).
+// Disabled for now: AddDaprWorkflow registers a hosted service that connects to the
+// Dapr actor placement service via gRPC on startup, which fails in environments
+// where the placement service is not running (e.g. local Dapr CLI without actors).
+// builder.Services.AddDaprWorkflow(options =>
+// {
+//     options.RegisterWorkflow<PuzzleWorkflow>();
+// });
 
 // Add PostgreSQL DbContext
 builder.Services.AddDbContext<CompositionContext>(options =>

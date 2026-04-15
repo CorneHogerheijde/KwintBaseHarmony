@@ -6,9 +6,6 @@ spec:
   mtls:
     enabled: false
   tracing:
-    samplingRate: "1"
-    zipkin:
-      endpointAddress: "http://localhost:9411/api/v2/spans"
+    samplingRate: "0"
   logging:
     level: info
-  runMode: standalone
