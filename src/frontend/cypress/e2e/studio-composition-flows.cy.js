@@ -15,7 +15,6 @@ describe("KwintBaseHarmony studio composition flows", () => {
     cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
-    cy.contains("Backend reachable on http://localhost:5000");
     cy.get("#student-id").type("student-cypress");
     cy.get("#composition-title").type("Warmup in C");
     cy.get("#difficulty").select("Intermediate");

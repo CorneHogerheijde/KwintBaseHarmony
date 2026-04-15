@@ -169,7 +169,7 @@ previewSelectedNoteButton.addEventListener("click", () => {
   log("Previewed selected note", { midi, note: midiToLabel(midi) });
 });
 
-refreshStatusButton.addEventListener("click", () => {
+refreshStatusButton?.addEventListener("click", () => {
   void checkBackendStatus();
 });
 
