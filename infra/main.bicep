@@ -113,6 +113,7 @@ module postgres 'br/public:avm/res/db-for-postgre-sql/flexible-server:0.15.2' = 
     skuName: 'Standard_B1ms'
     tier: 'Burstable'
     version: '16'
+    availabilityZone: -1
     highAvailability: 'Disabled'
     backupRetentionDays: 7
     databases: [
@@ -150,6 +151,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
     secrets: [
       {
         name: 'postgres-connection-string'
+        #disable-next-line use-safe-access
         value: 'Host=${postgres.outputs.fqdn};Port=5432;Database=kwintbaseharmony;Username=${postgresAdminLogin};Password=${postgresAdminPassword};SslMode=Require'
       }
     ]
@@ -171,7 +173,10 @@ module containerAppsEnv 'br/public:avm/res/app/managed-environment:0.13.2' = {
     name: caeName
     location: location
     tags: tags
-    logAnalyticsWorkspaceResourceId: logAnalytics.outputs.resourceId
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsWorkspaceResourceId: logAnalytics.outputs.resourceId
+    }
   }
 }
 
@@ -197,7 +202,7 @@ module backendApp 'br/public:avm/res/app/container-app:0.22.0' = {
     secrets: [
       {
         name: 'postgres-connection-string'
-        keyVaultUrl: 'https://${kvName}.vault.azure.net/secrets/postgres-connection-string'
+        keyVaultUrl: 'https://${kvName}${environment().suffixes.keyvaultDns}/secrets/postgres-connection-string'
         identity: managedIdentity.outputs.resourceId
       }
     ]
@@ -213,7 +218,7 @@ module backendApp 'br/public:avm/res/app/container-app:0.22.0' = {
         name: 'api'
         image: '${acr.outputs.loginServer}/kwintbaseharmony-api:${backendImageTag}'
         resources: {
-          cpu: '0.5'
+          cpu: any('0.5')
           memory: '1Gi'
         }
         env: [
@@ -279,7 +284,7 @@ module frontendApp 'br/public:avm/res/app/container-app:0.22.0' = {
         name: 'frontend'
         image: '${acr.outputs.loginServer}/kwintbaseharmony-frontend:${frontendImageTag}'
         resources: {
-          cpu: '0.25'
+          cpu: any('0.25')
           memory: '0.5Gi'
         }
         env: [

@@ -39,6 +39,38 @@ env:
 #   POSTGRES_ADMIN_PASSWORD — The PostgreSQL admin password (same one used in the initial deployment above)
 
 jobs:
+  test-bicep:
+    name: Validate Bicep template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Bicep CLI
+        run: |
+          curl -Lo /usr/local/bin/bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+          chmod +x /usr/local/bin/bicep
+
+      - name: Compile Bicep to ARM JSON
+        run: bicep build infra/main.bicep --outfile infra/tests/snapshots/main.arm.json
+
+      - name: Check for unexpected snapshot drift
+        run: |
+          if git diff --exit-code infra/tests/snapshots/main.arm.json; then
+            echo "Snapshot matches — no unexpected changes."
+          else
+            echo ""
+            echo "ERROR: main.bicep compiles to a different ARM template than the committed"
+            echo "snapshot. If the change is intentional, run:"
+            echo "  bicep build infra/main.bicep --outfile infra/tests/snapshots/main.arm.json"
+            echo "and commit the updated snapshot."
+            exit 1
+          fi
+
+      - name: Run structural assertions
+        shell: pwsh
+        run: pwsh -NoProfile -File infra/tests/Test-BicepSnapshot.ps1
+
   build-and-push:
     name: Build and push Docker images
     runs-on: ubuntu-latest
@@ -82,7 +114,7 @@ jobs:
   deploy-infra:
     name: Deploy Bicep infrastructure
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: [test-bicep, build-and-push]
     outputs:
       frontend_url: ${{ steps.bicep.outputs.frontend_url }}
       backend_url: ${{ steps.bicep.outputs.backend_url }}
