@@ -61,9 +61,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Run database migrations on startup (idempotent)
-using (var scope = app.Services.CreateScope())
+// Run database migrations on startup (idempotent).
+// Skipped in "Testing" environment where an in-memory DB is used (migrations are not supported).
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<CompositionContext>();
     await dbContext.Database.MigrateAsync();
 }
