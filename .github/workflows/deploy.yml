@@ -1,0 +1,139 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'prod'
+
+# Required for OIDC (federated credential) Azure login — no client secret needed.
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ENVIRONMENT_NAME: ${{ github.event.inputs.environment || 'prod' }}
+
+# ── First-time setup ──────────────────────────────────────────────────────────
+# Before this pipeline runs, provision the infrastructure manually once:
+#
+#   az deployment group create \
+#     --resource-group <your-rg> \
+#     --template-file infra/main.bicep \
+#     --parameters infra/main.bicepparam \
+#     --parameters postgresAdminPassword=<secure-password>
+#
+# Then add the following as GitHub Actions repository variables (Settings → Secrets and variables → Actions → Variables):
+#   AZURE_CLIENT_ID         — Service principal client ID (with federated credential configured)
+#   AZURE_TENANT_ID         — Azure tenant ID
+#   AZURE_SUBSCRIPTION_ID  — Azure subscription ID
+#   AZURE_RESOURCE_GROUP   — e.g. rg-kwintbaseharmony-prod
+#   AZURE_ACR_LOGIN_SERVER — e.g. kbhacrabcd1234.azurecr.io  (from: az acr show --name <name> --query loginServer -o tsv)
+#
+# And add ONE repository secret:
+#   POSTGRES_ADMIN_PASSWORD — The PostgreSQL admin password (same one used in the initial deployment above)
+
+jobs:
+  build-and-push:
+    name: Build and push Docker images
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ github.sha }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Container Registry
+        run: az acr login --name "${{ vars.AZURE_ACR_LOGIN_SERVER }}"
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: src/backend
+          file: src/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ vars.AZURE_ACR_LOGIN_SERVER }}/kwintbaseharmony-api:${{ github.sha }}
+            ${{ vars.AZURE_ACR_LOGIN_SERVER }}/kwintbaseharmony-api:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: src/frontend
+          file: src/frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ vars.AZURE_ACR_LOGIN_SERVER }}/kwintbaseharmony-frontend:${{ github.sha }}
+            ${{ vars.AZURE_ACR_LOGIN_SERVER }}/kwintbaseharmony-frontend:latest
+
+  deploy-infra:
+    name: Deploy Bicep infrastructure
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    outputs:
+      frontend_url: ${{ steps.bicep.outputs.frontend_url }}
+      backend_url: ${{ steps.bicep.outputs.backend_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # Validate what would change before applying (acts as a dry-run check in the log).
+      - name: Bicep what-if (preview changes)
+        run: |
+          az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters environmentName="${{ env.ENVIRONMENT_NAME }}" \
+            --parameters postgresAdminPassword="${{ secrets.POSTGRES_ADMIN_PASSWORD }}" \
+            --parameters backendImageTag="${{ github.sha }}" \
+            --parameters frontendImageTag="${{ github.sha }}"
+
+      - name: Deploy Bicep
+        id: bicep
+        run: |
+          OUTPUT=$(az deployment group create \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters environmentName="${{ env.ENVIRONMENT_NAME }}" \
+            --parameters postgresAdminPassword="${{ secrets.POSTGRES_ADMIN_PASSWORD }}" \
+            --parameters backendImageTag="${{ github.sha }}" \
+            --parameters frontendImageTag="${{ github.sha }}" \
+            --output json)
+
+          FRONTEND_URL=$(echo "$OUTPUT" | jq -r '.properties.outputs.frontendUrl.value')
+          BACKEND_URL=$(echo "$OUTPUT" | jq -r '.properties.outputs.backendUrl.value')
+          echo "frontend_url=$FRONTEND_URL" >> "$GITHUB_OUTPUT"
+          echo "backend_url=$BACKEND_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Deployment summary
+        run: |
+          echo "### Deployment complete :rocket:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| | |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Frontend** | ${{ steps.bicep.outputs.frontend_url }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Backend**  | ${{ steps.bicep.outputs.backend_url }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| **Image tag** | \`${{ github.sha }}\` |" >> "$GITHUB_STEP_SUMMARY"

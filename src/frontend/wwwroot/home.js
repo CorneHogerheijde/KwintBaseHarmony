@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api/compositions";
+const API_BASE = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 
 const startForm = document.getElementById("start-form");
 const studentIdInput = document.getElementById("student-id-input");

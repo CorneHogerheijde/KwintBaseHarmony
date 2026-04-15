@@ -34,11 +34,16 @@ builder.Services.AddScoped<IMidiExportService, MidiExportService>();
 
 
 // Add CORS for frontend
+// Additional origins can be added via configuration (e.g. Cors__AllowedOrigins__0=https://...)
+var defaultOrigins = new[] { "http://localhost:5051", "http://127.0.0.1:5051", "http://localhost:5173", "http://localhost:3000" };
+var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+var allowedOrigins = defaultOrigins.Union(configuredOrigins).ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5051", "http://127.0.0.1:5051", "http://localhost:5173", "http://localhost:3000")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
@@ -54,9 +59,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
-    // Auto-migrate on startup
-    using var scope = app.Services.CreateScope();
+}
+
+// Run database migrations on startup (idempotent)
+using (var scope = app.Services.CreateScope())
+{
     var dbContext = scope.ServiceProvider.GetRequiredService<CompositionContext>();
     await dbContext.Database.MigrateAsync();
 }

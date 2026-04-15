@@ -9,14 +9,16 @@ function setStatusPill(el, message, healthy) {
   el.style.color = healthy ? "#0b4e40" : "#8b3a16";
 }
 
+const _backendBase = window.APP_CONFIG?.apiBase ?? "http://localhost:5000";
+
 async function checkApi() {
   setStatusPill(apiStatusEl, "Checking…", true);
   try {
-    const response = await fetch("http://localhost:5000/health", { method: "GET", mode: "cors" });
+    const response = await fetch(`${_backendBase}/health`, { method: "GET", mode: "cors" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    setStatusPill(apiStatusEl, "Reachable — http://localhost:5000", true);
+    setStatusPill(apiStatusEl, `Reachable — ${_backendBase}`, true);
   } catch {
-    setStatusPill(apiStatusEl, "Not reachable on http://localhost:5000", false);
+    setStatusPill(apiStatusEl, `Not reachable on ${_backendBase}`, false);
   }
 }
 
