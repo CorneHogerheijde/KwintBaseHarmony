@@ -3,18 +3,8 @@ kind: Component
 metadata:
   name: postgresdb
 spec:
-  type: postgresql
+  type: state.postgresql
   version: v1
   metadata:
-  - name: host
-    value: localhost
-  - name: port
-    value: "5432"
-  - name: database
-    value: kwintbaseharmony
-  - name: username
-    value: postgres
-  - name: password
-    value: postgres
-  - name: sslmode
-    value: disable
+  - name: connectionString
+    value: "host=localhost port=5432 dbname=kwintbaseharmony user=postgres password=postgres sslmode=disable"
