@@ -73,10 +73,14 @@
                     </div>
                     <div class="toolbar-actions">
                         <span id="midi-status" class="midi-status">Checking MIDI availability...</span>
+                        <button id="piano-zoom-out" type="button" class="secondary-button" aria-label="Zoom out piano">−</button>
+                        <button id="piano-zoom-in"  type="button" class="secondary-button" aria-label="Zoom in piano">+</button>
                         <button id="preview-selected-note" type="button" class="secondary-button">Preview Selected Note</button>
                     </div>
                 </div>
-                <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+                <div class="piano-viewport">
+                    <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+                </div>
             </section>
 
             <section class="panel panel-wide">

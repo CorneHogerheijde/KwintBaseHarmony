@@ -23,7 +23,7 @@ import { log } from "./scripts/logging.js";
 import { setupMidiInput } from "./scripts/midi.js";
 import { midiToLabel, normalizeMidi } from "./scripts/music.js";
 import { renderNotation } from "./scripts/notation.js";
-import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.js";
+import { renderPianoKeyboard, syncSelectedPitchDisplay, zoomIn, zoomOut } from "./scripts/piano.js";
 
 let currentComposition = null;
 
@@ -238,6 +238,9 @@ renderPianoKeyboard((midi) => {
 setSelectedPitch(pitchInput.value);
 void setupMidiInput((note) => setSelectedPitch(note, { preview: true }), log);
 void checkBackendStatus();
+
+document.getElementById("piano-zoom-in")?.addEventListener("click",  () => zoomIn());
+document.getElementById("piano-zoom-out")?.addEventListener("click", () => zoomOut());
 
 startPuzzleButton.addEventListener("click", () => {
   if (currentComposition) {

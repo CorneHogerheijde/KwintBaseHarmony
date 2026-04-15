@@ -310,3 +310,42 @@ describe("Puzzle page — circle of fifths widget", () => {
     cy.get(".circle-of-fifths-label").should("contain", "G");
   });
 });
+
+describe("Puzzle page — 88-key piano and zoom", () => {
+  beforeEach(() => {
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada", difficulty: "intermediate" });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadComposition");
+    // Wait until renderPianoKeyboard has fully rendered all 88 keys
+    cy.get(".piano-key").should("have.length", 88);
+  });
+
+  it("renders the full 88-key range (A0=21 and C8=108 both present)", () => {
+    cy.get(".piano-key[data-midi=\"21\"]").should("exist");
+    cy.get(".piano-key[data-midi=\"108\"]").should("exist");
+  });
+
+  it("renders exactly 88 piano keys", () => {
+    cy.get(".piano-key").should("have.length", 88);
+  });
+
+  it("renders the piano inside a scrollable viewport", () => {
+    cy.get(".piano-viewport").should("exist");
+    cy.get(".piano-viewport #piano-keyboard").should("exist");
+  });
+
+  it("zoom-in button increases keyboard width", () => {
+    cy.get("#piano-keyboard").invoke("width").then((before) => {
+      cy.get("#piano-zoom-in").click();
+      cy.get("#piano-keyboard").invoke("width").should("be.greaterThan", before);
+    });
+  });
+
+  it("zoom-out button decreases keyboard width", () => {
+    cy.get("#piano-keyboard").invoke("width").then((before) => {
+      cy.get("#piano-zoom-out").click();
+      cy.get("#piano-keyboard").invoke("width").should("be.lessThan", before);
+    });
+  });
+});

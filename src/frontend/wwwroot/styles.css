@@ -264,10 +264,17 @@ button:hover,
   gap: 14px;
 }
 
+.piano-viewport {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border-radius: 12px;
+}
+
 .piano-keyboard {
-  display: grid;
-  grid-template-columns: repeat(25, minmax(0, 1fr));
-  gap: 8px;
+  position: relative;
+  height: 150px;
+  /* width is set dynamically by piano.js */
 }
 
 .notation-staff {
@@ -283,14 +290,22 @@ button:hover,
 }
 
 .piano-key {
-  min-height: 112px;
-  padding: 12px 8px;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  padding: 0 0 6px;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
-  gap: 4px;
-  border-radius: 18px;
+  border-radius: 0 0 6px 6px;
+  border-top: none;
+  transition: filter 80ms ease;
+}
+
+.black-key {
+  height: 62%;
+  z-index: 2;
 }
 
 .piano-key.is-active {
@@ -318,12 +333,10 @@ button:hover,
 }
 
 .note-name {
-  font-weight: 700;
-}
-
-.midi-label {
-  font-size: 0.78rem;
-  opacity: 0.78;
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .layer-card {
@@ -402,10 +415,6 @@ button:hover,
     grid-column: span 12;
   }
 
-  .piano-keyboard {
-    grid-template-columns: repeat(13, minmax(0, 1fr));
-  }
-
   .page-shell {
     width: min(100% - 20px, 1180px);
     padding-top: 20px;
@@ -426,13 +435,7 @@ button:hover,
     align-items: start;
   }
 
-  .piano-keyboard {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-
-  .piano-key {
-    min-height: 92px;
-  }
+  /* piano scrolls horizontally — no grid changes needed */
 }
 
 /* ═══════════════════════════════════════════════════════════════════
