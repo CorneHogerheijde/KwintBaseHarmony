@@ -1,4 +1,4 @@
-export const pianoRange = { start: 48, end: 72 };
+export const pianoRange = { start: 21, end: 108 }; // full 88-key range (A0–C8)
 
 const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const diatonicSteps = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };

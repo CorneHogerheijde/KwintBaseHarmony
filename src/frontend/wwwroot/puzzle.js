@@ -1,6 +1,6 @@
 import { playPreviewNote } from "./scripts/audio.js";
 import { midiToLabel, normalizeMidi } from "./scripts/music.js";
-import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.js";
+import { renderPianoKeyboard, syncSelectedPitchDisplay, scrollPianoToMidi, zoomIn, zoomOut } from "./scripts/piano.js";
 import { renderNotation } from "./scripts/notation.js";
 import { playLayer, playEverythingSoFar, playArpeggio } from "./scripts/playback.js";
 import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
@@ -29,6 +29,8 @@ const playAllBtn = document.getElementById("play-all-btn");
 const arpeggioTempoInput = document.getElementById("arpeggio-tempo");
 const arpeggioTempoLabel = document.getElementById("arpeggio-tempo-label");
 const circleOfFifthsEl = document.getElementById("circle-of-fifths");
+const pianoZoomInBtn  = document.getElementById("piano-zoom-in");
+const pianoZoomOutBtn = document.getElementById("piano-zoom-out");
 const completionPanel = document.getElementById("completion-panel");
 const playFullBtn = document.getElementById("play-full-btn");
 const pianoKeyboard = document.getElementById("piano-keyboard");
@@ -175,6 +177,7 @@ function renderLayer(layerNumber) {
   updateNotation();
 
   if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidi);
+  scrollPianoToMidi(puzzleLayer.targetMidi);
 
   puzzleCard.hidden = false;
   completionPanel.hidden = true;
@@ -292,6 +295,9 @@ playAllBtn.addEventListener("click", () => {
 playFullBtn.addEventListener("click", () => {
   if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
 });
+
+pianoZoomInBtn?.addEventListener("click",  () => zoomIn());
+pianoZoomOutBtn?.addEventListener("click", () => zoomOut());
 
 // ── Initialise ────────────────────────────────────────────────────────────────
 async function init() {

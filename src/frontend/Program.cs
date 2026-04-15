@@ -3,7 +3,27 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();
+
+// In development, prevent browsers from caching JS/CSS modules so
+// edits are always picked up without a manual hard refresh.
+if (app.Environment.IsDevelopment())
+{
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        OnPrepareResponse = ctx =>
+        {
+            var ext = Path.GetExtension(ctx.File.Name);
+            if (ext is ".js" or ".css")
+            {
+                ctx.Context.Response.Headers.CacheControl = "no-cache";
+            }
+        }
+    });
+}
+else
+{
+    app.UseStaticFiles();
+}
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 

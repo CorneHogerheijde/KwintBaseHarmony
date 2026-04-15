@@ -47,8 +47,8 @@ const layersByDifficulty = {
     },
     {
       number: 5,
-      name: "The Ninth",
-      prompt: "Add the ninth — the D above middle C. It extends your chord into a second voice, adding colour.",
+      name: "The Secunde",
+      prompt: "Add the secunde — the D above middle C. It extends your chord into a second voice, adding colour.",
       hint: "D4 is two semitones above middle C (MIDI 62). It's the white key immediately to the right of C4.",
       targetMidi: 62,
       autoHint: true
@@ -106,8 +106,8 @@ const layersByDifficulty = {
     },
     {
       number: 5,
-      name: "The Ninth",
-      prompt: "Add the ninth — D. The second degree of the scale, extending the harmony into a new voice.",
+      name: "The Secunde",
+      prompt: "Add the secunde — D. The second degree of the scale, extending the harmony into a new voice.",
       hint: "D4 is a white key, two semitones above C (MIDI 62).",
       targetMidi: 62,
       autoHint: false
@@ -165,9 +165,9 @@ const layersByDifficulty = {
     },
     {
       number: 5,
-      name: "The Ninth",
-      prompt: "Ninth — D4. The second degree, in the tenor voice.",
-      hint: "D4 (MIDI 62) — a ninth above C3.",
+      name: "The Secunde",
+      prompt: "Secunde — D4. The second degree, in the tenor voice.",
+      hint: "D4 (MIDI 62) — a secunde above C3.",
       targetMidi: 62,
       autoHint: false
     },

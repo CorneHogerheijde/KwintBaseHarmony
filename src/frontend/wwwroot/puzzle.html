@@ -45,6 +45,8 @@
                         <p class="piano-caption">Selected note</p>
                         <strong id="selected-note-label" class="selected-note-label">C4 · MIDI 60</strong>
                     </div>
+                    <button id="piano-zoom-out" type="button" class="secondary-button" aria-label="Zoom out piano">−</button>
+                    <button id="piano-zoom-in"  type="button" class="secondary-button" aria-label="Zoom in piano">+</button>
                     <button id="play-all-btn" type="button" class="secondary-button">Play Everything So Far</button>
                     <label class="tempo-control">
                         <span>Tempo</span>
@@ -53,7 +55,9 @@
                     </label>
                 </div>
             </div>
-            <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+            <div class="piano-viewport">
+                <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+            </div>
         </section>
 
         <section class="panel panel-wide">

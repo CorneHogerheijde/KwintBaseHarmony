@@ -56,7 +56,7 @@ Wire the pedagogical core loop: student is shown a harmonic concept for the curr
 | 2 | The Fifth | Add the perfect fifth — G. It creates openness and stability above the root. | 67 | G4 |
 | 3 | The Third | Complete the triad by adding the third — E. This gives the chord its bright character. | 64 | E4 |
 | 4 | The Seventh | Add the major seventh — B. It brings sophistication and luminous tension. | 71 | B4 |
-| 5 | The Ninth | Add the ninth — D. The second degree, extending the harmony into a new voice. | 62 | D4 |
+| 5 | The Secunde | Add the secunde — D. The second degree, extending the harmony into a new voice. | 62 | D4 |
 | 6 | The Sixth | Add the major sixth — A. It brings warmth and a sense of longing. | 69 | A4 |
 | 7 | Resolution | Return to the root — C, one octave higher. Anchor the harmony and complete your composition. | 72 | C5 |
 
