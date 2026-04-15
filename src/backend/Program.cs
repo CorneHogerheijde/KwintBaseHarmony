@@ -234,6 +234,7 @@ compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/notes", async (
 compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/complete", async (
     Guid id,
     int layerNumber,
+    CompleteLayerRequest? body,
     ICompositionService compositionService,
     ILogger<Program> logger) =>
 {
@@ -242,9 +243,20 @@ compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/complete", async (
         return Results.BadRequest(new { error = "Layer number must be between 1 and 7" });
     }
 
+    if (body?.Attempts is < 1)
+    {
+        return Results.BadRequest(new { error = "attempts must be >= 1" });
+    }
+
+    if (body?.TimeSpentMs is < 0)
+    {
+        return Results.BadRequest(new { error = "timeSpentMs must be >= 0" });
+    }
+
     try
     {
-        var composition = await compositionService.CompleteLayerAsync(id, layerNumber);
+        var composition = await compositionService.CompleteLayerAsync(
+            id, layerNumber, body?.Attempts, body?.FirstTryCorrect, body?.TimeSpentMs);
         logger.LogInformation("Completed layer {LayerNumber} in composition {CompositionId}", layerNumber, id);
         return Results.Ok(MapToResponse(composition));
     }
@@ -323,6 +335,7 @@ static CompositionResponse MapToResponse(Composition composition)
                 layer.Completed,
                 layer.TimeSpentMs,
                 layer.UserNotes,
+                layer.PuzzleAnswersJson,
                 layer.Notes
                     .OrderBy(note => note.TimingMs)
                     .Select(note => new NoteResponse(
@@ -353,6 +366,8 @@ public sealed record CompositionResponse(
     DateTime UpdatedAt,
     List<LayerResponse> Layers);
 
+public sealed record CompleteLayerRequest(int? Attempts, bool? FirstTryCorrect, long? TimeSpentMs);
+
 public sealed record LayerResponse(
     int LayerNumber,
     string Name,
@@ -360,6 +375,7 @@ public sealed record LayerResponse(
     bool Completed,
     long TimeSpentMs,
     string? UserNotes,
+    string? PuzzleAnswersJson,
     List<NoteResponse> Notes);
 
 public sealed record NoteResponse(

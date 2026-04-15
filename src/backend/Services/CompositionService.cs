@@ -144,8 +144,14 @@ public class CompositionService : ICompositionService
 
     /// <summary>
     /// Marks a layer as completed and updates completion percentage.
+    /// Optionally records puzzle analytics: attempt count, first-try correctness, and time spent.
     /// </summary>
-    public async Task<Composition> CompleteLayerAsync(Guid compositionId, int layerNumber)
+    public async Task<Composition> CompleteLayerAsync(
+        Guid compositionId,
+        int layerNumber,
+        int? attempts,
+        bool? firstTryCorrect,
+        long? timeSpentMs)
     {
         var composition = await GetByIdAsync(compositionId)
             ?? throw new KeyNotFoundException($"Composition {compositionId} not found");
@@ -155,6 +161,14 @@ public class CompositionService : ICompositionService
                 $"Layer {layerNumber} not found in composition {compositionId}");
 
         layer.Completed = true;
+        layer.TimeSpentMs = timeSpentMs ?? 0;
+        layer.PuzzleAnswersJson = (attempts.HasValue || firstTryCorrect.HasValue)
+            ? System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    attempts = attempts ?? 1,
+                    firstTryCorrect = firstTryCorrect ?? false
+                })
+            : null;
         layer.UpdatedAt = DateTime.UtcNow;
         composition.UpdatedAt = DateTime.UtcNow;
         composition.UpdateCompletionPercentage();
@@ -322,25 +336,25 @@ public class CompositionService : ICompositionService
 
     private static string GetDefaultLayerName(int layerNumber) => layerNumber switch
     {
-        1 => "Foundation (Root + 5th)",
-        2 => "Adding the Third",
-        3 => "The Major Triad",
-        4 => "Seventh Chord",
-        5 => "Extensions",
-        6 => "Alterations",
-        7 => "Final Composition",
+        1 => "Foundation",
+        2 => "The Fifth",
+        3 => "The Third",
+        4 => "The Seventh",
+        5 => "The Ninth",
+        6 => "The Sixth",
+        7 => "Resolution",
         _ => $"Layer {layerNumber}"
     };
 
     private static string GetDefaultLayerConcept(int layerNumber) => layerNumber switch
     {
-        1 => "Understanding the perfect 5th—the stable foundation",
-        2 => "Completing the major triad with the third",
-        3 => "The complete three-note chord: root, third, fifth",
-        4 => "Adding color with sevenths and extended intervals",
-        5 => "Extensions: ninths, elevenths, thirteenths",
-        6 => "Alterations and chromatic movement",
-        7 => "Bringing it all together: your complete composition",
+        1 => "Play the root note — C. This is the anchor of your entire harmony.",
+        2 => "Add the perfect fifth — G. It creates openness and stability above the root.",
+        3 => "Complete the triad by adding the third — E. This gives the chord its bright character.",
+        4 => "Add the major seventh — B. It brings sophistication and luminous tension.",
+        5 => "Add the ninth — D. The second degree, extending the harmony into a new voice.",
+        6 => "Add the major sixth — A. It brings warmth and a sense of longing.",
+        7 => "Return to the root — C, one octave higher. Anchor the harmony and complete your composition.",
         _ => $"Layer {layerNumber} concept"
     };
 
