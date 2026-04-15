@@ -154,6 +154,11 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
         #disable-next-line use-safe-access
         value: 'Host=${postgres.outputs.fqdn};Port=5432;Database=kwintbaseharmony;Username=${postgresAdminLogin};Password=${postgresAdminPassword};SslMode=Require'
       }
+      {
+        // Store the password itself so it can be retrieved independently of the connection string.
+        name: 'postgres-admin-password'
+        value: postgresAdminPassword
+      }
     ]
     roleAssignments: [
       {

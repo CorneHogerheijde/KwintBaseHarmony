@@ -1,9 +1,9 @@
 {
   "predictedResources": [
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.OperationalInsights/workspaces/', format('kbh-law-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.OperationalInsights/workspaces/kbh-law-visysouj",
       "type": "Microsoft.OperationalInsights/workspaces",
-      "name": "[format('kbh-law-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-law-visysouj",
       "apiVersion": "2025-07-01",
       "location": "westeurope",
       "tags": {
@@ -34,9 +34,9 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.ManagedIdentity/userAssignedIdentities/', format('kbh-id-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj",
       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-      "name": "[format('kbh-id-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-id-visysouj",
       "apiVersion": "2024-11-30",
       "location": "westeurope",
       "tags": {
@@ -46,9 +46,9 @@
       "properties": {}
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.ContainerRegistry/registries/', format('kbhacr{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj",
       "type": "Microsoft.ContainerRegistry/registries",
-      "name": "[format('kbhacr{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbhacrvisysouj",
       "apiVersion": "2025-06-01-preview",
       "location": "westeurope",
       "sku": {
@@ -85,13 +85,13 @@
       }
     },
     {
-      "id": "[EXTENSIONRESOURCEID(resourceId('Microsoft.ContainerRegistry/registries', format('kbhacr{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), 'Microsoft.Authorization/roleAssignments', coalesce(null(), guid(resourceId('Microsoft.ContainerRegistry/registries', format('kbhacr{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value, '/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d')))]",
+      "id": "[CONCAT('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj/providers/', concat('Microsoft.Authorization/roleAssignments/', coalesce(null(), guid('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId, '/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d'))))]",
       "type": "Microsoft.Authorization/roleAssignments",
-      "name": "[coalesce(null(), guid(resourceId('Microsoft.ContainerRegistry/registries', format('kbhacr{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value, '/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d'))]",
+      "name": "[coalesce(null(), guid('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId, '/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d'))]",
       "apiVersion": "2022-04-01",
       "properties": {
-        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d",
-        "principalId": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value]",
+        "roleDefinitionId": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d",
+        "principalId": "[reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId]",
         "description": null,
         "principalType": "ServicePrincipal",
         "condition": null,
@@ -100,9 +100,9 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.DBforPostgreSQL/flexibleServers/', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.DBforPostgreSQL/flexibleServers/kbh-pg-visysouj",
       "type": "Microsoft.DBforPostgreSQL/flexibleServers",
-      "name": "[format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-pg-visysouj",
       "apiVersion": "2025-06-01-preview",
       "location": "westeurope",
       "sku": {
@@ -152,9 +152,9 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.DBforPostgreSQL/flexibleServers/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'kwintbaseharmony'), '/')[0], '/databases/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'kwintbaseharmony'), '/')[1]))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.DBforPostgreSQL/flexibleServers/kbh-pg-visysouj/databases/kwintbaseharmony",
       "type": "Microsoft.DBforPostgreSQL/flexibleServers/databases",
-      "name": "[format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'kwintbaseharmony')]",
+      "name": "kbh-pg-visysouj/kwintbaseharmony",
       "apiVersion": "2025-06-01-preview",
       "properties": {
         "collation": "en_US.utf8",
@@ -162,9 +162,9 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.DBforPostgreSQL/flexibleServers/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'AllowAzureServices'), '/')[0], '/firewallRules/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'AllowAzureServices'), '/')[1]))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.DBforPostgreSQL/flexibleServers/kbh-pg-visysouj/firewallRules/AllowAzureServices",
       "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
-      "name": "[format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'AllowAzureServices')]",
+      "name": "kbh-pg-visysouj/AllowAzureServices",
       "apiVersion": "2025-06-01-preview",
       "properties": {
         "endIpAddress": "0.0.0.0",
@@ -172,18 +172,18 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.DBforPostgreSQL/flexibleServers/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'PostgreSQL-advancedThreatProtection'), '/')[0], '/advancedThreatProtectionSettings/', split(format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'PostgreSQL-advancedThreatProtection'), '/')[1]))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.DBforPostgreSQL/flexibleServers/kbh-pg-visysouj/advancedThreatProtectionSettings/PostgreSQL-advancedThreatProtection",
       "type": "Microsoft.DBforPostgreSQL/flexibleServers/advancedThreatProtectionSettings",
-      "name": "[format('{0}/{1}', format('kbh-pg-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'PostgreSQL-advancedThreatProtection')]",
+      "name": "kbh-pg-visysouj/PostgreSQL-advancedThreatProtection",
       "apiVersion": "2025-06-01-preview",
       "properties": {
         "state": "Enabled"
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.KeyVault/vaults/', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj",
       "type": "Microsoft.KeyVault/vaults",
-      "name": "[format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-kv-visysouj",
       "apiVersion": "2024-11-01",
       "location": "westeurope",
       "tags": {
@@ -210,13 +210,13 @@
       }
     },
     {
-      "id": "[EXTENSIONRESOURCEID(format('Microsoft.KeyVault/vaults/{0}', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), 'Microsoft.Authorization/roleAssignments', coalesce(null(), guid(resourceId('Microsoft.KeyVault/vaults', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value, '/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6')))]",
+      "id": "[CONCAT('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj/providers/', concat('Microsoft.Authorization/roleAssignments/', coalesce(null(), guid('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId, '/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'))))]",
       "type": "Microsoft.Authorization/roleAssignments",
-      "name": "[coalesce(null(), guid(resourceId('Microsoft.KeyVault/vaults', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value, '/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'))]",
+      "name": "[coalesce(null(), guid('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId, '/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'))]",
       "apiVersion": "2022-04-01",
       "properties": {
-        "roleDefinitionId": "/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6",
-        "principalId": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.principalId.value]",
+        "roleDefinitionId": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6",
+        "principalId": "[reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj', '2024-11-30').principalId]",
         "description": null,
         "principalType": "ServicePrincipal",
         "condition": null,
@@ -225,9 +225,9 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.KeyVault/vaults/', split(format('{0}/{1}', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'postgres-connection-string'), '/')[0], '/secrets/', split(format('{0}/{1}', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'postgres-connection-string'), '/')[1]))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj/secrets/postgres-connection-string",
       "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[format('{0}/{1}', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), 'postgres-connection-string')]",
+      "name": "kbh-kv-visysouj/postgres-connection-string",
       "apiVersion": "2024-11-01",
       "tags": {
         "application": "kwintbaseharmony",
@@ -240,13 +240,32 @@
           "exp": null,
           "nbf": null
         },
-        "value": "[format('Host={0};Port=5432;Database=kwintbaseharmony;Username={1};Password={2};SslMode=Require', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/postgresql', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.fqdn.value, 'kbhadmin', parameters('postgresAdminPassword'))]"
+        "value": "[format('Host={0};Port=5432;Database=kwintbaseharmony;Username={1};Password={2};SslMode=Require', null(), 'kbhadmin', parameters('postgresAdminPassword'))]"
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.App/managedEnvironments/', format('kbh-cae-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.KeyVault/vaults/kbh-kv-visysouj/secrets/postgres-admin-password",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "kbh-kv-visysouj/postgres-admin-password",
+      "apiVersion": "2024-11-01",
+      "tags": {
+        "application": "kwintbaseharmony",
+        "environment": "test"
+      },
+      "properties": {
+        "contentType": null,
+        "attributes": {
+          "enabled": true,
+          "exp": null,
+          "nbf": null
+        },
+        "value": "[parameters('postgresAdminPassword')]"
+      }
+    },
+    {
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/managedEnvironments/kbh-cae-visysouj",
       "type": "Microsoft.App/managedEnvironments",
-      "name": "[format('kbh-cae-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-cae-visysouj",
       "apiVersion": "2025-10-02-preview",
       "location": "westeurope",
       "tags": {
@@ -261,7 +280,13 @@
         "ingressConfiguration": null,
         "kedaConfiguration": null,
         "peerAuthentication": null,
-        "appLogsConfiguration": "[shallowMerge(createArray(createObject('destination', 'log-analytics'), if(not(empty(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value)), createObject('logAnalyticsConfiguration', createObject('customerId', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')[2], split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')[4], concat('Microsoft.OperationalInsights/workspaces/', last(split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')))), '2025-02-01').customerId, 'sharedKey', listKeys(format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')[2], split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')[4], concat('Microsoft.OperationalInsights/workspaces/', last(split(reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/log-analytics', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value, '/')))), '2025-02-01').primarySharedKey)), createObject())))]",
+        "appLogsConfiguration": {
+          "destination": "log-analytics",
+          "logAnalyticsConfiguration": {
+            "customerId": "[reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.OperationalInsights/workspaces/kbh-law-visysouj', '2025-02-01').customerId]",
+            "sharedKey": "[listKeys('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.OperationalInsights/workspaces/kbh-law-visysouj', '2025-02-01').primarySharedKey]"
+          }
+        },
         "daprAIConnectionString": "",
         "daprAIInstrumentationKey": "",
         "customDomainConfiguration": {
@@ -286,32 +311,34 @@
         },
         "workloadProfiles": null,
         "zoneRedundant": true,
-        "infrastructureResourceGroup": "[take(format('ME_{0}', format('kbh-cae-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))), 63)]"
+        "infrastructureResourceGroup": "ME_kbh-cae-visysouj"
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.App/containerApps/', format('kbh-api-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/containerApps/kbh-api-visysouj",
       "type": "Microsoft.App/containerApps",
-      "name": "[format('kbh-api-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-api-visysouj",
       "apiVersion": "2026-01-01",
       "location": "westeurope",
       "kind": "containerapps",
       "identity": {
-        "type": "[if(not(empty(reduce(createArray(createObject(format('{0}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value), createObject())), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next')))))), 'UserAssigned', 'None')]",
-        "userAssignedIdentities": "[if(not(empty(reduce(createArray(createObject(format('{0}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value), createObject())), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next')))))), variables('formattedUserAssignedIdentities'), null())]"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj": {}
+        }
       },
       "tags": {
         "application": "kwintbaseharmony",
         "environment": "test"
       },
       "properties": {
-        "environmentId": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-apps-env', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value]",
+        "environmentId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/managedEnvironments/kbh-cae-visysouj",
         "workloadProfileName": null,
         "template": {
           "containers": [
             {
               "name": "api",
-              "image": "[format('{0}/kwintbaseharmony-api:{1}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-registry', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.loginServer.value, 'abc1234')]",
+              "image": "[format('{0}/kwintbaseharmony-api:{1}', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', '2025-06-01-preview').loginServer, 'abc1234')]",
               "resources": {
                 "cpu": "0.5",
                 "memory": "1Gi"
@@ -327,7 +354,7 @@
                 },
                 {
                   "name": "Cors__AllowedOrigins__0",
-                  "value": "[format('https://{0}', format('{0}.{1}', format('kbh-frontend-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-apps-env', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.defaultDomain.value))]"
+                  "value": "[format('https://{0}', format('{0}.{1}', 'kbh-frontend-visysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/managedEnvironments/kbh-cae-visysouj', '2025-10-02-preview').defaultDomain))]"
                 }
               ]
             }
@@ -371,15 +398,15 @@
           "maxInactiveRevisions": 0,
           "registries": [
             {
-              "server": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-registry', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.loginServer.value]",
-              "identity": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value]"
+              "server": "[reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', '2025-06-01-preview').loginServer]",
+              "identity": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj"
             }
           ],
           "secrets": [
             {
               "name": "postgres-connection-string",
-              "keyVaultUrl": "[format('https://{0}{1}/secrets/postgres-connection-string', format('kbh-kv-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), environment().suffixes.keyvaultDns)]",
-              "identity": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value]"
+              "keyVaultUrl": "[format('https://{0}{1}/secrets/postgres-connection-string', 'kbh-kv-visysouj', environment().suffixes.keyvaultDns)]",
+              "identity": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj"
             }
           ],
           "runtime": null
@@ -387,28 +414,30 @@
       }
     },
     {
-      "id": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/{2}', subscription().subscriptionId, resourceGroup().name, concat('Microsoft.App/containerApps/', format('kbh-frontend-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))))]",
+      "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/containerApps/kbh-frontend-visysouj",
       "type": "Microsoft.App/containerApps",
-      "name": "[format('kbh-frontend-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8))]",
+      "name": "kbh-frontend-visysouj",
       "apiVersion": "2026-01-01",
       "location": "westeurope",
       "kind": "containerapps",
       "identity": {
-        "type": "[if(not(empty(reduce(createArray(createObject(format('{0}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value), createObject())), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next')))))), 'UserAssigned', 'None')]",
-        "userAssignedIdentities": "[if(not(empty(reduce(createArray(createObject(format('{0}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value), createObject())), createObject(), lambda('cur', 'next', union(lambdaVariables('cur'), lambdaVariables('next')))))), variables('formattedUserAssignedIdentities'), null())]"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj": {}
+        }
       },
       "tags": {
         "application": "kwintbaseharmony",
         "environment": "test"
       },
       "properties": {
-        "environmentId": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-apps-env', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value]",
+        "environmentId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/managedEnvironments/kbh-cae-visysouj",
         "workloadProfileName": null,
         "template": {
           "containers": [
             {
               "name": "frontend",
-              "image": "[format('{0}/kwintbaseharmony-frontend:{1}', reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-registry', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.loginServer.value, 'abc1234')]",
+              "image": "[format('{0}/kwintbaseharmony-frontend:{1}', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', '2025-06-01-preview').loginServer, 'abc1234')]",
               "resources": {
                 "cpu": "0.25",
                 "memory": "0.5Gi"
@@ -420,7 +449,7 @@
                 },
                 {
                   "name": "API_BASE_URL",
-                  "value": "[format('https://{0}', format('{0}.{1}', format('kbh-api-{0}', take(toLower(uniqueString(FORMAT('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'test')), 8)), reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-apps-env', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.defaultDomain.value))]"
+                  "value": "[format('https://{0}', format('{0}.{1}', 'kbh-api-visysouj', reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.App/managedEnvironments/kbh-cae-visysouj', '2025-10-02-preview').defaultDomain))]"
                 }
               ]
             }
@@ -464,8 +493,8 @@
           "maxInactiveRevisions": 0,
           "registries": [
             {
-              "server": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/container-registry', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.loginServer.value]",
-              "identity": "[reference(format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Resources/deployments/managed-identity', subscription().subscriptionId, resourceGroup().name), '2025-04-01').outputs.resourceId.value]"
+              "server": "[reference('/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ContainerRegistry/registries/kbhacrvisysouj', '2025-06-01-preview').loginServer]",
+              "identity": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-kwintbaseharmony-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/kbh-id-visysouj"
             }
           ],
           "secrets": null,

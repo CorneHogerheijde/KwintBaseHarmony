@@ -20,23 +20,29 @@ env:
   ENVIRONMENT_NAME: ${{ github.event.inputs.environment || 'prod' }}
 
 # ── First-time setup ──────────────────────────────────────────────────────────
-# Before this pipeline runs, provision the infrastructure manually once:
+# 1. Deploy the bootstrap secrets Key Vault (once):
+#      az deployment group create \
+#        --resource-group <your-rg> \
+#        --template-file infra/secrets.bicep \
+#        --parameters infra/secrets.bicepparam
 #
-#   az deployment group create \
-#     --resource-group <your-rg> \
-#     --template-file infra/main.bicep \
-#     --parameters infra/main.bicepparam \
-#     --parameters postgresAdminPassword=<secure-password>
+# 2. Store the PostgreSQL admin password in it:
+#      az keyvault secret set \
+#        --vault-name kbh-secrets-prod \
+#        --name postgres-admin-password \
+#        --value '<your-secure-password>'
 #
-# Then add the following as GitHub Actions repository variables (Settings → Secrets and variables → Actions → Variables):
+# 3. Fill in YOUR subscription ID and resource group in infra/main.bicepparam's getSecret() call.
+#
+# 4. Add the following as GitHub Actions repository variables
+#    (Settings → Secrets and variables → Actions → Variables):
 #   AZURE_CLIENT_ID         — Service principal client ID (with federated credential configured)
 #   AZURE_TENANT_ID         — Azure tenant ID
 #   AZURE_SUBSCRIPTION_ID  — Azure subscription ID
 #   AZURE_RESOURCE_GROUP   — e.g. rg-kwintbaseharmony-prod
 #   AZURE_ACR_LOGIN_SERVER — e.g. kbhacrabcd1234.azurecr.io  (from: az acr show --name <name> --query loginServer -o tsv)
 #
-# And add ONE repository secret:
-#   POSTGRES_ADMIN_PASSWORD — The PostgreSQL admin password (same one used in the initial deployment above)
+# No GitHub secrets needed — the PostgreSQL password is resolved from Key Vault via getSecret().
 
 jobs:
   test-bicep:
@@ -128,7 +134,6 @@ jobs:
             --template-file infra/main.bicep \
             --parameters infra/main.bicepparam \
             --parameters environmentName="${{ env.ENVIRONMENT_NAME }}" \
-            --parameters postgresAdminPassword="${{ secrets.POSTGRES_ADMIN_PASSWORD }}" \
             --parameters backendImageTag="${{ github.sha }}" \
             --parameters frontendImageTag="${{ github.sha }}"
 
@@ -140,7 +145,6 @@ jobs:
             --template-file infra/main.bicep \
             --parameters infra/main.bicepparam \
             --parameters environmentName="${{ env.ENVIRONMENT_NAME }}" \
-            --parameters postgresAdminPassword="${{ secrets.POSTGRES_ADMIN_PASSWORD }}" \
             --parameters backendImageTag="${{ github.sha }}" \
             --parameters frontendImageTag="${{ github.sha }}" \
             --output json)
