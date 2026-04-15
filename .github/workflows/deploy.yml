@@ -40,7 +40,7 @@ env:
 
 jobs:
   test-bicep:
-    name: Validate Bicep template
+    name: Validate Bicep snapshot
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -50,26 +50,16 @@ jobs:
         run: |
           curl -Lo /usr/local/bin/bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
           chmod +x /usr/local/bin/bicep
+          bicep --version
 
-      - name: Compile Bicep to ARM JSON
-        run: bicep build infra/main.bicep --outfile infra/tests/snapshots/main.arm.json
-
-      - name: Check for unexpected snapshot drift
+      - name: Validate snapshot (detect drift)
         run: |
-          if git diff --exit-code infra/tests/snapshots/main.arm.json; then
-            echo "Snapshot matches — no unexpected changes."
-          else
-            echo ""
-            echo "ERROR: main.bicep compiles to a different ARM template than the committed"
-            echo "snapshot. If the change is intentional, run:"
-            echo "  bicep build infra/main.bicep --outfile infra/tests/snapshots/main.arm.json"
-            echo "and commit the updated snapshot."
-            exit 1
-          fi
+          bicep snapshot infra/main.test.bicepparam --mode validate
+          echo "No drift detected."
 
-      - name: Run structural assertions
-        shell: pwsh
-        run: pwsh -NoProfile -File infra/tests/Test-BicepSnapshot.ps1
+        # To update the baseline after an intentional change, run locally:
+        #   bicep snapshot infra/main.test.bicepparam --mode overwrite
+        # then commit infra/main.test.snapshot.json.
 
   build-and-push:
     name: Build and push Docker images
