@@ -31,9 +31,8 @@ const arpeggioTempoLabel = document.getElementById("arpeggio-tempo-label");
 const circleOfFifthsEl = document.getElementById("circle-of-fifths");
 const pianoZoomInBtn  = document.getElementById("piano-zoom-in");
 const pianoZoomOutBtn = document.getElementById("piano-zoom-out");
+const pianoKeyboard   = document.getElementById("piano-keyboard");
 const completionPanel = document.getElementById("completion-panel");
-const playFullBtn = document.getElementById("play-full-btn");
-const pianoKeyboard = document.getElementById("piano-keyboard");
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
@@ -180,10 +179,9 @@ function renderLayer(layerNumber) {
   scrollPianoToMidi(puzzleLayer.targetMidi);
 
   puzzleCard.hidden = false;
-  completionPanel.hidden = true;
 }
 
-// ── Show completion screen ────────────────────────────────────────────────────
+// ── Render completion panel ───────────────────────────────────────────────────
 function renderCompletion() {
   currentLayerNumber = null;
   puzzleCard.hidden = true;
@@ -290,9 +288,6 @@ arpeggioTempoInput?.addEventListener("input", () => {
 });
 
 playAllBtn.addEventListener("click", () => {
-  if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
-});
-playFullBtn.addEventListener("click", () => {
   if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
 });
 
