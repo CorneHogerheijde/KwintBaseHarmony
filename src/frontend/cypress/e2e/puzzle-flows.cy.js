@@ -244,3 +244,31 @@ describe("Puzzle page — Skip Layer", () => {
     cy.get("#puzzle-layer-name").should("contain", "Layer 2 of 7");
   });
 });
+
+describe("Puzzle page — arpeggio tempo control", () => {
+  beforeEach(() => {
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada" });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadComposition");
+  });
+
+  it("renders the tempo slider with default value of 72", () => {
+    cy.get("#arpeggio-tempo").should("have.value", "72");
+  });
+
+  it("renders the tempo label showing '72 BPM' by default", () => {
+    cy.get("#arpeggio-tempo-label").should("contain", "72 BPM");
+  });
+
+  it("updates the BPM label when the slider is moved", () => {
+    cy.get("#arpeggio-tempo").invoke("val", "120").trigger("input");
+    cy.get("#arpeggio-tempo-label").should("contain", "120 BPM");
+  });
+
+  it("slider minimum is 40 and maximum is 160", () => {
+    cy.get("#arpeggio-tempo")
+      .should("have.attr", "min", "40")
+      .and("have.attr", "max", "160");
+  });
+});

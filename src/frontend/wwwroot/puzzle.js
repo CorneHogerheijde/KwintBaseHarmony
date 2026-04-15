@@ -2,7 +2,7 @@ import { playPreviewNote } from "./scripts/audio.js";
 import { midiToLabel, normalizeMidi } from "./scripts/music.js";
 import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.js";
 import { renderNotation } from "./scripts/notation.js";
-import { playLayer, playEverythingSoFar } from "./scripts/playback.js";
+import { playLayer, playEverythingSoFar, playArpeggio } from "./scripts/playback.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
@@ -25,6 +25,8 @@ const showAnswerBtn = document.getElementById("show-answer-btn");
 const skipLayerBtn = document.getElementById("skip-layer-btn");
 const prevLayerBtn = document.getElementById("prev-layer-btn");
 const playAllBtn = document.getElementById("play-all-btn");
+const arpeggioTempoInput = document.getElementById("arpeggio-tempo");
+const arpeggioTempoLabel = document.getElementById("arpeggio-tempo-label");
 const completionPanel = document.getElementById("completion-panel");
 const playFullBtn = document.getElementById("play-full-btn");
 const pianoKeyboard = document.getElementById("piano-keyboard");
@@ -276,12 +278,15 @@ prevLayerBtn.addEventListener("click", () => {
   }
 });
 
-playAllBtn.addEventListener("click", () => {
-  if (composition) playEverythingSoFar(composition);
+arpeggioTempoInput?.addEventListener("input", () => {
+  if (arpeggioTempoLabel) arpeggioTempoLabel.textContent = `${arpeggioTempoInput.value} BPM`;
 });
 
+playAllBtn.addEventListener("click", () => {
+  if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
+});
 playFullBtn.addEventListener("click", () => {
-  if (composition) playEverythingSoFar(composition);
+  if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
 });
 
 // ── Initialise ────────────────────────────────────────────────────────────────
