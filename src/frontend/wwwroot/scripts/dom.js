@@ -23,3 +23,4 @@ export const midiStatus = document.getElementById("midi-status");
 export const notationStaff = document.getElementById("notation-staff");
 export const notationClefSelect = document.getElementById("notation-clef");
 export const notationSummary = document.getElementById("notation-summary");
+export const startPuzzleButton = document.getElementById("start-puzzle");

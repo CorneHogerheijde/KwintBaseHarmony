@@ -3,162 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KwintBaseHarmony Studio</title>
+    <title>KwintBaseHarmony</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="page-shell">
-        <header class="hero">
+
+        <header class="home-hero">
             <p class="eyebrow">KwintBaseHarmony</p>
-            <h1>Composition studio for the minimal API backend</h1>
-            <p class="lede">A small static frontend hosted like concerto's NoteStreamApp: lightweight, direct, and served by ASP.NET Core on port 5051.</p>
-            <div class="hero-actions">
-                <a class="primary-link" href="http://localhost:5000/health" target="_blank" rel="noreferrer">Open Backend Health</a>
-                <button id="refresh-status" type="button" class="secondary-button">Refresh API Status</button>
-            </div>
-            <div id="api-status" class="status-pill">Checking backend connectivity...</div>
+            <h1>Build your harmonic foundation</h1>
+            <p class="lede">Work through each layer of the Kwintessence structure — one note at a time.</p>
         </header>
 
-        <main class="dashboard">
-            <section class="panel">
+        <main class="home-main">
+
+            <!-- ── Start a new composition ───────────────────────────── -->
+            <section class="panel home-start-panel">
                 <div class="panel-header">
-                    <h2>Create Composition</h2>
-                    <p>Start a new harmony exercise and load it into the dashboard.</p>
+                    <h2>Start a new composition</h2>
+                    <p>Enter your name and a title to create a fresh composition and begin the puzzle.</p>
                 </div>
-                <form id="create-composition-form" class="stacked-form">
+                <form id="start-form" class="stacked-form">
                     <label>
-                        Student ID
-                        <input id="student-id" name="studentId" type="text" placeholder="student-001" required>
+                        Your name
+                        <input id="student-id-input" name="studentId" type="text" placeholder="e.g. Ada" autocomplete="name" required>
                     </label>
                     <label>
-                        Title
-                        <input id="composition-title" name="title" type="text" placeholder="Warmup in C" required>
+                        Composition title
+                        <input id="title-input" name="title" type="text" placeholder="e.g. Warmup in C" required>
                     </label>
                     <label>
                         Difficulty
-                        <select id="difficulty" name="difficulty">
+                        <select id="difficulty-input" name="difficulty">
                             <option value="beginner">Beginner</option>
                             <option value="intermediate">Intermediate</option>
                             <option value="advanced">Advanced</option>
                         </select>
                     </label>
-                    <button type="submit" class="primary-button">Create and Load</button>
+                    <button id="start-submit-btn" type="submit" class="primary-button">Start Puzzle →</button>
                 </form>
+                <p id="start-error" class="home-error hidden"></p>
             </section>
 
-            <section class="panel">
+            <!-- ── Resume an existing composition ───────────────────── -->
+            <section class="panel home-resume-panel">
                 <div class="panel-header">
-                    <h2>Load Composition</h2>
-                    <p>Fetch an existing composition by its identifier.</p>
+                    <h2>Resume a composition</h2>
+                    <p>Enter your name to load your previous work.</p>
                 </div>
-                <form id="load-composition-form" class="inline-form">
-                    <input id="composition-id-input" name="compositionId" type="text" placeholder="Paste composition GUID" required>
-                    <button type="submit" class="secondary-button">Load</button>
+                <form id="lookup-form" class="inline-form">
+                    <input id="lookup-student-id" name="studentId" type="text" placeholder="Your name" autocomplete="name" required>
+                    <button type="submit" class="secondary-button">Look up</button>
                 </form>
-                <div class="quick-actions">
-                    <button id="download-json" type="button" class="secondary-button" disabled>Export JSON</button>
-                    <button id="download-midi" type="button" class="secondary-button" disabled>Export MIDI</button>
-                </div>
+                <p id="lookup-error" class="home-error hidden"></p>
+                <ul id="composition-list" class="composition-list hidden" aria-label="Your compositions"></ul>
+                <p id="no-compositions" class="home-empty hidden">No compositions found. Start a new one!</p>
             </section>
 
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>Virtual Piano</h2>
-                    <p>Choose pitches by ear and touch instead of relying only on MIDI numbers.</p>
-                </div>
-                <div class="piano-toolbar">
-                    <div>
-                        <p class="piano-caption">Selected note</p>
-                        <strong id="selected-note-label" class="selected-note-label">C4 · MIDI 60</strong>
-                    </div>
-                    <div class="toolbar-actions">
-                        <span id="midi-status" class="midi-status">Checking MIDI availability...</span>
-                        <button id="preview-selected-note" type="button" class="secondary-button">Preview Selected Note</button>
-                    </div>
-                </div>
-                <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
-            </section>
-
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>Notation Preview</h2>
-                    <p>See the currently selected pitch and recent composition notes on a staff.</p>
-                </div>
-                <div class="notation-toolbar">
-                    <label class="clef-picker" for="notation-clef">
-                        Clef
-                        <select id="notation-clef" name="notationClef">
-                            <option value="treble">Treble</option>
-                            <option value="bass">Bass</option>
-                        </select>
-                    </label>
-                    <p id="notation-summary" class="notation-summary">Previewing C4 on the treble clef.</p>
-                </div>
-                <div id="notation-staff" class="notation-staff" aria-label="Musical notation preview"></div>
-            </section>
-
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>Add Note</h2>
-                    <p>Append a MIDI note to a layer on the currently loaded composition.</p>
-                </div>
-                <form id="add-note-form" class="note-grid">
-                    <label>
-                        Layer
-                        <input id="layer-number" name="layerNumber" type="number" min="1" max="7" value="1" required>
-                    </label>
-                    <label>
-                        Pitch
-                        <input id="pitch" name="pitch" type="number" min="0" max="127" value="60" required>
-                    </label>
-                    <label>
-                        Duration (ms)
-                        <input id="duration-ms" name="durationMs" type="number" min="1" value="500" required>
-                    </label>
-                    <label>
-                        Timing (ms)
-                        <input id="timing-ms" name="timingMs" type="number" min="0" value="0" required>
-                    </label>
-                    <label>
-                        Velocity
-                        <input id="velocity" name="velocity" type="number" min="0" max="127" value="100">
-                    </label>
-                    <button type="submit" class="primary-button">Add Note</button>
-                </form>
-            </section>
-
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>Current Composition</h2>
-                    <p id="composition-summary">No composition loaded.</p>
-                </div>
-                <div id="layers" class="layer-list empty-state">Load a composition to inspect its layers.</div>
-            </section>
-
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>JSON Round-Trip</h2>
-                    <p>Export the loaded composition into the editor, adjust it if needed, then import it back through the API.</p>
-                </div>
-                <div class="json-toolbar">
-                    <button id="load-json-into-editor" type="button" class="secondary-button" disabled>Load Current JSON</button>
-                    <button id="import-json" type="button" class="primary-button">Import Editor JSON</button>
-                    <button id="clear-json-editor" type="button" class="secondary-button">Clear Editor</button>
-                </div>
-                <label class="json-editor-label" for="json-editor">Composition JSON</label>
-                <textarea id="json-editor" class="json-editor" spellcheck="false" placeholder="Export a composition or paste a JSON payload here."></textarea>
-            </section>
-
-            <section class="panel panel-wide">
-                <div class="panel-header">
-                    <h2>Activity</h2>
-                    <p>Recent frontend operations and API responses.</p>
-                </div>
-                <pre id="activity-log" class="activity-log">Frontend ready.</pre>
-            </section>
         </main>
+
+        <footer class="home-footer">
+            <a href="/dashboard.html" class="footer-link">Dashboard</a>
+            <span class="footer-sep">·</span>
+            <a href="/status.html" class="footer-link">Status</a>
+        </footer>
+
     </div>
 
-    <script type="module" src="/app.js"></script>
+    <script type="module" src="/home.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ describe("KwintBaseHarmony studio composition flows", () => {
       body: composition
     }).as("createComposition");
 
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.contains("Backend reachable on http://localhost:5000");
@@ -63,7 +63,7 @@ describe("KwintBaseHarmony studio composition flows", () => {
       body: composition
     }).as("loadComposition");
 
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.get("#composition-id-input").type(composition.id);
@@ -108,7 +108,7 @@ describe("KwintBaseHarmony studio composition flows", () => {
       }
     }).as("exportJson");
 
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.get("#json-editor").type(JSON.stringify({ title: "seed payload" }), {
@@ -136,7 +136,7 @@ describe("KwintBaseHarmony studio composition flows", () => {
       body: composition
     }).as("createComposition");
 
-    cy.visit("/");
+    cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
     cy.window().then((windowObject) => {

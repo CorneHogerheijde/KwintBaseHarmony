@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwintBaseHarmony — Status</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="page-shell">
+
+        <nav class="puzzle-nav">
+            <a href="/" class="back-link">← Home</a>
+            <a href="/dashboard.html" class="footer-link">Dashboard</a>
+        </nav>
+
+        <header class="home-hero">
+            <p class="eyebrow">KwintBaseHarmony</p>
+            <h1>System status</h1>
+            <p class="lede">Check backend connectivity and service health.</p>
+        </header>
+
+        <main class="dashboard">
+
+            <section class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Backend API</h2>
+                    <p>Tests connectivity to the backend at <code>http://localhost:5000</code>.</p>
+                </div>
+                <div class="status-row">
+                    <div id="api-status" class="status-pill">Checking…</div>
+                    <button id="refresh-status" type="button" class="secondary-button">Refresh</button>
+                    <a href="http://localhost:5000/health" target="_blank" rel="noreferrer" class="secondary-button">Open /health ↗</a>
+                    <a href="http://localhost:5000/swagger" target="_blank" rel="noreferrer" class="secondary-button">Open Swagger ↗</a>
+                </div>
+            </section>
+
+            <section class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Dapr sidecar</h2>
+                    <p>Tests connectivity to the Dapr sidecar at <code>http://localhost:3500</code>.</p>
+                </div>
+                <div class="status-row">
+                    <div id="dapr-status" class="status-pill">Checking…</div>
+                    <button id="refresh-dapr" type="button" class="secondary-button">Refresh</button>
+                    <a href="http://localhost:3500/v1.0/healthz" target="_blank" rel="noreferrer" class="secondary-button">Open /healthz ↗</a>
+                </div>
+            </section>
+
+            <section class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Frontend</h2>
+                    <p>Static frontend served by ASP.NET Core at <code>http://localhost:5051</code>.</p>
+                </div>
+                <div class="status-row">
+                    <div class="status-pill" style="background:rgba(18,110,90,0.1);color:#0b4e40">Running — you are here</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module" src="/status.js"></script>
+</body>
+</html>

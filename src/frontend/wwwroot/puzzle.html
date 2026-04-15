@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwintBaseHarmony — Composition Puzzle</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="page-shell">
+
+        <nav class="puzzle-nav">
+            <a href="/" class="back-link">← Dashboard</a>
+            <p id="composition-title-label" class="puzzle-composition-title">Loading composition…</p>
+        </nav>
+
+        <div class="puzzle-progress-wrap">
+            <div class="puzzle-progress-bar" id="puzzle-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0">
+                <div class="puzzle-progress-fill" id="puzzle-progress-fill"></div>
+            </div>
+            <p id="puzzle-progress-label" class="puzzle-progress-label">Layer 0 of 7</p>
+        </div>
+
+        <section class="panel puzzle-card" id="puzzle-card" aria-live="polite">
+            <p class="eyebrow" id="puzzle-layer-name">Layer —</p>
+            <h2 id="puzzle-prompt" class="puzzle-prompt">Loading…</h2>
+            <p id="puzzle-hint" class="puzzle-hint hidden"></p>
+            <div id="puzzle-feedback" class="puzzle-feedback hidden">
+                <span id="puzzle-feedback-text"></span>
+            </div>
+            <div class="puzzle-actions">
+                <button id="mark-complete-btn" type="button" class="primary-button" disabled>Mark Layer Complete</button>
+                <button id="show-answer-btn" type="button" class="secondary-button">Show Answer</button>
+                <button id="prev-layer-btn" type="button" class="secondary-button" disabled>Previous Layer</button>
+                <button id="skip-layer-btn" type="button" class="secondary-button">Skip Layer</button>
+            </div>
+        </section>
+
+        <section class="panel panel-wide">
+            <div class="panel-header">
+                <h2>Virtual Piano</h2>
+                <div class="toolbar-actions">
+                    <div>
+                        <p class="piano-caption">Selected note</p>
+                        <strong id="selected-note-label" class="selected-note-label">C4 · MIDI 60</strong>
+                    </div>
+                    <button id="play-all-btn" type="button" class="secondary-button">Play Everything So Far</button>
+                </div>
+            </div>
+            <div id="piano-keyboard" class="piano-keyboard" aria-label="Virtual piano keyboard"></div>
+        </section>
+
+        <section class="panel panel-wide">
+            <div class="panel-header">
+                <h2>Notation Preview</h2>
+                <div class="notation-toolbar">
+                    <label class="clef-picker" for="notation-clef">
+                        Clef
+                        <select id="notation-clef" name="notationClef">
+                            <option value="treble">Treble</option>
+                            <option value="bass">Bass</option>
+                        </select>
+                    </label>
+                    <p id="notation-summary" class="notation-summary">Previewing C4 on the treble clef.</p>
+                </div>
+            </div>
+            <div id="notation-staff" class="notation-staff" aria-label="Musical notation preview"></div>
+        </section>
+
+        <section class="panel panel-wide puzzle-completion" id="completion-panel" hidden>
+            <p class="eyebrow">Complete</p>
+            <h2>Your composition is complete!</h2>
+            <p class="lede">You have worked through all 7 harmonic layers of the Kwintessence structure.</p>
+            <div class="hero-actions">
+                <button id="play-full-btn" type="button" class="primary-button">Play Full Composition</button>
+                <a href="/" class="secondary-button">Back to Dashboard</a>
+            </div>
+        </section>
+
+    </div>
+
+    <script type="module" src="/puzzle.js"></script>
+</body>
+</html>
