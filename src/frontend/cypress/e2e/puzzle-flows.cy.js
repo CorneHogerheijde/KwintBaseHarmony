@@ -272,3 +272,41 @@ describe("Puzzle page — arpeggio tempo control", () => {
       .and("have.attr", "max", "160");
   });
 });
+
+describe("Puzzle page — circle of fifths widget", () => {
+  beforeEach(() => {
+    const composition = buildComposition({ id: COMPOSITION_ID, title: "My Harmony", studentId: "Ada" });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("loadComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadComposition");
+  });
+
+  it("renders the circle-of-fifths widget on the puzzle card", () => {
+    cy.get("#circle-of-fifths").should("exist").and("not.be.empty");
+  });
+
+  it("shows an SVG diagram with an aria-label", () => {
+    cy.get("#circle-of-fifths svg").should("have.attr", "aria-label");
+  });
+
+  it("highlights C for layer 1 (Foundation — root note)", () => {
+    cy.get("#circle-of-fifths svg")
+      .should("have.attr", "aria-label")
+      .and("contain", "C highlighted");
+    cy.get(".circle-of-fifths-label").should("contain", "Circle of Fifths").and("contain", "C");
+  });
+
+  it("highlights G for layer 2 when layer 1 is completed", () => {
+    const comp = buildComposition({
+      id: COMPOSITION_ID,
+      completedLayers: [1]
+    });
+    cy.intercept("GET", `${BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: comp }).as("loadLayer2");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@loadLayer2");
+    cy.get("#circle-of-fifths svg")
+      .should("have.attr", "aria-label")
+      .and("contain", "G highlighted");
+    cy.get(".circle-of-fifths-label").should("contain", "G");
+  });
+});

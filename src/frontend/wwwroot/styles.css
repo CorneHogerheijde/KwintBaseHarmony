@@ -113,6 +113,28 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+.circle-of-fifths-widget {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.circle-of-fifths-widget svg {
+  width: 160px;
+  height: 160px;
+}
+
+.circle-of-fifths-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 .piano-caption {
   margin-bottom: 4px;
   color: var(--muted);
