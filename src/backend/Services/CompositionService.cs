@@ -340,7 +340,7 @@ public class CompositionService : ICompositionService
         2 => "The Fifth",
         3 => "The Third",
         4 => "The Seventh",
-        5 => "The Ninth",
+        5 => "The Secunde",
         6 => "The Sixth",
         7 => "Resolution",
         _ => $"Layer {layerNumber}"
@@ -352,7 +352,7 @@ public class CompositionService : ICompositionService
         2 => "Add the perfect fifth — G. It creates openness and stability above the root.",
         3 => "Complete the triad by adding the third — E. This gives the chord its bright character.",
         4 => "Add the major seventh — B. It brings sophistication and luminous tension.",
-        5 => "Add the ninth — D. The second degree, extending the harmony into a new voice.",
+        5 => "Add the secunde — D. The second degree, extending the harmony into a new voice.",
         6 => "Add the major sixth — A. It brings warmth and a sense of longing.",
         7 => "Return to the root — C, one octave higher. Anchor the harmony and complete your composition.",
         _ => $"Layer {layerNumber} concept"
