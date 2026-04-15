@@ -397,14 +397,18 @@ Wire everything together and test the complete concept with musicians.
   - Also: MIDI hardware input (`midi.js`), chord playback (`playback.js`), puzzle engine (`puzzle-engine.js`)
 
 ### WS3 - Integration & Testing: 🚧 In Progress
-- **WS3-3.1 MVP Assembly**: 🚧 In Progress (2026-04-15)
+- **WS3-3.1 MVP Assembly**: ✅ Complete (2026-04-15)
   - Full puzzle flow wired end-to-end: home → create → puzzle → all 7 layers → completion panel
   - Home page (`index.html` + `home.js`): create and resume composition flows
   - Puzzle page (`puzzle.html` + `puzzle.js`): layer prompts, piano, notation, feedback, MIDI input, playback
   - Dashboard (`dashboard.html`) and status page (`status.html`) operational
-  - Cypress E2E: home-flows (9 tests), puzzle-flows, studio-composition-flows, studio-interactions
-  - All Cypress tests passing
-- **WS3-3.2 Internal Musician Testing**: Pending — recruit 3-5 musicians
+  - 65 tests total: 31 backend (xUnit) + 34 frontend (Cypress E2E), all passing
+  - Azure Container Apps infra + CI/CD pipeline deployed
+- **WS3-3.2 Internal Musician Testing**: 🚧 Next — recruit 3-5 musicians
+  - Target: mix of skill levels (beginner, intermediate, advanced)
+  - Protocol: 20-30 min session, thinking out loud, debrief
+  - Deploy to Azure so testers can access without local setup
+  - Document observations: what teaches, what confuses, emotional feel
 - **WS3-3.3 Feedback Triage**: Pending
 
 ---
