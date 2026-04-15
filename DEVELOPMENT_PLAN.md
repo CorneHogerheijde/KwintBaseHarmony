@@ -425,12 +425,13 @@ Wire everything together and test the complete concept with musicians.
 
 Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on the stated failure modes: *task clarity* and *UI discoverability*.
 
-### Priority 1 — Difficulty Differentiation
-**Problem**: Beginner/Intermediate/Advanced selection has no effect on the puzzle experience. Testers noticed.  
-**Solution**: Combine level-adaptive prompts/hints AND different target note complexity per level:
-- **Beginner**: verbose prompts, explicit hints always visible, simpler intervals
-- **Intermediate**: concise prompts, hints on request, standard intervals
-- **Advanced**: minimal prompts, no hints, wider interval range across octaves
+### ✅ Priority 1 — Difficulty Differentiation *(complete — PR #13, April 15 2026)*
+**Problem**: Beginner/Intermediate/Advanced selection had no effect on the puzzle experience. Testers noticed.  
+**Solution**: `getPuzzleLayers(difficulty)` factory in `puzzle-engine.js`; `puzzle.js` reads `composition.difficulty` from the API response and threads it through all engine calls.
+- **Beginner**: verbose prompts, hint always visible (no Show Answer button), C4-range targets
+- **Intermediate**: concise prompts, hint on request only, unchanged target notes
+- **Advanced**: minimal prompts, bass voicing starting at C3 (MIDI 48), open-position spread
+- Cypress tests: 34 → 41 (7 new difficulty-specific tests)
 
 ### Priority 2 — 88-Key Piano with Zoom/Pan
 **Problem**: Current 25-key keyboard (MIDI 48–72) doesn't resemble a real piano; musicians felt disoriented.  
@@ -456,3 +457,6 @@ Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on
 - **WS1 complete**: Data model + persistence + MIDI export + REST API (31 tests)
 - **WS2 complete**: Audio engine, piano keyboard, notation renderer, real-time sync, puzzle engine
 - **WS3 complete**: Home flow Cypress E2E tests (9 tests), Azure infrastructure, CI/CD pipeline, musician testing
+- **PR #12**: Layer name alignment + puzzle analytics recording (33 backend tests)
+- **PR #13**: Difficulty-aware puzzle layers — beginner/intermediate/advanced (41 Cypress tests)
+- **PR #14**: GET `/api/compositions/{id}/analytics` endpoint (36 backend tests)
