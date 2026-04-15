@@ -433,21 +433,33 @@ Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on
 - **Advanced**: minimal prompts, bass voicing starting at C3 (MIDI 48), open-position spread
 - Cypress tests: 34 → 41 (7 new difficulty-specific tests)
 
-### Priority 2 — 88-Key Piano with Zoom/Pan
+### ✅ Priority 2 — 88-Key Piano with Zoom/Pan *(complete — PR #15, April 15 2026)*
 **Problem**: Current 25-key keyboard (MIDI 48–72) doesn't resemble a real piano; musicians felt disoriented.  
-**Solution**: Full 88-key keyboard (MIDI 21–108) with horizontal zoom/pan. Viewport focuses on relevant octave per layer, but full range is scrollable.
+**Solution**: Full 88-key keyboard (MIDI 21–108) with horizontal scroll viewport, zoom-in/zoom-out buttons, absolute positioning of keys, and auto-scroll to the target note on each layer advance.
+- Layer 5 also renamed from "The Ninth" to "The Secunde" in all code and spec documents
+- Cypress tests: 29 new puzzle-flow tests including 5 piano/zoom tests
 
-### Priority 3 — Improved Piano Visual
+### ✅ Priority 3 — Improved Piano Visual *(complete — resolved in Priority 2)*
 **Problem**: Key proportions and labeling feel abstract.  
-**Solution**: Authentic black/white key proportions, note name labels on white keys (toggleable), slight 3D shadow on press. Likely resolved as part of Priority 2.
+**Solution**: Authentic black/white key proportions via absolute positioning, note name labels on white keys, subtle border-radius on key bottoms. Resolved as part of Priority 2 piano rewrite.
 
-### Priority 4 — Arpeggio Playback
+### ✅ Priority 4 — Arpeggio Playback *(complete — PR #16, April 15 2026)*
 **Problem**: "Play Everything So Far" plays all notes as a simultaneous chord — not how harmony is typically experienced.  
-**Solution**: Add arpeggio mode: play accumulated notes one by one in layer order, with configurable tempo.
+**Solution**: `playArpeggio(composition, bpm)` in `playback.js` plays one note per completed layer in order, spaced by one beat (90% staccato). BPM slider (40–160, default 72) added to the piano toolbar with live label.
+- Cypress tests: 4 new arpeggio tempo tests
 
-### Priority 5 — Circle of Fifths Reference
+### ✅ Priority 5 — Circle of Fifths Reference *(complete — PR #17, April 15 2026)*
 **Problem**: Testers lacked context for *why* the notes were chosen in this order.  
-**Solution**: Inline circle of fifths diagram that highlights the current layer's note and its relationship to the root. Links the puzzle to music theory.
+**Solution**: Inline SVG circle-of-fifths diagram at the bottom of the puzzle card. Root (C) shown with an accent ring; current layer's target note filled accent-colour; dashed line connects root to target. Updates on every layer advance.
+- Cypress tests: 4 new circle-of-fifths tests
+
+---
+
+## Phase 2 Complete ✅
+
+**Completed**: April 15, 2026  
+**Tests**: 54 Cypress + 36 backend passing (90 total)  
+**Result**: All five Phase 2 priorities shipped and merged to main. Full 88-key piano, arpeggio playback, and music-theory context (circle of fifths) delivered.
 
 ---
 
@@ -460,3 +472,6 @@ Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on
 - **PR #12**: Layer name alignment + puzzle analytics recording (33 backend tests)
 - **PR #13**: Difficulty-aware puzzle layers — beginner/intermediate/advanced (41 Cypress tests)
 - **PR #14**: GET `/api/compositions/{id}/analytics` endpoint (36 backend tests)
+- **PR #15**: 88-key piano with zoom/pan + auto-scroll + layer 5 rename (54 Cypress tests)
+- **PR #16**: Arpeggio playback with BPM slider (54 Cypress tests)
+- **PR #17**: Circle-of-fifths SVG widget (54 Cypress tests)
