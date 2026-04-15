@@ -464,9 +464,111 @@ public class CompositionEndpointsTests
         });
     }
 
+    [Fact]
+    public async Task GetAnalytics_WithUnknownId_ReturnsNotFound()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.GetAsync($"/api/compositions/{Guid.NewGuid()}/analytics");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetAnalytics_ForFreshComposition_ReturnsZeroTotals()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-analytics-10",
+            title = "Fresh Analytics",
+            difficulty = "intermediate"
+        });
+        var created = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(created);
+
+        var analyticsResponse = await client.GetAsync($"/api/compositions/{created.Id}/analytics");
+
+        Assert.Equal(HttpStatusCode.OK, analyticsResponse.StatusCode);
+
+        var analytics = await analyticsResponse.Content.ReadFromJsonAsync<CompositionAnalyticsResponseDto>();
+        Assert.NotNull(analytics);
+        Assert.Equal(created.Id, analytics.CompositionId);
+        Assert.Equal("intermediate", analytics.Difficulty);
+        Assert.Equal(0, analytics.Summary.CompletedLayers);
+        Assert.Equal(7, analytics.Summary.TotalLayers);
+        Assert.Equal(0L, analytics.Summary.TotalTimeSpentMs);
+        Assert.Null(analytics.Summary.AverageAttemptsPerLayer);
+        Assert.Null(analytics.Summary.FirstTryCorrectRate);
+        Assert.Equal(7, analytics.Layers.Count);
+        Assert.All(analytics.Layers, layer =>
+        {
+            Assert.False(layer.Completed);
+            Assert.Null(layer.Attempts);
+            Assert.Null(layer.FirstTryCorrect);
+        });
+    }
+
+    [Fact]
+    public async Task GetAnalytics_AfterCompletingLayersWithAnalytics_ReturnsAggregatedSummary()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-analytics-11",
+            title = "Aggregated Analytics",
+            difficulty = "beginner"
+        });
+        var created = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(created);
+
+        // Complete layer 1: 3 attempts, not first-try, 30 000 ms
+        await client.PostAsJsonAsync(
+            $"/api/compositions/{created.Id}/layers/1/complete",
+            new { attempts = 3, firstTryCorrect = false, timeSpentMs = 30000 });
+
+        // Complete layer 2: 1 attempt, first-try, 10 000 ms
+        await client.PostAsJsonAsync(
+            $"/api/compositions/{created.Id}/layers/2/complete",
+            new { attempts = 1, firstTryCorrect = true, timeSpentMs = 10000 });
+
+        var analyticsResponse = await client.GetAsync($"/api/compositions/{created.Id}/analytics");
+
+        Assert.Equal(HttpStatusCode.OK, analyticsResponse.StatusCode);
+
+        var analytics = await analyticsResponse.Content.ReadFromJsonAsync<CompositionAnalyticsResponseDto>();
+        Assert.NotNull(analytics);
+        Assert.Equal(2, analytics.Summary.CompletedLayers);
+        Assert.Equal(40000L, analytics.Summary.TotalTimeSpentMs);
+        Assert.Equal(2.0, analytics.Summary.AverageAttemptsPerLayer); // (3 + 1) / 2
+        Assert.Equal(0.5, analytics.Summary.FirstTryCorrectRate);     // 1 of 2
+
+        var layer1 = analytics.Layers.Single(l => l.LayerNumber == 1);
+        Assert.True(layer1.Completed);
+        Assert.Equal(3, layer1.Attempts);
+        Assert.False(layer1.FirstTryCorrect);
+        Assert.Equal(30000L, layer1.TimeSpentMs);
+
+        var layer2 = analytics.Layers.Single(l => l.LayerNumber == 2);
+        Assert.True(layer2.Completed);
+        Assert.Equal(1, layer2.Attempts);
+        Assert.True(layer2.FirstTryCorrect);
+    }
+
     private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers);
 
     private sealed record LayerResponseDto(int LayerNumber, string Name, string? Concept, bool Completed, long TimeSpentMs, string? UserNotes, string? PuzzleAnswersJson, List<NoteResponseDto> Notes);
 
     private sealed record NoteResponseDto(int Pitch, int DurationMs, int TimingMs, int Velocity, DateTime CreatedAt);
+
+    private sealed record CompositionAnalyticsResponseDto(Guid CompositionId, string Difficulty, decimal CompletionPercentage, AnalyticsSummaryDto Summary, List<LayerAnalyticsDto> Layers);
+
+    private sealed record AnalyticsSummaryDto(int CompletedLayers, int TotalLayers, long TotalTimeSpentMs, double? AverageAttemptsPerLayer, double? FirstTryCorrectRate);
+
+    private sealed record LayerAnalyticsDto(int LayerNumber, string Name, bool Completed, long TimeSpentMs, int? Attempts, bool? FirstTryCorrect);
 }
