@@ -3,6 +3,7 @@ import { midiToLabel, normalizeMidi } from "./scripts/music.js";
 import { renderPianoKeyboard, syncSelectedPitchDisplay } from "./scripts/piano.js";
 import { renderNotation } from "./scripts/notation.js";
 import { playLayer, playEverythingSoFar, playArpeggio } from "./scripts/playback.js";
+import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
@@ -27,6 +28,7 @@ const prevLayerBtn = document.getElementById("prev-layer-btn");
 const playAllBtn = document.getElementById("play-all-btn");
 const arpeggioTempoInput = document.getElementById("arpeggio-tempo");
 const arpeggioTempoLabel = document.getElementById("arpeggio-tempo-label");
+const circleOfFifthsEl = document.getElementById("circle-of-fifths");
 const completionPanel = document.getElementById("completion-panel");
 const playFullBtn = document.getElementById("play-full-btn");
 const pianoKeyboard = document.getElementById("piano-keyboard");
@@ -171,6 +173,8 @@ function renderLayer(layerNumber) {
 
   updateProgress();
   updateNotation();
+
+  if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidi);
 
   puzzleCard.hidden = false;
   completionPanel.hidden = true;
