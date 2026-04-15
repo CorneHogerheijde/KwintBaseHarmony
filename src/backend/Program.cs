@@ -266,6 +266,66 @@ compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/complete", async (
     }
 });
 
+compositions.MapGet("/{id:guid}/analytics", async (Guid id, ICompositionService compositionService) =>
+{
+    var composition = await compositionService.GetByIdAsync(id);
+    if (composition is null)
+    {
+        return Results.NotFound(new { error = $"Composition {id} not found" });
+    }
+
+    var layerAnalytics = composition.Layers
+        .OrderBy(l => l.LayerNumber)
+        .Select(l =>
+        {
+            int? attempts = null;
+            bool? firstTryCorrect = null;
+
+            if (l.PuzzleAnswersJson is not null)
+            {
+                try
+                {
+                    var doc = System.Text.Json.JsonDocument.Parse(l.PuzzleAnswersJson);
+                    if (doc.RootElement.TryGetProperty("attempts", out var attemptsEl))
+                        attempts = attemptsEl.GetInt32();
+                    if (doc.RootElement.TryGetProperty("firstTryCorrect", out var ftcEl))
+                        firstTryCorrect = ftcEl.GetBoolean();
+                }
+                catch (System.Text.Json.JsonException) { /* malformed data — skip */ }
+            }
+
+            return new LayerAnalyticsResponse(l.LayerNumber, l.Name, l.Completed, l.TimeSpentMs, attempts, firstTryCorrect);
+        })
+        .ToList();
+
+    int completedLayers = layerAnalytics.Count(la => la.Completed);
+    long totalTimeSpentMs = layerAnalytics.Sum(la => la.TimeSpentMs);
+
+    var layersWithAttempts = layerAnalytics.Where(la => la.Attempts.HasValue).ToList();
+    double? averageAttemptsPerLayer = layersWithAttempts.Count > 0
+        ? Math.Round((double)layersWithAttempts.Sum(la => la.Attempts!.Value) / layersWithAttempts.Count, 2)
+        : null;
+
+    var layersWithFtc = layerAnalytics.Where(la => la.FirstTryCorrect.HasValue).ToList();
+    double? firstTryCorrectRate = layersWithFtc.Count > 0
+        ? Math.Round((double)layersWithFtc.Count(la => la.FirstTryCorrect!.Value) / layersWithFtc.Count, 4)
+        : null;
+
+    var summary = new AnalyticsSummaryResponse(
+        completedLayers,
+        layerAnalytics.Count,
+        totalTimeSpentMs,
+        averageAttemptsPerLayer,
+        firstTryCorrectRate);
+
+    return Results.Ok(new CompositionAnalyticsResponse(
+        composition.Id,
+        composition.Difficulty,
+        composition.CompletionPercentage,
+        summary,
+        layerAnalytics));
+});
+
 compositions.MapGet("/{id:guid}/export/midi", async (
     Guid id,
     ICompositionService compositionService,
@@ -384,5 +444,27 @@ public sealed record NoteResponse(
     int TimingMs,
     int Velocity,
     DateTime CreatedAt);
+
+public sealed record LayerAnalyticsResponse(
+    int LayerNumber,
+    string Name,
+    bool Completed,
+    long TimeSpentMs,
+    int? Attempts,
+    bool? FirstTryCorrect);
+
+public sealed record AnalyticsSummaryResponse(
+    int CompletedLayers,
+    int TotalLayers,
+    long TotalTimeSpentMs,
+    double? AverageAttemptsPerLayer,
+    double? FirstTryCorrectRate);
+
+public sealed record CompositionAnalyticsResponse(
+    Guid CompositionId,
+    string Difficulty,
+    decimal CompletionPercentage,
+    AnalyticsSummaryResponse Summary,
+    List<LayerAnalyticsResponse> Layers);
 
 public partial class Program;
