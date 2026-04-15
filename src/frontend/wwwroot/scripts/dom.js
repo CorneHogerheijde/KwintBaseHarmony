@@ -1,4 +1,6 @@
-export const apiBaseUrl = "http://localhost:5000/api/compositions";
+const _backendBase = window.APP_CONFIG?.apiBase ?? "http://localhost:5000";
+export const backendBaseUrl = _backendBase;
+export const apiBaseUrl = `${_backendBase}/api/compositions`;
 
 export const activityLog = document.getElementById("activity-log");
 export const statusPill = document.getElementById("api-status");

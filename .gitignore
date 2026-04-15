@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# Temporary PowerShell module cache (used during local dev, never committed)
+.pester-modules/
+
 # dotenv files
 .env
 

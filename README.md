@@ -37,23 +37,28 @@ Every harmonic decision is experienced across three simultaneous channels:
 
 ## Project Status
 
-**Phase**: Pre-Development  
-**Last Updated**: April 14, 2026
+**Phase**: Active Development  
+**Last Updated**: April 15, 2026
 
 ### Completed
 - ✅ Creative brainstorming session (3 techniques)
 - ✅ 9 core ideas organized by theme
 - ✅ Design principles defined
 - ✅ Phase 1 action plans created
+- ✅ REST API (composition CRUD, MIDI export)
+- ✅ .NET 10 backend with EF Core + PostgreSQL
+- ✅ Vanilla JS frontend (ASP.NET Core static files)
+- ✅ Dapr integration (state store, local sidecar)
+- ✅ Azure Container Apps infrastructure (AVM Bicep, 14 resources)
+- ✅ GitHub Actions CI/CD pipeline (build → test → deploy)
+- ✅ Bicep snapshot tests (native `bicep snapshot` CLI)
 
 ### In Progress
-- ⏳ Development planning
-- ⏳ Technical stack finalization
-- ⏳ Team assembly
+- ⏳ Phase 2: Puzzle-based composition UI
+- ⏳ Audio playback integration
 
 ### Upcoming
-- 📋 Phase 1: MVP development (4-6 weeks)
-- 📋 Phase 2: Expansion features
+- 📋 Phase 2: Expansion features (branching composition, AI analysis)
 - 📋 Phase 3: Real-world testing & iteration
 
 ## Project Structure
@@ -61,21 +66,58 @@ Every harmonic decision is experienced across three simultaneous channels:
 ```
 KwintBaseHarmony/
 ├── README.md                          # This file
-├── DEVELOPMENT_PLAN.md                # Detailed Phase 1 action plans
-├── .gitignore                         # Git ignore rules
-├── _outputs/                          # Project outputs & artifacts
-│   ├── brainstorming/
-│   │   └── brainstorming-session-2026-04-14.md
-│   ├── planning-artifacts/
-│   ├── implementation-artifacts/
-│   └── test-artifacts/
-├── docs/                              # Documentation (future)
-├── src/                               # Source code (future)
-│   ├── components/
-│   ├── audio/
-│   ├── notation/
-│   └── learning/
-└── tests/                             # Test files (future)
+├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
+├── RUNNING_LOCALLY.md                 # Local dev guide
+├── LICENSE
+├── .gitignore
+├── dapr.yaml                          # Multi-app run config
+├── docker-compose.yml                 # Local Dapr environment
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml                 # CI/CD: test → build → deploy
+│
+├── infra/                             # Azure infrastructure (AVM Bicep)
+│   ├── main.bicep                     # Orchestrator — 14 Azure resources
+│   ├── main.bicepparam                # Production parameters
+│   ├── main.test.bicepparam           # Test parameters (snapshot baseline)
+│   ├── main.test.snapshot.json        # Committed Bicep snapshot baseline
+│   └── tests/
+│       └── Test-BicepSnapshot.ps1     # Snapshot drift detection script
+│
+├── src/
+│   ├── frontend/                      # ASP.NET Core static files frontend
+│   │   ├── Program.cs
+│   │   ├── KwintBaseHarmony.Frontend.csproj
+│   │   └── wwwroot/
+│   │       ├── index.html
+│   │       ├── styles.css
+│   │       └── app.js
+│   │
+│   └── backend/                       # .NET 10 + EF Core + Dapr
+│       ├── Program.cs
+│       ├── KwintBaseHarmony.csproj
+│       ├── appsettings.json
+│       ├── Models/                    # Composition, Layer, Note
+│       ├── Services/                  # CompositionService, MidiExportService
+│       ├── Data/                      # EF Core DbContext
+│       ├── Migrations/
+│       └── components/                # Dapr component YAML files
+│
+├── tests/                             # xUnit integration + unit tests
+│   ├── CompositionEndpointsTests.cs
+│   ├── CompositionServiceTests.cs
+│   ├── MidiExportServiceTests.cs
+│   └── KwintBaseHarmony.Tests.csproj
+│
+├── scripts/
+│   └── start-dapr-local.ps1           # Windows Dapr launcher
+│
+└── _outputs/                          # Project outputs & artifacts
+    ├── brainstorming/
+    ├── planning-artifacts/
+    ├── implementation-artifacts/
+    └── test-artifacts/
 ```
 
 ## Key Ideas at a Glance
@@ -191,27 +233,28 @@ See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementa
 
 ---
 
-## Architecture: React Frontend + .NET Dapr Backend
+## Architecture: Vanilla JS Frontend + .NET Dapr Backend
 
 ### Technology Stack
 
 **Frontend:**
-- ⚛️ **React 18** — Interactive UI framework
-- 📘 **TypeScript** — Type safety
-- 🎹 **Tone.js** — Web Audio API abstraction
-- 🎼 **Vexflow** — Musical notation rendering
-- 🎨 **Tailwind CSS** — Utility-first styling
-- 📦 **Vite** — Modern build tool
+- 🌐 **Vanilla JS + HTML/CSS** — Lightweight browser-native UI
+- 🔵 **ASP.NET Core** — Static file host (no Node.js build step)
 
 **Backend:**
-- 🔵 **.NET 10** — Backend runtime
-- 🔄 **Dapr Runtime** — Distributed application runtime
-- 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
-- 🎵 **NAudio** — Audio engine integration
-- 📚 **Entity Framework Core** — Data persistence
+- 🔵 **.NET 10** — API runtime
+- 🔄 **Dapr Runtime** — Distributed application runtime (state store, sidecar)
+- 📚 **Entity Framework Core** — ORM with PostgreSQL
+- 🎵 **MIDI export** — NAudio-based MIDI file generation
 
-**Development & Deployment:**
+**Infrastructure & Deployment:**
+- ☁️ **Azure Container Apps** — Serverless container hosting
+- 🏗️ **AVM Bicep** — Infrastructure as Code (14 Azure resources)
+- 🔒 **Azure Key Vault** — Secret management
+- 🐘 **Azure Database for PostgreSQL Flexible Server** — Managed database
+- 📦 **Azure Container Registry** — Docker image registry
 - 🐳 **Docker** — Containerization
+- ⚙️ **GitHub Actions** — CI/CD pipeline (test → build → deploy)
 - 🎯 **Dapr CLI** — Local development environment
 - 📊 **BMAD** — Project methodology and brainstorming framework
 
@@ -308,256 +351,53 @@ Once both are running:
 
 **Reference:** [Dapr Workflow Concerto Example](https://github.com/diagrid-labs/dapr-workflow-concerto)
 
+
 ---
 
-## Project Structure
+## Deployment
 
-```
-KwintBaseHarmony/
-├── README.md                          # This file
-├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
-├── LICENSE                            # MIT License
-├── .gitignore
-├── docker-compose.yml                 # Local Dapr environment
-│
-├── src/
-│   ├── frontend/                      # ASP.NET Core static frontend
-│   │   ├── Program.cs
-│   │   ├── KwintBaseHarmony.Frontend.csproj
-│   │   └── wwwroot/
-│   │       ├── index.html
-│   │       ├── styles.css
-│   │       └── app.js
-│   │
-│   └── backend/                       # .NET 10 + Dapr
-│       ├── Program.cs                 # Dapr setup
-│       ├── Controllers/
-│       │   ├── PuzzleController.cs
-│       │   ├── CompositionController.cs
-│       │   └── ...
-│       ├── Workflows/
-│       │   ├── PuzzleWorkflow.cs
-│       │   ├── CompositionWorkflow.cs
-│       │   └── ...
-│       ├── Models/
-│       │   ├── Puzzle.cs
-│       │   ├── Note.cs
-│       │   └── ...
-│       ├── Components/
-│       │   ├── pubsub.yaml            # Dapr pub/sub config
-│       │   ├── state.yaml             # Dapr state store config
-│       │   └── ...
-│       ├── KwintBaseHarmony.csproj
-│       └── appsettings.json
-│
-└── _outputs/
-    ├── brainstorming/
-    ├── planning-artifacts/
-    ├── implementation-artifacts/
-    └── test-artifacts/
+The app deploys to **Azure Container Apps** via GitHub Actions on every push to `main` (after Bicep snapshot validation and Docker image build).
+
+### Infrastructure
+
+All Azure resources are defined in `infra/main.bicep` using Azure Verified Modules (AVM):
+
+| Resource | Purpose |
+|---|---|
+| Container Apps Environment | Shared runtime for both containers |
+| Backend Container App | .NET 10 API |
+| Frontend Container App | ASP.NET Core static file host |
+| PostgreSQL Flexible Server | Managed database |
+| Key Vault | Secrets (DB password, connection strings) |
+| Container Registry | Docker image storage |
+| Log Analytics Workspace | Centralized logs |
+| Managed Identity + Role Assignments | Least-privilege access |
+
+### Bicep Snapshot Tests
+
+Bicep drift detection runs on every PR via `bicep snapshot --mode validate`. If the compiled template differs from the committed baseline, CI fails.
+
+To update the baseline after an intentional Bicep change:
+```sh
+bicep snapshot infra/main.test.bicepparam --mode overwrite
+git add infra/main.test.snapshot.json && git commit -m "chore: update Bicep snapshot baseline"
 ```
 
----
-
-## Development Tools & Methodology
-
-### BMAD (Brainstorming Method & Design)
-
-This project uses **BMAD** for structured ideation and development planning:
-
-- **Brainstorming Sessions** — Used to generate the 9 core ideas
-- **Architecture Design** — Documented in DEVELOPMENT_PLAN.md
-- **Workflow Organization** — Tracks progress and dependencies
-- **Skill Development** — Continuous improvement methodology
-
-Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
-
-### Development Workflow
-
-1. **Ideation** → BMAD brainstorming sessions
-2. **Planning** → DEVELOPMENT_PLAN workstreams
-3. **Implementation** → Code in organized workstreams
-4. **Testing** → Internal musician feedback loops
-5. **Iteration** → Refinement based on real-world usage
-
----
-
-## Resources
-
-- **Kwintessence Book Reference**: Layer-by-layer harmonic pedagogy
-- **Brainstorming Session**: `_outputs/brainstorming/brainstorming-session-2026-04-14.md`
-- **Development Plan**: `DEVELOPMENT_PLAN.md`
-- **Dapr Documentation**: https://docs.dapr.io
-- **Dapr Workflow Example**: https://github.com/diagrid-labs/dapr-workflow-concerto
-- **BMAD Method**: Brainstorming & design methodology used for this project
-
----
-- 🎨 **Tailwind CSS** — Utility-first styling
-- 📦 **Vite** — Modern build tool
-
-**Backend:**
-- 🔵 **.NET 10** — Backend runtime
-- 🔄 **Dapr Runtime** — Distributed application runtime
-- 🔀 **Dapr Workflow** — Orchestrate user input flows (note sequences, puzzle progression)
-- 🎵 **NAudio** — Audio engine integration
-- 📚 **Entity Framework Core** — Data persistence
-
-**Development & Deployment:**
-- 🐳 **Docker** — Containerization
-- 🎯 **Dapr CLI** — Local development environment
-- 📊 **BMAD** — Project methodology and brainstorming framework
-
----
-
-## Quick Setup
-
-### Prerequisites
-
-- **Node.js** 18+ (frontend)
-- **.NET 10 SDK** (backend)
-- **Dapr CLI** (installed and initialized)
-- **Docker** (for Dapr containers)
-- **Git**
-
-### 1. Clone & Initial Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/CorneHogerheijde/KwintBaseHarmony.git
-cd KwintBaseHarmony
-
-# Initialize Dapr
-dapr init
-```
-
-For Windows, use the local launcher in `scripts/start-dapr-local.ps1` instead of `dapr run -f .`.
-
-### 2. Frontend + Backend with Dapr
-
-#### Windows
-
+To run the check locally:
 ```powershell
-pwsh ./scripts/start-dapr-local.ps1
+pwsh -NoProfile -File infra/tests/Test-BicepSnapshot.ps1
 ```
 
-#### Linux/macOS
+### Required GitHub Secrets
 
-```bash
-dapr run -f .
-```
-
-Access points:
-- Frontend: `http://localhost:5051`
-- API: `http://localhost:5000`
-- Swagger: `http://localhost:5000/swagger`
-- Backend Dapr HTTP: `http://localhost:3500`
-- Frontend Dapr HTTP: `http://localhost:3510`
-
-### 3. Direct .NET Alternative
-
-```bash
-cd src/backend
-
-# Restore dependencies
-dotnet restore
-
-# Start without Dapr for testing
-dotnet run
-```
-
-The backend will be available at `http://localhost:5000`
-
-### 4. Testing Together
-
-Once both are running:
-
-1. Open frontend at `http://localhost:5051`
-2. The frontend will connect to the backend API
-3. Piano keyboard should be interactive
-4. Ready to start the first puzzle!
-
----
-
-## Dapr Workflow Integration
-
-**How Dapr Workflows orchestrate user interactions:**
-
-1. **Puzzle Workflow** — Orchestrates the puzzle flow
-   - User selects notes on piano
-   - Workflow validates against expected answer
-   - Audio + notation feedback triggered
-   - Next puzzle initiated
-
-2. **Composition Workflow** — Manages multi-step composition
-   - Each layer (root+5th, +3rd, etc.) is a workflow step
-   - State persisted between sessions
-   - Allows pausing/resuming
-
-3. **User Input Processing** — Dapr Workflow handles:
-   - Note input sequences
-   - Validation logic
-   - Feedback generation
-   - State transitions
-
-**Reference:** [Dapr Workflow Concerto Example](https://github.com/diagrid-labs/dapr-workflow-concerto)
-
----
-
-## Project Structure
-
-```
-KwintBaseHarmony/
-├── README.md                          # This file
-├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
-├── LICENSE                            # MIT License
-├── .gitignore
-├── docker-compose.yml                 # Local Dapr environment
-│
-├── src/
-│   ├── frontend/                      # React + TypeScript
-│   │   ├── public/
-│   │   ├── src/
-│   │   │   ├── components/            # React components
-│   │   │   │   ├── PianoKeyboard.tsx
-│   │   │   │   ├── NotationDisplay.tsx
-│   │   │   │   ├── PuzzleUI.tsx
-│   │   │   │   └── ...
-│   │   │   ├── pages/
-│   │   │   │   ├── Welcome.tsx
-│   │   │   │   ├── PuzzlePage.tsx
-│   │   │   │   └── ...
-│   │   │   ├── App.tsx
-│   │   │   └── main.tsx
-│   │   ├── package.json
-│   │   └── vite.config.ts
-│   │
-│   └── backend/                       # .NET 10 + Dapr
-│       ├── Program.cs                 # Dapr setup
-│       ├── Controllers/
-│       │   ├── PuzzleController.cs
-│       │   ├── CompositionController.cs
-│       │   └── ...
-│       ├── Workflows/
-│       │   ├── PuzzleWorkflow.cs
-│       │   ├── CompositionWorkflow.cs
-│       │   └── ...
-│       ├── Models/
-│       │   ├── Puzzle.cs
-│       │   ├── Note.cs
-│       │   └── ...
-│       ├── Components/
-│       │   ├── pubsub.yaml            # Dapr pub/sub config
-│       │   ├── state.yaml             # Dapr state store config
-│       │   └── ...
-│       ├── KwintBaseHarmony.csproj
-│       └── appsettings.json
-│
-└── _outputs/
-    ├── brainstorming/
-    ├── planning-artifacts/
-    ├── implementation-artifacts/
-    └── test-artifacts/
-```
+| Secret | Description |
+|---|---|
+| `AZURE_CLIENT_ID` | Service principal / workload identity client ID |
+| `AZURE_TENANT_ID` | Azure AD tenant ID |
+| `AZURE_SUBSCRIPTION_ID` | Target subscription |
+| `AZURE_RESOURCE_GROUP` | Target resource group |
+| `ACR_LOGIN_SERVER` | Azure Container Registry login server |
+| `POSTGRES_ADMIN_PASSWORD` | PostgreSQL admin password |
 
 ---
 
@@ -572,14 +412,12 @@ This project uses **BMAD** for structured ideation and development planning:
 - **Workflow Organization** — Tracks progress and dependencies
 - **Skill Development** — Continuous improvement methodology
 
-Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
-
 ### Development Workflow
 
 1. **Ideation** → BMAD brainstorming sessions
 2. **Planning** → DEVELOPMENT_PLAN workstreams
 3. **Implementation** → Code in organized workstreams
-4. **Testing** → Internal musician feedback loops
+4. **Testing** → `dotnet test` + Bicep snapshot CI
 5. **Iteration** → Refinement based on real-world usage
 
 ---
@@ -588,10 +426,13 @@ Read more: [BMAD Documentation](https://github.com/microsoft/BuildMethodology)
 
 - **Kwintessence Book Reference**: Layer-by-layer harmonic pedagogy
 - **Brainstorming Session**: `_outputs/brainstorming/brainstorming-session-2026-04-14.md`
-- **Development Plan**: `DEVELOPMENT_PLAN.md`
+- **Development Plan**: [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)
+- **Running Locally**: [RUNNING_LOCALLY.md](./RUNNING_LOCALLY.md)
 - **Dapr Documentation**: https://docs.dapr.io
-- **Dapr Workflow Example**: https://github.com/diagrid-labs/dapr-workflow-concerto
-- **BMAD Method**: Brainstorming & design methodology used for this project
+- **Azure Container Apps**: https://learn.microsoft.com/azure/container-apps/
+- **Azure Verified Modules**: https://azure.github.io/Azure-Verified-Modules/
+- **Bicep snapshot CLI**: https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-snapshot
+
 
 ---
 
@@ -606,7 +447,3 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 Copyright © 2026 Corné Hogerheijde
 
 ---
-
-**Last Updated**: April 14, 2026  
-**Created by**: Corné  
-**Project Status**: Brainstorming → Development Planning

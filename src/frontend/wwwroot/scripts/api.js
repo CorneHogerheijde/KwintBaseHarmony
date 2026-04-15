@@ -1,4 +1,4 @@
-import { apiBaseUrl } from "./dom.js";
+import { apiBaseUrl, backendBaseUrl } from "./dom.js";
 import { setStatus } from "./logging.js";
 
 export async function request(path, options = {}) {
@@ -25,13 +25,13 @@ export async function request(path, options = {}) {
 
 export async function checkBackendStatus() {
   try {
-    const response = await fetch("http://localhost:5000/health", { method: "GET", mode: "cors" });
+    const response = await fetch(`${backendBaseUrl}/health`, { method: "GET", mode: "cors" });
     if (!response.ok) {
       throw new Error(`Health check returned ${response.status}`);
     }
 
-    setStatus("Backend reachable on http://localhost:5000", true);
+    setStatus(`Backend reachable on ${backendBaseUrl}`, true);
   } catch {
-    setStatus("Backend not reachable on http://localhost:5000", false);
+    setStatus(`Backend not reachable on ${backendBaseUrl}`, false);
   }
 }

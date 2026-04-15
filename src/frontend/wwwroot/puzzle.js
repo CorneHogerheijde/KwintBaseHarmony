@@ -30,7 +30,7 @@ const playFullBtn = document.getElementById("play-full-btn");
 const pianoKeyboard = document.getElementById("piano-keyboard");
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const apiBase = "http://localhost:5000/api/compositions";
+const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 let composition = null;
 let currentLayerNumber = null;
 let selectedMidi = 60;
