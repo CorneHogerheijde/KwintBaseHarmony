@@ -396,7 +396,7 @@ Wire everything together and test the complete concept with musicians.
 - **WS2-2.4 Real-Time Sync**: ✅ Complete — piano, notation, and playback update from a single MIDI state
   - Also: MIDI hardware input (`midi.js`), chord playback (`playback.js`), puzzle engine (`puzzle-engine.js`)
 
-### WS3 - Integration & Testing: 🚧 In Progress
+### WS3 - Integration & Testing: ✅ Complete
 - **WS3-3.1 MVP Assembly**: ✅ Complete (2026-04-15)
   - Full puzzle flow wired end-to-end: home → create → puzzle → all 7 layers → completion panel
   - Home page (`index.html` + `home.js`): create and resume composition flows
@@ -404,12 +404,49 @@ Wire everything together and test the complete concept with musicians.
   - Dashboard (`dashboard.html`) and status page (`status.html`) operational
   - 65 tests total: 31 backend (xUnit) + 34 frontend (Cypress E2E), all passing
   - Azure Container Apps infra + CI/CD pipeline deployed
-- **WS3-3.2 Internal Musician Testing**: 🚧 Next — recruit 3-5 musicians
-  - Target: mix of skill levels (beginner, intermediate, advanced)
-  - Protocol: 20-30 min session, thinking out loud, debrief
-  - Deploy to Azure so testers can access without local setup
-  - Document observations: what teaches, what confuses, emotional feel
-- **WS3-3.3 Feedback Triage**: Pending
+- **WS3-3.2 Internal Musician Testing**: ✅ Complete (2026-04-15)
+  - Mix of skill levels tested (paired sessions, all 7 layers)
+  - Core loop validated: testers understood the concept and want to return
+  - Feedback documented (see Phase 2 backlog below)
+- **WS3-3.3 Feedback Triage**: ✅ Complete (2026-04-15)
+  - 5 items identified and prioritized into Phase 2 backlog
+
+---
+
+## Phase 1 Complete ✅
+
+**Completed**: April 15, 2026  
+**Tests**: 65 passing (31 backend + 34 Cypress E2E)  
+**Result**: MVP validated with real musicians. Core puzzle concept works. Two UX gaps (piano fidelity, difficulty differentiation) and three feature gaps identified for Phase 2.
+
+---
+
+## Phase 2 Backlog
+
+Derived from WS3-3.2 musician testing (April 15, 2026). Prioritized by impact on the stated failure modes: *task clarity* and *UI discoverability*.
+
+### Priority 1 — Difficulty Differentiation
+**Problem**: Beginner/Intermediate/Advanced selection has no effect on the puzzle experience. Testers noticed.  
+**Solution**: Combine level-adaptive prompts/hints AND different target note complexity per level:
+- **Beginner**: verbose prompts, explicit hints always visible, simpler intervals
+- **Intermediate**: concise prompts, hints on request, standard intervals
+- **Advanced**: minimal prompts, no hints, wider interval range across octaves
+
+### Priority 2 — 88-Key Piano with Zoom/Pan
+**Problem**: Current 25-key keyboard (MIDI 48–72) doesn't resemble a real piano; musicians felt disoriented.  
+**Solution**: Full 88-key keyboard (MIDI 21–108) with horizontal zoom/pan. Viewport focuses on relevant octave per layer, but full range is scrollable.
+
+### Priority 3 — Improved Piano Visual
+**Problem**: Key proportions and labeling feel abstract.  
+**Solution**: Authentic black/white key proportions, note name labels on white keys (toggleable), slight 3D shadow on press. Likely resolved as part of Priority 2.
+
+### Priority 4 — Arpeggio Playback
+**Problem**: "Play Everything So Far" plays all notes as a simultaneous chord — not how harmony is typically experienced.  
+**Solution**: Add arpeggio mode: play accumulated notes one by one in layer order, with configurable tempo.
+
+### Priority 5 — Circle of Fifths Reference
+**Problem**: Testers lacked context for *why* the notes were chosen in this order.  
+**Solution**: Inline circle of fifths diagram that highlights the current layer's note and its relationship to the root. Links the puzzle to music theory.
 
 ---
 
@@ -418,4 +455,4 @@ Wire everything together and test the complete concept with musicians.
 - **bc86553**: Initial spec baseline
 - **WS1 complete**: Data model + persistence + MIDI export + REST API (31 tests)
 - **WS2 complete**: Audio engine, piano keyboard, notation renderer, real-time sync, puzzle engine
-- **WS3 in progress**: Home flow Cypress E2E tests (9 tests), Azure infrastructure, CI/CD pipeline
+- **WS3 complete**: Home flow Cypress E2E tests (9 tests), Azure infrastructure, CI/CD pipeline, musician testing
