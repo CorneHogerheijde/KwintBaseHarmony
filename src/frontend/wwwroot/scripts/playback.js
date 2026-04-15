@@ -98,3 +98,34 @@ export function playEverythingSoFar(composition) {
     scheduleNote(context, note.pitch, now, 1.6);
   }
 }
+
+/**
+ * Plays one note per completed layer in layer order, spaced by one beat.
+ * Takes the first note of each layer (by timingMs) as the layer's representative pitch.
+ * No-ops if no layers have notes.
+ * @param {{ layers: Array<{notes: Array<{pitch:number, timingMs:number}>}> }} composition
+ * @param {number} [bpm=72] Beats per minute — controls spacing between notes
+ */
+export function playArpeggio(composition, bpm = 72) {
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const beatSecs = 60 / bpm;
+  // One representative note per layer: the note with the lowest timingMs
+  const pitches = composition.layers
+    .map((l) => {
+      const notes = l.notes ?? [];
+      if (notes.length === 0) return null;
+      return [...notes].sort((a, b) => a.timingMs - b.timingMs)[0].pitch;
+    })
+    .filter((p) => p !== null);
+
+  if (pitches.length === 0) return;
+
+  const noteDuration = beatSecs * 0.9; // slight staccato — 90% of beat
+  const now = context.currentTime;
+
+  pitches.forEach((pitch, i) => {
+    scheduleNote(context, pitch, now + i * beatSecs, noteDuration);
+  });
+}
