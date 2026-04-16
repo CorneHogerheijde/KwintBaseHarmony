@@ -7,6 +7,7 @@ import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
+  isCorrectChord,
   getFirstIncompleteLayer
 } from "./scripts/puzzle-engine.js";
 
@@ -22,6 +23,7 @@ const hintEl = document.getElementById("puzzle-hint");
 const feedbackEl = document.getElementById("puzzle-feedback");
 const feedbackText = document.getElementById("puzzle-feedback-text");
 const markCompleteBtn = document.getElementById("mark-complete-btn");
+const submitChordBtn = document.getElementById("submit-chord-btn");
 const showAnswerBtn = document.getElementById("show-answer-btn");
 const skipLayerBtn = document.getElementById("skip-layer-btn");
 const prevLayerBtn = document.getElementById("prev-layer-btn");
@@ -41,6 +43,7 @@ let difficulty = "intermediate";
 let currentLayerNumber = null;
 let selectedMidi = 60;
 let correctNoteSelected = false;
+let selectedChordMidis = [];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function compositionUrl(path = "") {
@@ -109,7 +112,31 @@ function clearFeedback() {
 }
 
 // ── Note selection ────────────────────────────────────────────────────────────
+function clearChordSelection() {
+  selectedChordMidis = [];
+  for (const key of pianoKeyboard.querySelectorAll(".is-selected")) {
+    key.classList.remove("is-selected");
+  }
+}
+
 function onNoteSelected(midi, { preview = false } = {}) {
+  if (difficulty === "chords") {
+    const normalizedMidi = normalizeMidi(midi);
+    if (preview) playPreviewNote(normalizedMidi, () => {});
+    const key = pianoKeyboard.querySelector(`.piano-key[data-midi="${normalizedMidi}"]`);
+    const idx = selectedChordMidis.indexOf(normalizedMidi);
+    if (idx === -1) {
+      selectedChordMidis.push(normalizedMidi);
+      if (key) key.classList.add("is-selected");
+    } else {
+      selectedChordMidis.splice(idx, 1);
+      if (key) key.classList.remove("is-selected");
+    }
+    syncSelectedPitchDisplay(normalizedMidi);
+    clearFeedback();
+    return;
+  }
+
   selectedMidi = normalizeMidi(midi);
   syncSelectedPitchDisplay(selectedMidi);
   updateNotation();
@@ -160,13 +187,23 @@ function renderLayer(layerNumber) {
   playAllBtn.disabled   = layerNumber === 1;
 
   if (isAlreadyCompleted) {
+    markCompleteBtn.hidden = false;
     markCompleteBtn.disabled = true;
+    submitChordBtn.hidden = true;
     showAnswerBtn.disabled = true;
     skipLayerBtn.textContent = "Back to Puzzle \u2192";
     skipLayerBtn.disabled = false;
     showFeedback("This layer is already complete. Click \"Back to Puzzle \u2192\" to resume.", true);
   } else {
-    markCompleteBtn.disabled = true;
+    if (difficulty === "chords") {
+      markCompleteBtn.hidden = true;
+      submitChordBtn.hidden = false;
+      clearChordSelection();
+    } else {
+      markCompleteBtn.hidden = false;
+      markCompleteBtn.disabled = true;
+      submitChordBtn.hidden = true;
+    }
     showAnswerBtn.disabled = false;
     skipLayerBtn.textContent = "Skip Layer";
     skipLayerBtn.disabled = false;
@@ -175,7 +212,7 @@ function renderLayer(layerNumber) {
   updateProgress();
   updateNotation();
 
-  if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidi);
+  if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
   scrollPianoToMidi(puzzleLayer.targetMidi);
 
   puzzleCard.hidden = false;
@@ -243,8 +280,46 @@ showAnswerBtn.addEventListener("click", () => {
   const puzzleLayer = layers.find((l) => l.number === currentLayerNumber);
   if (!puzzleLayer) return;
 
-  highlightHintKey(puzzleLayer.targetMidi);
+  highlightHintKey(puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
   hintEl.classList.remove("hidden");
+});
+
+submitChordBtn.addEventListener("click", async () => {
+  if (!composition || !currentLayerNumber) return;
+
+  const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);
+  if (!correct) {
+    showFeedback("Not quite — try again. Select all the required notes and click Submit chord.", false);
+    return;
+  }
+
+  submitChordBtn.disabled = true;
+  skipLayerBtn.disabled = true;
+  showAnswerBtn.disabled = true;
+
+  try {
+    for (const pitch of selectedChordMidis) {
+      await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
+        method: "POST",
+        body: JSON.stringify({ pitch, durationMs: 500, timingMs: 0, velocity: 100 })
+      });
+    }
+
+    composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+      method: "POST"
+    });
+
+    const completedLayer = composition.layers.find((l) => l.layerNumber === currentLayerNumber);
+    if (completedLayer) playLayer(completedLayer);
+
+    clearChordSelection();
+    advanceToNextLayer();
+  } catch (error) {
+    showFeedback(`Error: ${error.message}`, false);
+    submitChordBtn.disabled = false;
+    skipLayerBtn.disabled = false;
+    showAnswerBtn.disabled = false;
+  }
 });
 
 skipLayerBtn.addEventListener("click", async () => {
@@ -313,6 +388,7 @@ async function init() {
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
+
 
   renderPianoKeyboard((midi) => onNoteSelected(midi, { preview: true }));
   onNoteSelected(60);
