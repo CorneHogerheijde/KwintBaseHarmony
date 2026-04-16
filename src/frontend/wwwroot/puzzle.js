@@ -7,6 +7,7 @@ import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
+  isCorrectChord,
   transposeLayers,
   getFirstIncompleteLayer
 } from "./scripts/puzzle-engine.js";
@@ -42,6 +43,7 @@ let difficulty = "intermediate";
 let currentLayerNumber = null;
 let selectedMidi = 60;
 let correctNoteSelected = false;
+let selectedChordMidis = [];
 let rootMidi = 60;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -98,6 +100,18 @@ function highlightHintKey(midi) {
   if (key) key.classList.add("is-hint");
 }
 
+function highlightHintKeys(midis) {
+  clearHintKeys();
+  for (const m of midis) {
+    const key = pianoKeyboard.querySelector(`.piano-key[data-midi="${m}"]`);
+    if (key) key.classList.add("is-hint");
+  }
+}
+
+function getActiveLayers() {
+  return transposeLayers(getPuzzleLayers(difficulty), rootMidi);
+}
+
 // ── Feedback banner ───────────────────────────────────────────────────────────
 function showFeedback(message, isSuccess) {
   feedbackText.textContent = message;
@@ -133,6 +147,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     }
     syncSelectedPitchDisplay(normalizedMidi);
     clearFeedback();
+    updateNotation();
     return;
   }
 
@@ -197,6 +212,7 @@ function renderLayer(layerNumber) {
     if (difficulty === "chords") {
       markCompleteBtn.hidden = true;
       submitChordBtn.hidden = false;
+      submitChordBtn.disabled = false;
       clearChordSelection();
     } else {
       markCompleteBtn.hidden = false;
@@ -211,9 +227,11 @@ function renderLayer(layerNumber) {
   updateProgress();
   updateNotation();
 
-  // TODO: pass completedMidis from composition.layers to show completion highlights
-  if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
-  scrollPianoToMidi(puzzleLayer.targetMidi);
+  if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi, rootMidi);
+  scrollPianoToMidi(puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
+
+  const explanationEl = document.getElementById("layer-explanation");
+  if (explanationEl) explanationEl.textContent = puzzleLayer.explanation ?? "";
 
   puzzleCard.hidden = false;
 }
@@ -276,11 +294,15 @@ markCompleteBtn.addEventListener("click", async () => {
 });
 
 showAnswerBtn.addEventListener("click", () => {
-  const layers = getPuzzleLayers(difficulty);
+  const layers = getActiveLayers();
   const puzzleLayer = layers.find((l) => l.number === currentLayerNumber);
   if (!puzzleLayer) return;
 
-  highlightHintKey(puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
+  if (puzzleLayer.targetMidis) {
+    highlightHintKeys(puzzleLayer.targetMidis);
+  } else {
+    highlightHintKey(puzzleLayer.targetMidi);
+  }
   hintEl.classList.remove("hidden");
 });
 
@@ -393,6 +415,10 @@ async function init() {
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
 
+  document.getElementById("root-note-select").addEventListener("change", (e) => {
+    rootMidi = parseInt(e.target.value, 10);
+    if (currentLayerNumber !== null) renderLayer(currentLayerNumber);
+  });
 
   renderPianoKeyboard((midi) => onNoteSelected(midi, { preview: true }));
   onNoteSelected(60);
