@@ -374,6 +374,30 @@ compositions.MapPost("/import/json", async (
     }
 });
 
+compositions.MapPatch("/{id:guid}/root-midi", async (
+    Guid id,
+    UpdateRootMidiRequest request,
+    ICompositionService compositionService,
+    ILogger<Program> logger) =>
+{
+    if (request.RootMidi < 0 || request.RootMidi > 127)
+    {
+        return Results.BadRequest(new { error = "RootMidi must be between 0 and 127" });
+    }
+
+    var composition = await compositionService.GetByIdAsync(id);
+    if (composition is null)
+    {
+        return Results.NotFound(new { error = $"Composition {id} not found" });
+    }
+
+    composition.RootMidi = request.RootMidi;
+    var updated = await compositionService.UpdateAsync(composition);
+
+    logger.LogInformation("Updated root MIDI to {RootMidi} for composition {CompositionId}", request.RootMidi, id);
+    return Results.Ok(MapToResponse(updated));
+});
+
 app.Run();
 
 static CompositionResponse MapToResponse(Composition composition)
@@ -386,6 +410,7 @@ static CompositionResponse MapToResponse(Composition composition)
         composition.CompletionPercentage,
         composition.CreatedAt,
         composition.UpdatedAt,
+        composition.RootMidi,
         composition.Layers
             .OrderBy(layer => layer.LayerNumber)
             .Select(layer => new LayerResponse(
@@ -412,6 +437,8 @@ public sealed record CreateCompositionRequest(string StudentId, string Title, st
 
 public sealed record UpdateCompositionRequest(string? Title, string? Difficulty);
 
+public sealed record UpdateRootMidiRequest(int RootMidi);
+
 public sealed record AddNoteRequest(int Pitch, int DurationMs, int TimingMs, int? Velocity);
 
 public sealed record ImportJsonRequest(string Json);
@@ -424,6 +451,7 @@ public sealed record CompositionResponse(
     decimal CompletionPercentage,
     DateTime CreatedAt,
     DateTime UpdatedAt,
+    int RootMidi,
     List<LayerResponse> Layers);
 
 public sealed record CompleteLayerRequest(int? Attempts, bool? FirstTryCorrect, long? TimeSpentMs);

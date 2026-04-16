@@ -65,6 +65,14 @@ public class Composition
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// MIDI note number of the transposition root chosen by the student (default 60 = C).
+    /// Used to restore the student's preferred key on reload.
+    /// </summary>
+    [Required]
+    [Range(0, 127)]
+    public int RootMidi { get; set; } = 60;
+
+    /// <summary>
     /// Collection of harmonic layers (5-7 layers per Kwintessence structure).
     /// </summary>
     public ICollection<Layer> Layers { get; set; } = new List<Layer>();
