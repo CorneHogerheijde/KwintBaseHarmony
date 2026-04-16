@@ -24,6 +24,7 @@ const hintEl = document.getElementById("puzzle-hint");
 const feedbackEl = document.getElementById("puzzle-feedback");
 const feedbackText = document.getElementById("puzzle-feedback-text");
 const markCompleteBtn = document.getElementById("mark-complete-btn");
+const submitChordBtn = document.getElementById("submit-chord-btn");
 const showAnswerBtn = document.getElementById("show-answer-btn");
 const skipLayerBtn = document.getElementById("skip-layer-btn");
 const prevLayerBtn = document.getElementById("prev-layer-btn");
@@ -307,10 +308,6 @@ showAnswerBtn.addEventListener("click", () => {
 });
 
 submitChordBtn.addEventListener("click", async () => {
-  if (!composition || !currentLayerNumber) return;
-
-  const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);
-  if (!correct) { () => {
   if (!composition || !currentLayerNumber) return;
 
   const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);
