@@ -338,7 +338,14 @@ showAnswerBtn.addEventListener("click", () => {
 submitChordBtn.addEventListener("click", async () => {
   if (!composition || !currentLayerNumber) return;
 
-  const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);
+  const activeLayers = getActiveLayers();
+  const puzzleLayer = activeLayers.find((l) => l.number === currentLayerNumber);
+  if (!puzzleLayer?.targetMidis) return;
+
+  const sortedSelected = [...selectedChordMidis].sort((a, b) => a - b);
+  const sortedTarget = [...puzzleLayer.targetMidis].sort((a, b) => a - b);
+  const correct = sortedSelected.length === sortedTarget.length && sortedSelected.every((m, i) => m === sortedTarget[i]);
+
   if (!correct) {
     showFeedback("Not quite — try again. Select all the required notes and click Submit chord.", false);
     return;
