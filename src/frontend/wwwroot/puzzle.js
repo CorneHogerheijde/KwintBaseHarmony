@@ -149,7 +149,29 @@ function onNoteSelected(midi, { preview = false } = {}) {
     setRootBtn.textContent = "Change Root";
     setRootBtn.classList.remove("is-active");
     updateRootLabel();
-    if (currentLayerNumber !== null) renderLayer(currentLayerNumber);
+    if (currentLayerNumber !== null) {
+      renderLayer(currentLayerNumber);
+      // Re-evaluate the current selection against the new transposition
+      // so the user doesn't need to re-click what they already had selected.
+      const activeLayers = getActiveLayers();
+      const puzzleLayer = activeLayers.find((l) => l.number === currentLayerNumber);
+      if (puzzleLayer && !currentApiLayer()?.completed) {
+        if (difficulty === "chords") {
+          // Re-highlight any keys that are still selected
+          for (const m of selectedChordMidis) {
+            const key = pianoKeyboard.querySelector(`.piano-key[data-midi="${m}"]`);
+            if (key) key.classList.add("is-selected");
+          }
+        } else {
+          // Silently recheck the note the user already has selected
+          correctNoteSelected = puzzleLayer.targetMidi === selectedMidi;
+          if (correctNoteSelected) {
+            showFeedback(`Correct! ${midiToLabel(selectedMidi)} is the right note. Click "Mark Layer Complete" to continue.`, true);
+            markCompleteBtn.disabled = false;
+          }
+        }
+      }
+    }
     return;
   }
 
