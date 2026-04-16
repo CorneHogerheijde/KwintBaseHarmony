@@ -300,6 +300,23 @@ export function isCorrectNote(layerNumber, midi, difficulty = "intermediate") {
 }
 
 /**
+ * Returns true when the selected MIDI notes exactly match the target chord
+ * for the given layer and difficulty (order-independent).
+ * @param {number} layerNumber 1–7
+ * @param {number[]} selectedMidis Array of selected MIDI note numbers
+ * @param {string} [difficulty] "beginner" | "intermediate" | "advanced"
+ */
+export function isCorrectChord(layerNumber, selectedMidis, difficulty = "intermediate") {
+  const layers = getPuzzleLayers(difficulty);
+  const layer = layers.find((l) => l.number === layerNumber);
+  if (!layer?.targetMidis) return false;
+  if (selectedMidis.length !== layer.targetMidis.length) return false;
+  const sorted = [...selectedMidis].sort((a, b) => a - b);
+  const target = [...layer.targetMidis].sort((a, b) => a - b);
+  return sorted.every((midi, i) => midi === target[i]);
+}
+
+/**
  * Returns a new array of layers with each layer's targetMidi offset by
  * (rootMidi - 60), so the puzzle is transposed to the given root note.
  * Does not mutate the input array or its objects.
