@@ -38,7 +38,7 @@ Every harmonic decision is experienced across three simultaneous channels:
 ## Project Status
 
 **Phase**: Active Development  
-**Last Updated**: April 15, 2026
+**Last Updated**: April 16, 2026
 
 ### Completed
 - ✅ Creative brainstorming session (3 techniques)
@@ -52,14 +52,18 @@ Every harmonic decision is experienced across three simultaneous channels:
 - ✅ Azure Container Apps infrastructure (AVM Bicep, 14 resources)
 - ✅ GitHub Actions CI/CD pipeline (build → test → deploy)
 - ✅ Bicep snapshot tests (native `bicep snapshot` CLI)
-
-### In Progress
-- ⏳ Phase 2: Puzzle-based composition UI
-- ⏳ Audio playback integration
+- ✅ Phase 2: Puzzle-based composition UI with interactive piano, notation, audio playback
+- ✅ Phase 3A: `LAYER_COUNT` constant, Unicode accidentals, Vitest unit test suite (48 tests)
+- ✅ Phase 3B: Root-note transposition — 7 root options, full puzzle layer shift
+- ✅ Phase 3C: Chord puzzle type — multi-note layers, chord hint highlighting
+- ✅ Phase 3D: Correct accidental placement, time signature, chord notation rendering
+- ✅ Phase 3E: Harmonic Understanding panel — collapsible explanation for all 28 puzzle layers
+- ✅ Phase 3F: Expanded circle-of-fifths widget with inner minor chord ring
 
 ### Upcoming
-- 📋 Phase 2: Expansion features (branching composition, AI analysis)
-- 📋 Phase 3: Real-world testing & iteration
+- 📋 Phase 4: Branching composition paths and genre/style selection
+- 📋 Phase 5: AI-powered harmonic analysis of existing songs
+- 📋 Real-world testing with musicians and music educators
 
 ## Project Structure
 
@@ -90,9 +94,21 @@ KwintBaseHarmony/
 │   │   ├── Program.cs
 │   │   ├── KwintBaseHarmony.Frontend.csproj
 │   │   └── wwwroot/
-│   │       ├── index.html
-│   │       ├── styles.css
-│   │       └── app.js
+│   │       ├── index.html             # Dashboard: start/resume composition
+│   │       ├── puzzle.html            # Puzzle page: interactive harmony learning
+│   │       ├── studio.html            # Studio: free composition editor
+│   │       ├── styles.css             # Shared styles
+│   │       ├── app.js                 # Dashboard JS
+│   │       ├── puzzle.js              # Puzzle page logic
+│   │       └── scripts/
+│   │           ├── audio.js           # Web Audio API note preview
+│   │           ├── circle-of-fifths.js # SVG circle of fifths (major + minor rings)
+│   │           ├── midi.js            # Web MIDI input
+│   │           ├── music.js           # MIDI/interval utilities, LAYER_COUNT
+│   │           ├── notation.js        # ABC.js notation rendering
+│   │           ├── piano.js           # 88-key interactive piano with zoom
+│   │           ├── playback.js        # Arpeggio and layer playback
+│   │           └── puzzle-engine.js   # Puzzle layers (4 difficulties × 7 layers)
 │   │
 │   └── backend/                       # .NET 10 + EF Core + Dapr
 │       ├── Program.cs
