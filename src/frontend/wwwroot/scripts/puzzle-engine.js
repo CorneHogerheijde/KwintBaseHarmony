@@ -319,17 +319,57 @@ export function isCorrectChord(layerNumber, selectedMidis, difficulty = "interme
 /**
  * Returns a new array of layers with each layer's targetMidi offset by
  * (rootMidi - 60), so the puzzle is transposed to the given root note.
+ * Prompts, hints, and explanations are also rewritten with transposed note names.
  * Does not mutate the input array or its objects.
  * @param {Array} layers  Layer objects (each with a targetMidi property)
  * @param {number} rootMidi  MIDI note number of the desired root (60 = C)
  * @returns {Array}
  */
+
+const _NOTE_SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const _NOTE_FLATS  = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+// Root indices that conventionally use flats: Db(1), Eb(3), F(5), Ab(8), Bb(10)
+const _FLAT_ROOT_INDICES = new Set([1, 3, 5, 8, 10]);
+
+function _noteIdx(name) {
+  const i = _NOTE_SHARPS.indexOf(name);
+  return i !== -1 ? i : _NOTE_FLATS.indexOf(name);
+}
+
+/**
+ * Replaces note names (e.g. "C", "G4", "Cmaj7", "Am") in a string with their
+ * equivalents after shifting by the given number of semitones.
+ */
+function transposeText(text, semitones) {
+  if (!text || semitones === 0) return text;
+  const rootChromatic = ((semitones % 12) + 12) % 12;
+  const outNames = _FLAT_ROOT_INDICES.has(rootChromatic) ? _NOTE_FLATS : _NOTE_SHARPS;
+  return text.replace(
+    /\b([A-G][b#]?)(maj\d*|min\d*|m(?!\w)|aug|dim|sus\d*|add\d*|\d|)\b/g,
+    (match, notePart, suffix) => {
+      const idx = _noteIdx(notePart);
+      if (idx === -1) return match;
+      const raw = idx + semitones;
+      const newNote = outNames[((raw % 12) + 12) % 12];
+      // Adjust octave digit when the note wraps across an octave boundary
+      if (suffix && /^\d$/.test(suffix)) {
+        return `${newNote}${parseInt(suffix, 10) + Math.floor(raw / 12)}`;
+      }
+      return newNote + suffix;
+    }
+  );
+}
+
 export function transposeLayers(layers, rootMidi) {
   const offset = rootMidi - 60;
+  if (offset === 0) return layers;
   return layers.map((layer) => ({
     ...layer,
-    targetMidi: layer.targetMidi + offset,
-    ...(layer.targetMidis ? { targetMidis: layer.targetMidis.map((m) => m + offset) } : {})
+    targetMidi: layer.targetMidi !== undefined ? layer.targetMidi + offset : undefined,
+    ...(layer.targetMidis ? { targetMidis: layer.targetMidis.map((m) => m + offset) } : {}),
+    prompt:      transposeText(layer.prompt, offset),
+    hint:        transposeText(layer.hint, offset),
+    explanation: transposeText(layer.explanation, offset)
   }));
 }
 

@@ -265,6 +265,7 @@ button:hover,
 }
 
 .piano-viewport {
+  margin-top: 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;

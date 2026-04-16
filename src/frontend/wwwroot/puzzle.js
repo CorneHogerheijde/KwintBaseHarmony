@@ -149,6 +149,13 @@ function onNoteSelected(midi, { preview = false } = {}) {
     setRootBtn.textContent = "Change Root";
     setRootBtn.classList.remove("is-active");
     updateRootLabel();
+    // Persist the new transposition to the backend (fire-and-forget)
+    if (composition) {
+      apiRequest(compositionUrl("/root-midi"), {
+        method: "PATCH",
+        body: JSON.stringify({ rootMidi })
+      }).catch((err) => console.warn("Failed to save rootMidi:", err));
+    }
     if (currentLayerNumber !== null) {
       renderLayer(currentLayerNumber);
       // Re-evaluate the current selection against the new transposition
@@ -468,6 +475,7 @@ async function init() {
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
+  rootMidi = composition.rootMidi ?? 60;
 
   setRootBtn?.addEventListener("click", () => {
     rootSelectionMode = true;
