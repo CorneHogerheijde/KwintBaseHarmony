@@ -3,6 +3,7 @@ import {
   getPuzzleLayers,
   isCorrectNote,
   getFirstIncompleteLayer,
+  transposeLayers,
 } from "../../wwwroot/scripts/puzzle-engine.js";
 
 // ── getPuzzleLayers ───────────────────────────────────────────────────────────
@@ -121,5 +122,41 @@ describe("getFirstIncompleteLayer", () => {
 
   it("works with advanced difficulty", () => {
     expect(getFirstIncompleteLayer(buildComposition([1, 2], "advanced"), "advanced")).toBe(3);
+  });
+});
+
+// ── transposeLayers ───────────────────────────────────────────────────────────
+
+describe("transposeLayers", () => {
+  const baseLayers = getPuzzleLayers("intermediate");
+
+  it("identity: rootMidi=60 produces no change in targetMidi values", () => {
+    const result = transposeLayers(baseLayers, 60);
+    result.forEach((layer, i) => {
+      expect(layer.targetMidi).toBe(baseLayers[i].targetMidi);
+    });
+  });
+
+  it("positive offset: rootMidi=62 shifts all targetMidi by +2", () => {
+    const result = transposeLayers(baseLayers, 62);
+    result.forEach((layer, i) => {
+      expect(layer.targetMidi).toBe(baseLayers[i].targetMidi + 2);
+    });
+  });
+
+  it("negative offset: rootMidi=57 shifts all targetMidi by -3", () => {
+    const result = transposeLayers(baseLayers, 57);
+    result.forEach((layer, i) => {
+      expect(layer.targetMidi).toBe(baseLayers[i].targetMidi - 3);
+    });
+  });
+
+  it("immutability: original array is not mutated", () => {
+    const original = getPuzzleLayers("intermediate");
+    const originalMidis = original.map((l) => l.targetMidi);
+    transposeLayers(original, 62);
+    original.forEach((layer, i) => {
+      expect(layer.targetMidi).toBe(originalMidis[i]);
+    });
   });
 });
