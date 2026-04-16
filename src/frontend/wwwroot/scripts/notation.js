@@ -66,7 +66,7 @@ export function renderNotation(selectedPitch, composition) {
   const noteSpacing = 10;
   const bottomLineY = 120;
   const topLineY = bottomLineY - noteSpacing * 8;
-  const width = Math.max(560, 120 + notes.length * 64);
+  const width = 300;
   const height = 170;
 
   notationSummary.textContent = notes.length === 1
@@ -102,17 +102,42 @@ export function renderNotation(selectedPitch, composition) {
   clefText.textContent = clef === "bass" ? "Bass" : "Treble";
   svg.appendChild(clefText);
 
-  notes.forEach((note, index) => {
-    const x = 116 + index * 58;
+  // 4/4 time signature
+  const timeSigTop = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  timeSigTop.setAttribute("x", String(staffStartX + 4));
+  timeSigTop.setAttribute("y", String(topLineY + noteSpacing * 2));
+  timeSigTop.setAttribute("fill", "#2f241d");
+  timeSigTop.setAttribute("font-size", "16");
+  timeSigTop.setAttribute("font-family", "serif");
+  timeSigTop.setAttribute("text-anchor", "middle");
+  timeSigTop.textContent = "4";
+  svg.appendChild(timeSigTop);
+
+  const timeSigBottom = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  timeSigBottom.setAttribute("x", String(staffStartX + 4));
+  timeSigBottom.setAttribute("y", String(topLineY + noteSpacing * 6));
+  timeSigBottom.setAttribute("fill", "#2f241d");
+  timeSigBottom.setAttribute("font-size", "16");
+  timeSigBottom.setAttribute("font-family", "serif");
+  timeSigBottom.setAttribute("text-anchor", "middle");
+  timeSigBottom.textContent = "4";
+  svg.appendChild(timeSigBottom);
+
+  // All notes rendered as a chord at the same x position
+  const chordX = 130;
+
+  notes.forEach((note) => {
+    const x = chordX;
     const y = bottomLineY - (note.descriptor.diatonicIndex - clefReference.bottomLineIndex) * noteSpacing;
     drawLedgerLines(svg, x, y, note.descriptor.diatonicIndex, clefReference, noteSpacing);
 
     if (note.descriptor.accidental) {
       const accidental = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      accidental.setAttribute("x", String(x - 22));
+      accidental.setAttribute("x", String(x - 12));
       accidental.setAttribute("y", String(y + 5));
       accidental.setAttribute("fill", "#2f241d");
-      accidental.setAttribute("font-size", "22");
+      accidental.setAttribute("font-size", "18");
+      accidental.setAttribute("font-family", "serif");
       accidental.textContent = note.descriptor.accidental;
       svg.appendChild(accidental);
     }
