@@ -713,3 +713,16 @@ button:hover,
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Circle of fifths ─────────────────────────────────────────── */
+
+@keyframes cof-pulse {
+  0%, 100% { transform: scale(1.15); }
+  50%       { transform: scale(1.25); }
+}
+
+.cof-target-pulse {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: cof-pulse 1.4s ease-in-out infinite;
+}
