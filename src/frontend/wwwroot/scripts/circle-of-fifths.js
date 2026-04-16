@@ -20,6 +20,10 @@ const MINORS_BY_POS = ['Am', 'Em', 'Bm', 'F♯m', 'C♯m', 'G♯m', 'E♭m', 'B�
  */
 const PC_TO_POS = [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5];
 
+/** Reverse lookup: circle position → MIDI pitch class. Derived from PC_TO_POS. */
+const POS_TO_PC = Array(12);
+PC_TO_POS.forEach((pos, pc) => { POS_TO_PC[pos] = pc; });
+
 const SIZE   = 200;
 const CX     = SIZE / 2;
 const CY     = SIZE / 2;
@@ -66,8 +70,8 @@ export function renderCircleOfFifths(container, targetMidi, rootMidi = 60, compl
     const { x, y } = posXY(pos);
     const isRoot = pos === rootPos;
     const isTgt  = pos === targetPos;
-    const pc     = Object.entries(PC_TO_POS).find(([, p]) => p === pos)?.[0];
-    const isCompleted = pc !== undefined && completedPcs.has(Number(pc));
+    const pc     = POS_TO_PC[pos];
+    const isCompleted = pc !== undefined && completedPcs.has(pc);
 
     let fill = 'var(--bg)';
     let str  = 'var(--border)';

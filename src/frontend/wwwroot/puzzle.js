@@ -7,7 +7,7 @@ import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
-  isCorrectChord,
+  transposeLayers,
   getFirstIncompleteLayer
 } from "./scripts/puzzle-engine.js";
 
@@ -23,7 +23,6 @@ const hintEl = document.getElementById("puzzle-hint");
 const feedbackEl = document.getElementById("puzzle-feedback");
 const feedbackText = document.getElementById("puzzle-feedback-text");
 const markCompleteBtn = document.getElementById("mark-complete-btn");
-const submitChordBtn = document.getElementById("submit-chord-btn");
 const showAnswerBtn = document.getElementById("show-answer-btn");
 const skipLayerBtn = document.getElementById("skip-layer-btn");
 const prevLayerBtn = document.getElementById("prev-layer-btn");
@@ -43,7 +42,7 @@ let difficulty = "intermediate";
 let currentLayerNumber = null;
 let selectedMidi = 60;
 let correctNoteSelected = false;
-let selectedChordMidis = [];
+let rootMidi = 60;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function compositionUrl(path = "") {
@@ -146,7 +145,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     playPreviewNote(selectedMidi, () => {});
   }
 
-  correctNoteSelected = isCorrectNote(currentLayerNumber, selectedMidi, difficulty);
+  correctNoteSelected = getActiveLayers().find((l) => l.number === currentLayerNumber)?.targetMidi === selectedMidi;
 
   if (correctNoteSelected) {
     showFeedback(`Correct! ${midiToLabel(selectedMidi)} is the right note. Click "Mark Layer Complete" to continue.`, true);
@@ -161,7 +160,7 @@ function renderLayer(layerNumber) {
   currentLayerNumber = layerNumber;
   correctNoteSelected = false;
 
-  const layers = getPuzzleLayers(difficulty);
+  const layers = getActiveLayers();
   const puzzleLayer = layers.find((l) => l.number === layerNumber);
   if (!puzzleLayer) return;
 
@@ -212,6 +211,7 @@ function renderLayer(layerNumber) {
   updateProgress();
   updateNotation();
 
+  // TODO: pass completedMidis from composition.layers to show completion highlights
   if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
   scrollPianoToMidi(puzzleLayer.targetMidi);
 
@@ -285,6 +285,10 @@ showAnswerBtn.addEventListener("click", () => {
 });
 
 submitChordBtn.addEventListener("click", async () => {
+  if (!composition || !currentLayerNumber) return;
+
+  const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);
+  if (!correct) { () => {
   if (!composition || !currentLayerNumber) return;
 
   const correct = isCorrectChord(currentLayerNumber, selectedChordMidis, difficulty);

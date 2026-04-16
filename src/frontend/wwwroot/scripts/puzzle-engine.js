@@ -130,65 +130,6 @@ const layersByDifficulty = {
     }
   ],
 
-  chords: [
-    {
-      number: 1,
-      name: "Fifth+Third",
-      prompt: "Play C and E together — the root with its major third.",
-      hint: "Hold C4 (MIDI 60) and press E4 (MIDI 64) at the same time.",
-      targetMidis: [60, 64],
-      autoHint: false
-    },
-    {
-      number: 2,
-      name: "Root+Fifth",
-      prompt: "Play C and G — the open fifth, the most stable interval.",
-      hint: "Hold C4 (MIDI 60) and press G4 (MIDI 67).",
-      targetMidis: [60, 67],
-      autoHint: false
-    },
-    {
-      number: 3,
-      name: "Major Triad",
-      prompt: "Play the full C major triad: C, E, and G.",
-      hint: "Press C4 (60), E4 (64), and G4 (67) together.",
-      targetMidis: [60, 64, 67],
-      autoHint: false
-    },
-    {
-      number: 4,
-      name: "Major 7th",
-      prompt: "Add the major seventh B — the Cmaj7 chord.",
-      hint: "Press C4 (60), E4 (64), G4 (67), and B4 (71).",
-      targetMidis: [60, 64, 67, 71],
-      autoHint: false
-    },
-    {
-      number: 5,
-      name: "Cluster",
-      prompt: "Play C, D, E — a tight cluster of the first three scale degrees.",
-      hint: "Press C4 (60), D4 (62), and E4 (64).",
-      targetMidis: [60, 62, 64],
-      autoHint: false
-    },
-    {
-      number: 6,
-      name: "Added Sixth",
-      prompt: "Play C, E, A — root, third, and sixth, the C6 sound.",
-      hint: "Press C4 (60), E4 (64), and A4 (69).",
-      targetMidis: [60, 64, 69],
-      autoHint: false
-    },
-    {
-      number: 7,
-      name: "Full Voicing",
-      prompt: "Play C, D, E, G, B — the complete Cmaj9 upper structure.",
-      hint: "Press C4 (60), D4 (62), E4 (64), G4 (67), and B4 (71).",
-      targetMidis: [60, 62, 64, 67, 71],
-      autoHint: false
-    }
-  ],
-
   advanced: [
     {
       number: 1,
@@ -272,25 +213,6 @@ export function isCorrectNote(layerNumber, midi, difficulty = "intermediate") {
 }
 
 /**
- * Returns true when the selected MIDI set exactly matches the target chord for the given layer.
- * Only valid for the "chords" difficulty; returns false for all other difficulties.
- * @param {number} layerNumber 1–7
- * @param {number[]} selectedMidis Array of selected MIDI note numbers
- * @param {string} [difficulty] "chords" (returns false for other difficulties)
- */
-export function isCorrectChord(layerNumber, selectedMidis, difficulty = "chords") {
-  if (difficulty !== "chords") return false;
-  const layers = getPuzzleLayers(difficulty);
-  const layer = layers.find((l) => l.number === layerNumber);
-  if (!layer?.targetMidis) return false;
-
-  const sorted = (arr) => [...arr].sort((a, b) => a - b);
-  const target = sorted(layer.targetMidis);
-  const selected = sorted(selectedMidis);
-  return target.length === selected.length && target.every((v, i) => v === selected[i]);
-}
-
-/**
  * Returns a new array of layers with each layer's targetMidi offset by
  * (rootMidi - 60), so the puzzle is transposed to the given root note.
  * Does not mutate the input array or its objects.
@@ -300,7 +222,11 @@ export function isCorrectChord(layerNumber, selectedMidis, difficulty = "chords"
  */
 export function transposeLayers(layers, rootMidi) {
   const offset = rootMidi - 60;
-  return layers.map((layer) => ({ ...layer, targetMidi: layer.targetMidi + offset }));
+  return layers.map((layer) => ({
+    ...layer,
+    targetMidi: layer.targetMidi + offset,
+    ...(layer.targetMidis ? { targetMidis: layer.targetMidis.map((m) => m + offset) } : {})
+  }));
 }
 
 /**
