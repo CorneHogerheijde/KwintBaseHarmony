@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   getPuzzleLayers,
   isCorrectNote,
+  isCorrectChord,
   getFirstIncompleteLayer,
 } from "../../wwwroot/scripts/puzzle-engine.js";
 
@@ -121,5 +122,30 @@ describe("getFirstIncompleteLayer", () => {
 
   it("works with advanced difficulty", () => {
     expect(getFirstIncompleteLayer(buildComposition([1, 2], "advanced"), "advanced")).toBe(3);
+  });
+});
+
+// ── isCorrectChord ────────────────────────────────────────────────────────────
+
+describe("isCorrectChord", () => {
+  it("returns true for the correct full set (layer 3 = [60,64,67])", () => {
+    expect(isCorrectChord(3, [60, 64, 67], "chords")).toBe(true);
+  });
+
+  it("returns false when a note is missing", () => {
+    expect(isCorrectChord(3, [60, 64], "chords")).toBe(false);
+  });
+
+  it("returns false when an extra note is included", () => {
+    expect(isCorrectChord(3, [60, 64, 67, 69], "chords")).toBe(false);
+  });
+
+  it("is order-independent (selectedMidis in different order)", () => {
+    expect(isCorrectChord(3, [67, 60, 64], "chords")).toBe(true);
+  });
+
+  it("returns false for non-chords difficulty", () => {
+    expect(isCorrectChord(1, [60], "beginner")).toBe(false);
+    expect(isCorrectChord(1, [60], "intermediate")).toBe(false);
   });
 });
