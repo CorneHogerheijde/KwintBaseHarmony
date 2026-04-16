@@ -66,8 +66,8 @@ export function renderNotation(selectedPitch, composition) {
   const noteSpacing = 10;
   const bottomLineY = 120;
   const topLineY = bottomLineY - noteSpacing * 8;
-  const width = 300;
-  const height = 170;
+  const width = 580;
+  const height = 175;
 
   notationSummary.textContent = notes.length === 1
     ? `Previewing ${notes[0].descriptor.label} on the ${clefReference.label} clef.`
@@ -78,8 +78,18 @@ export function renderNotation(selectedPitch, composition) {
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `${clefReference.label} notation preview`);
 
-  const staffStartX = 76;
-  const staffEndX = width - 28;
+  const staffStartX = 58;
+  const staffEndX = width - 16;
+
+  // Left barline
+  const barLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  barLine.setAttribute("x1", String(staffStartX));
+  barLine.setAttribute("x2", String(staffStartX));
+  barLine.setAttribute("y1", String(topLineY));
+  barLine.setAttribute("y2", String(bottomLineY));
+  barLine.setAttribute("stroke", "#7c6858");
+  barLine.setAttribute("stroke-width", "1.8");
+  svg.appendChild(barLine);
 
   for (let line = 0; line < 5; line += 1) {
     const y = topLineY + line * noteSpacing * 2;
@@ -93,18 +103,26 @@ export function renderNotation(selectedPitch, composition) {
     svg.appendChild(staffLine);
   }
 
+  // Clef symbol (𝄞 treble / 𝄢 bass)
   const clefText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  clefText.setAttribute("x", "16");
-  clefText.setAttribute("y", "86");
   clefText.setAttribute("fill", "#2f241d");
-  clefText.setAttribute("font-size", "18");
-  clefText.setAttribute("font-weight", "700");
-  clefText.textContent = clef === "bass" ? "Bass" : "Treble";
+  clefText.setAttribute("font-family", "serif");
+  if (clef === "bass") {
+    clefText.setAttribute("x", "6");
+    clefText.setAttribute("y", "92");
+    clefText.setAttribute("font-size", "42");
+    clefText.textContent = "\u{1D122}"; // 𝄢
+  } else {
+    clefText.setAttribute("x", "4");
+    clefText.setAttribute("y", "128");
+    clefText.setAttribute("font-size", "82");
+    clefText.textContent = "\u{1D11E}"; // 𝄞
+  }
   svg.appendChild(clefText);
 
   // 4/4 time signature
   const timeSigTop = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigTop.setAttribute("x", String(staffStartX + 4));
+  timeSigTop.setAttribute("x", String(staffStartX + 8));
   timeSigTop.setAttribute("y", String(topLineY + noteSpacing * 2));
   timeSigTop.setAttribute("fill", "#2f241d");
   timeSigTop.setAttribute("font-size", "16");
@@ -114,7 +132,7 @@ export function renderNotation(selectedPitch, composition) {
   svg.appendChild(timeSigTop);
 
   const timeSigBottom = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigBottom.setAttribute("x", String(staffStartX + 4));
+  timeSigBottom.setAttribute("x", String(staffStartX + 8));
   timeSigBottom.setAttribute("y", String(topLineY + noteSpacing * 6));
   timeSigBottom.setAttribute("fill", "#2f241d");
   timeSigBottom.setAttribute("font-size", "16");
@@ -123,17 +141,19 @@ export function renderNotation(selectedPitch, composition) {
   timeSigBottom.textContent = "4";
   svg.appendChild(timeSigBottom);
 
-  // All notes rendered as a chord at the same x position
-  const chordX = 130;
+  // Spread notes across the staff horizontally (oldest left → newest/selected right)
+  const noteAreaStart = staffStartX + 30;
+  const noteAreaEnd = staffEndX - 20;
+  const noteStep = notes.length > 1 ? (noteAreaEnd - noteAreaStart) / (notes.length - 1) : 0;
 
-  notes.forEach((note) => {
-    const x = chordX;
+  notes.forEach((note, index) => {
+    const x = notes.length > 1 ? noteAreaStart + index * noteStep : (noteAreaStart + noteAreaEnd) / 2;
     const y = bottomLineY - (note.descriptor.diatonicIndex - clefReference.bottomLineIndex) * noteSpacing;
     drawLedgerLines(svg, x, y, note.descriptor.diatonicIndex, clefReference, noteSpacing);
 
     if (note.descriptor.accidental) {
       const accidental = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      accidental.setAttribute("x", String(x - 12));
+      accidental.setAttribute("x", String(x - 13));
       accidental.setAttribute("y", String(y + 5));
       accidental.setAttribute("fill", "#2f241d");
       accidental.setAttribute("font-size", "18");
@@ -161,8 +181,9 @@ export function renderNotation(selectedPitch, composition) {
     svg.appendChild(stem);
 
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(x - 14));
-    label.setAttribute("y", "152");
+    label.setAttribute("x", String(x));
+    label.setAttribute("y", "163");
+    label.setAttribute("text-anchor", "middle");
     label.setAttribute("fill", note.isSelected ? "#126e5a" : "#6d5b4b");
     label.setAttribute("font-size", "11");
     label.textContent = note.descriptor.label;

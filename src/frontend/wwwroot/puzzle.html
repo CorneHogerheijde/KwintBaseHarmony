@@ -22,6 +22,7 @@
             <p id="puzzle-progress-label" class="puzzle-progress-label">Layer 0 of 7</p>
         </div>
 
+        <div class="puzzle-body">
         <section class="panel puzzle-card" id="puzzle-card" aria-live="polite">
             <p class="eyebrow" id="puzzle-layer-name">Layer —</p>
             <h2 id="puzzle-prompt" class="puzzle-prompt">Loading…</h2>
@@ -39,6 +40,7 @@
             <details class="harmonic-understanding">
                 <summary>Harmonic Understanding</summary>
                 <p id="layer-explanation" class="harmonic-understanding__text"></p>
+                <p id="layer-root-note" class="harmonic-understanding__root"></p>
             </details>
             <div id="circle-of-fifths" class="circle-of-fifths-widget" aria-hidden="true"></div>
         </section>
@@ -54,15 +56,8 @@
                     <button id="piano-zoom-out" type="button" class="secondary-button" aria-label="Zoom out piano">−</button>
                     <button id="piano-zoom-in"  type="button" class="secondary-button" aria-label="Zoom in piano">+</button>
                     <button id="play-all-btn" type="button" class="secondary-button">Play Everything So Far</button>
-                    <label>Root: <select id="root-note-select">
-                        <option value="60">C</option>
-                        <option value="62">D</option>
-                        <option value="63">E♭</option>
-                        <option value="65">F</option>
-                        <option value="67">G</option>
-                        <option value="69">A</option>
-                        <option value="70">B♭</option>
-                    </select></label>
+                    <span id="root-note-label" class="root-note-label">Root: C</span>
+                    <button id="set-root-btn" type="button" class="secondary-button">Change Root</button>
                     <label class="tempo-control">
                         <span>Tempo</span>
                         <input id="arpeggio-tempo" type="range" min="40" max="160" value="72" step="4" aria-label="Arpeggio tempo in BPM">
@@ -101,6 +96,7 @@
                 <a href="/" class="secondary-button">Back to Dashboard</a>
             </div>
         </section>
+        </div>
 
     </div>
 

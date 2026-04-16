@@ -36,6 +36,8 @@ const pianoZoomInBtn  = document.getElementById("piano-zoom-in");
 const pianoZoomOutBtn = document.getElementById("piano-zoom-out");
 const pianoKeyboard   = document.getElementById("piano-keyboard");
 const completionPanel = document.getElementById("completion-panel");
+const setRootBtn      = document.getElementById("set-root-btn");
+const rootNoteLabel   = document.getElementById("root-note-label");
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
@@ -46,6 +48,7 @@ let selectedMidi = 60;
 let correctNoteSelected = false;
 let selectedChordMidis = [];
 let rootMidi = 60;
+let rootSelectionMode = false;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function compositionUrl(path = "") {
@@ -72,6 +75,11 @@ function currentApiLayer() {
 
 function countCompleted() {
   return composition?.layers?.filter((l) => l.completed).length ?? 0;
+}
+
+function updateRootLabel() {
+  const name = midiToLabel(rootMidi).replace(/\d+$/, "");
+  if (rootNoteLabel) rootNoteLabel.textContent = `Root: ${name}`;
 }
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
@@ -134,6 +142,17 @@ function clearChordSelection() {
 }
 
 function onNoteSelected(midi, { preview = false } = {}) {
+  // Root-selection mode: the next key click sets the root note
+  if (rootSelectionMode) {
+    rootMidi = midi;
+    rootSelectionMode = false;
+    setRootBtn.textContent = "Change Root";
+    setRootBtn.classList.remove("is-active");
+    updateRootLabel();
+    if (currentLayerNumber !== null) renderLayer(currentLayerNumber);
+    return;
+  }
+
   if (difficulty === "chords") {
     const normalizedMidi = normalizeMidi(midi);
     if (preview) playPreviewNote(normalizedMidi, () => {});
@@ -205,7 +224,8 @@ function renderLayer(layerNumber) {
     markCompleteBtn.hidden = false;
     markCompleteBtn.disabled = true;
     submitChordBtn.hidden = true;
-    showAnswerBtn.disabled = true;
+    showAnswerBtn.hidden = false;
+    showAnswerBtn.disabled = false;
     skipLayerBtn.textContent = "Back to Puzzle \u2192";
     skipLayerBtn.disabled = false;
     showFeedback("This layer is already complete. Click \"Back to Puzzle \u2192\" to resume.", true);
@@ -233,6 +253,14 @@ function renderLayer(layerNumber) {
 
   const explanationEl = document.getElementById("layer-explanation");
   if (explanationEl) explanationEl.textContent = puzzleLayer.explanation ?? "";
+
+  const rootNoteEl = document.getElementById("layer-root-note");
+  if (rootNoteEl) {
+    const rootName = midiToLabel(rootMidi).replace(/\d+$/, "");
+    rootNoteEl.textContent = rootMidi === 60
+      ? `Playing in the default key of C.`
+      : `Transposed to root: ${rootName}. Note names in the explanation above refer to the default key of C.`;
+  }
 
   puzzleCard.hidden = false;
 }
@@ -412,10 +440,13 @@ async function init() {
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
 
-  document.getElementById("root-note-select").addEventListener("change", (e) => {
-    rootMidi = parseInt(e.target.value, 10);
-    if (currentLayerNumber !== null) renderLayer(currentLayerNumber);
+  setRootBtn?.addEventListener("click", () => {
+    rootSelectionMode = true;
+    setRootBtn.textContent = "Click a key to set root\u2026";
+    setRootBtn.classList.add("is-active");
   });
+
+  updateRootLabel();
 
   renderPianoKeyboard((midi) => onNoteSelected(midi, { preview: true }));
   onNoteSelected(60);

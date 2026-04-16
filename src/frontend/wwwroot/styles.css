@@ -560,6 +560,41 @@ button:hover,
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Root note keyboard selector ──────────────────────────────── */
+
+.root-note-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.secondary-button.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, #fffaf2);
+  color: var(--accent-strong);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Harmonic understanding root note ─────────────────────────── */
+
+.harmonic-understanding__root {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* ── Puzzle body (gap between sections) ───────────────────────── */
+
+.puzzle-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 /* ── Hint key highlight ───────────────────────────────────────── */
