@@ -515,6 +515,29 @@ button:hover,
   margin-bottom: 1rem;
 }
 
+.harmonic-understanding {
+  margin-bottom: 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+}
+
+.harmonic-understanding summary {
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+  user-select: none;
+}
+
+.harmonic-understanding__text {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
 .puzzle-feedback {
   border-radius: 8px;
   padding: 0.55rem 0.9rem;
