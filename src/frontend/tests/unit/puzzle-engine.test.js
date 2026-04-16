@@ -148,4 +148,8 @@ describe("isCorrectChord", () => {
     expect(isCorrectChord(1, [60], "beginner")).toBe(false);
     expect(isCorrectChord(1, [60], "intermediate")).toBe(false);
   });
+
+  it("returns false for out-of-range layer number", () => {
+    expect(isCorrectChord(99, [60, 64, 67], "chords")).toBe(false);
+  });
 });

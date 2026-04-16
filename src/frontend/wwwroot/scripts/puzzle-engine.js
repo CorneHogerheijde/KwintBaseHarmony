@@ -279,6 +279,9 @@ export function isCorrectNote(layerNumber, midi, difficulty = "intermediate") {
  * @param {string} [difficulty] difficulty level
  */
 export function isCorrectChord(layerNumber, selectedMidis, difficulty = "chords") {
+  // Guard: only "chords" difficulty has targetMidis; any other name falls back to
+  // intermediate via getPuzzleLayers (which has no targetMidis), so this check is
+  // intentional. Update this guard if new chord-type difficulties are added.
   if (difficulty !== "chords") return false;
   const layers = getPuzzleLayers(difficulty);
   const layer = layers.find((l) => l.number === layerNumber);

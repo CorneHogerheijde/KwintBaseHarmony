@@ -99,6 +99,14 @@ function highlightHintKey(midi) {
   if (key) key.classList.add("is-hint");
 }
 
+function highlightHintKeys(midis) {
+  clearHintKeys();
+  for (const m of midis) {
+    const key = pianoKeyboard.querySelector(`.piano-key[data-midi="${m}"]`);
+    if (key) key.classList.add("is-hint");
+  }
+}
+
 // ── Feedback banner ───────────────────────────────────────────────────────────
 function showFeedback(message, isSuccess) {
   feedbackText.textContent = message;
@@ -134,6 +142,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     }
     syncSelectedPitchDisplay(normalizedMidi);
     clearFeedback();
+    updateNotation();
     return;
   }
 
@@ -197,6 +206,7 @@ function renderLayer(layerNumber) {
   } else if (difficulty === "chords") {
     markCompleteBtn.hidden = true;
     submitChordBtn.hidden = false;
+    submitChordBtn.disabled = false;
     clearChordSelection();
     showAnswerBtn.disabled = false;
     skipLayerBtn.textContent = "Skip Layer";
@@ -281,7 +291,11 @@ showAnswerBtn.addEventListener("click", () => {
   const puzzleLayer = layers.find((l) => l.number === currentLayerNumber);
   if (!puzzleLayer) return;
 
-  highlightHintKey(puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
+  if (puzzleLayer.targetMidis) {
+    highlightHintKeys(puzzleLayer.targetMidis);
+  } else {
+    highlightHintKey(puzzleLayer.targetMidi);
+  }
   hintEl.classList.remove("hidden");
 });
 
