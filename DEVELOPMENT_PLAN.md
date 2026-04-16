@@ -1,22 +1,30 @@
-# KwintBaseHarmony - Phase 1 Development Plan
+# KwintBaseHarmony - Development Plan
 
 ## Overview
 
-**Goal**: Build a functional MVP that demonstrates the core "harmony learning through composition puzzles" concept.
+**Goal**: Build a functional MVP that demonstrates the core "harmony learning through composition puzzles" concept, and progressively expand into a full Phase 3 feature set.
 
-**Timeline**: 4-6 weeks  
-**Target Users**: Initial testing with 3-5 musicians/music educators
+**Timeline**: Active development  
+**Target Users**: Musicians and music educators
 
-**Success Criteria**:
-- ✅ Students can compose a complete musical piece (5+ chord layers)
-- ✅ Audio feedback clearly teaches harmonic concepts
-- ✅ Multi-modal interaction (audio + keyboard + notation) works smoothly
-- ✅ Puzzle-based progression follows Kwintessence structure
-- ✅ Zero external pressure/gamification elements
+**Phase 3 Status** *(April 16, 2026)*: ✅ **Complete**
+
+### Phase 3 Deliverables — All Merged to Main
+
+| Phase | Feature | Status |
+|-------|---------|--------|
+| 3A | `LAYER_COUNT` constant, Unicode accidentals, Vitest unit test suite (48 tests) | ✅ |
+| 3B | Root-note transposition — 7 root options, all puzzle layers transpose accordingly | ✅ |
+| 3C | Chord puzzle type — multi-note target layers, chord hint key highlighting | ✅ |
+| 3D | Correct accidental placement, time signature, chord cluster notation rendering | ✅ |
+| 3E | Harmonic Understanding panel — collapsible `<details>` with theory text for all 28 layers | ✅ |
+| 3F | Expanded circle-of-fifths — inner minor chord ring, POS_TO_PC lookup, pulse animation | ✅ |
+
+**Test coverage**: 48 Vitest unit tests + 54 Cypress E2E tests, all passing.
 
 ---
 
-## Phase 1: MVP Architecture
+## Phase 1: MVP Architecture (Complete)
 
 ### Three Interdependent Workstreams
 
