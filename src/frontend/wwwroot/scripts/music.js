@@ -1,6 +1,10 @@
 export const pianoRange = { start: 21, end: 108 }; // full 88-key range (A0–C8)
+export const LAYER_COUNT = 7;
 
-const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+// Sharps represented as Unicode ♯ for display; internal pitch class index is position in array.
+const noteNames    = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+// Enharmonic flat equivalents for display when a flat spelling is preferred.
+const flatNames    = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
 const diatonicSteps = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
 
 export function normalizeMidi(midi) {
@@ -15,10 +19,11 @@ export function midiToLabel(midi) {
 
 export function getNoteDescriptor(midi) {
   const normalized = normalizeMidi(midi);
-  const token = noteNames[normalized % 12];
-  const octave = Math.floor(normalized / 12) - 1;
-  const letter = token[0];
-  const accidental = token.slice(1);
+  const pc        = normalized % 12;
+  const octave    = Math.floor(normalized / 12) - 1;
+  const token     = noteNames[pc];
+  const letter    = token[0];
+  const accidental = token.length > 1 ? token.slice(1) : "";
 
   return {
     midi: normalized,
@@ -36,5 +41,7 @@ export function midiToFrequency(midi) {
 }
 
 export function isBlackKey(midi) {
-  return noteNames[normalizeMidi(midi) % 12].includes("#");
+  // Black keys are pitch classes: 1, 3, 6, 8, 10  (the sharps/flats)
+  const pc = normalizeMidi(midi) % 12;
+  return pc === 1 || pc === 3 || pc === 6 || pc === 8 || pc === 10;
 }
