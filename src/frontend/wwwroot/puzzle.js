@@ -1,8 +1,8 @@
 import { playPreviewNote } from "./scripts/audio.js";
-import { midiToLabel, normalizeMidi } from "./scripts/music.js";
+import { midiToLabel, normalizeMidi, LAYER_COUNT } from "./scripts/music.js";
 import { renderPianoKeyboard, syncSelectedPitchDisplay, scrollPianoToMidi, zoomIn, zoomOut } from "./scripts/piano.js";
 import { renderNotation } from "./scripts/notation.js";
-import { playLayer, playEverythingSoFar, playArpeggio } from "./scripts/playback.js";
+import { playLayer, playArpeggio } from "./scripts/playback.js";
 import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import {
   getPuzzleLayers,
@@ -72,10 +72,10 @@ function countCompleted() {
 // ── Progress bar ──────────────────────────────────────────────────────────────
 function updateProgress() {
   const completed = countCompleted();
-  const pct = (completed / 7) * 100;
+  const pct = (completed / LAYER_COUNT) * 100;
   progressFill.style.width = `${pct}%`;
   progressBar.setAttribute("aria-valuenow", String(completed));
-  progressLabel.textContent = `${completed} of 7 layers complete`;
+  progressLabel.textContent = `${completed} of ${LAYER_COUNT} layers complete`;
 }
 
 // ── Notation ──────────────────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ function renderLayer(layerNumber) {
   const puzzleLayer = layers.find((l) => l.number === layerNumber);
   if (!puzzleLayer) return;
 
-  layerNameEl.textContent = `Layer ${layerNumber} of 7 — ${puzzleLayer.name}`;
+  layerNameEl.textContent = `Layer ${layerNumber} of ${LAYER_COUNT} — ${puzzleLayer.name}`;
   promptEl.textContent = puzzleLayer.prompt;
 
   hintEl.textContent = puzzleLayer.hint;
@@ -157,7 +157,7 @@ function renderLayer(layerNumber) {
   const isAlreadyCompleted = apiLayer?.completed ?? false;
 
   prevLayerBtn.disabled = layerNumber === 1;
-  playAllBtn.disabled = layerNumber === 1;
+  playAllBtn.disabled   = layerNumber === 1;
 
   if (isAlreadyCompleted) {
     markCompleteBtn.disabled = true;

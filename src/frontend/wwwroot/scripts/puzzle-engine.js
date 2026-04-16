@@ -201,17 +201,6 @@ export function getPuzzleLayers(difficulty) {
 }
 
 /**
- * @deprecated Use getPuzzleLayers(difficulty) instead.
- * Kept for backward-compatibility with existing tests.
- */
-export const puzzleLayers = layersByDifficulty.intermediate;
-
-/**
- * Returns true when the given MIDI note matches the target for the given layer number.
- * @param {number} layerNumber 1–7
- * @param {number} midi MIDI note number 0–127
- */
-/**
  * Returns true when the given MIDI note matches the target for the given layer and difficulty.
  * @param {number} layerNumber 1–7
  * @param {number} midi MIDI note number 0–127
