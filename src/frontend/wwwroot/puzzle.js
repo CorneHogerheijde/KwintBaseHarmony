@@ -93,7 +93,7 @@ function updateProgress() {
 
 // ── Notation ──────────────────────────────────────────────────────────────────
 function updateNotation() {
-  renderNotation(selectedMidi, composition);
+  renderNotation(selectedMidi, composition, rootMidi);
 }
 
 // ── Piano key hint highlight ──────────────────────────────────────────────────
@@ -234,10 +234,8 @@ function renderLayer(layerNumber) {
   hintEl.textContent = puzzleLayer.hint;
   if (puzzleLayer.autoHint) {
     hintEl.classList.remove("hidden");
-    showAnswerBtn.hidden = true;
   } else {
     hintEl.classList.add("hidden");
-    showAnswerBtn.hidden = false;
   }
 
   clearFeedback();
@@ -269,6 +267,7 @@ function renderLayer(layerNumber) {
       markCompleteBtn.disabled = true;
       submitChordBtn.hidden = true;
     }
+    showAnswerBtn.hidden = puzzleLayer.autoHint;
     showAnswerBtn.disabled = false;
     skipLayerBtn.textContent = "Skip Layer";
     skipLayerBtn.disabled = false;

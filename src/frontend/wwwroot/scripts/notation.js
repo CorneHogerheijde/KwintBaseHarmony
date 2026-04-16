@@ -1,8 +1,9 @@
 import { notationClefSelect, notationStaff, notationSummary } from "./dom.js";
 import { getNoteDescriptor } from "./music.js";
 
-function getRecentNotationNotes(selectedPitch, composition) {
-  const selected = { midi: selectedPitch, isSelected: true };
+function getRecentNotationNotes(selectedPitch, composition, rootMidi = 60) {
+  const offset = rootMidi - 60;
+  const selected = { midi: selectedPitch + offset, isSelected: true };
 
   if (!composition?.layers) {
     return [selected];
@@ -10,7 +11,7 @@ function getRecentNotationNotes(selectedPitch, composition) {
 
   const recentNotes = composition.layers
     .flatMap((layer) => (layer.notes ?? []).map((note) => ({
-      midi: note.pitch,
+      midi: note.pitch + offset,
       timingMs: note.timingMs ?? 0,
       layerNumber: layer.layerNumber,
       isSelected: false
@@ -53,8 +54,8 @@ function drawLedgerLines(svg, x, y, diatonicIndex, clefReference, noteSpacing) {
   }
 }
 
-export function renderNotation(selectedPitch, composition) {
-  const notes = getRecentNotationNotes(selectedPitch, composition).map((note) => ({
+export function renderNotation(selectedPitch, composition, rootMidi = 60) {
+  const notes = getRecentNotationNotes(selectedPitch, composition, rootMidi).map((note) => ({
     ...note,
     descriptor: getNoteDescriptor(note.midi)
   }));
