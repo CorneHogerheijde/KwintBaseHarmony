@@ -9,7 +9,8 @@ import {
   isCorrectNote,
   isCorrectChord,
   transposeLayers,
-  getFirstIncompleteLayer
+  getFirstIncompleteLayer,
+  getMultipleChoiceOptions
 } from "./scripts/puzzle-engine.js";
 
 // ── DOM references ────────────────────────────────────────────────────────────
@@ -36,6 +37,9 @@ const pianoZoomInBtn  = document.getElementById("piano-zoom-in");
 const pianoZoomOutBtn = document.getElementById("piano-zoom-out");
 const pianoKeyboard   = document.getElementById("piano-keyboard");
 const completionPanel = document.getElementById("completion-panel");
+const continueMovementBtn = document.getElementById("continue-movement-btn");
+const multipleChoiceOptionsEl = document.getElementById("multiple-choice-options");
+const pianoSectionEl = document.getElementById("piano-section");
 const setRootBtn      = document.getElementById("set-root-btn");
 const rootNoteLabel   = document.getElementById("root-note-label");
 
@@ -43,6 +47,7 @@ const rootNoteLabel   = document.getElementById("root-note-label");
 const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 let composition = null;
 let difficulty = "intermediate";
+let movementNumber = 1;
 let currentLayerNumber = null;
 let selectedMidi = 60;
 let correctNoteSelected = false;
@@ -279,6 +284,24 @@ function renderLayer(layerNumber) {
   if (circleOfFifthsEl) renderCircleOfFifths(circleOfFifthsEl, puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi, rootMidi);
   scrollPianoToMidi(puzzleLayer.targetMidis?.[0] ?? puzzleLayer.targetMidi);
 
+  // ── Multiple-choice mode (movement 3) ──────────────────────────────────────
+  if (movementNumber === 3 && !isAlreadyCompleted) {
+    if (pianoSectionEl) pianoSectionEl.hidden = true;
+    if (multipleChoiceOptionsEl) {
+      multipleChoiceOptionsEl.classList.remove("hidden");
+      renderMultipleChoiceOptions(layerNumber);
+    }
+    markCompleteBtn.hidden = true;
+    submitChordBtn.hidden = true;
+    showAnswerBtn.hidden = true;
+  } else if (movementNumber === 3 && isAlreadyCompleted) {
+    if (pianoSectionEl) pianoSectionEl.hidden = true;
+    if (multipleChoiceOptionsEl) multipleChoiceOptionsEl.classList.add("hidden");
+  } else {
+    if (pianoSectionEl) pianoSectionEl.hidden = false;
+    if (multipleChoiceOptionsEl) multipleChoiceOptionsEl.classList.add("hidden");
+  }
+
   const explanationEl = document.getElementById("layer-explanation");
   if (explanationEl) explanationEl.textContent = puzzleLayer.explanation ?? "";
 
@@ -293,11 +316,97 @@ function renderLayer(layerNumber) {
   puzzleCard.hidden = false;
 }
 
+// ── Multiple-choice renderer (movement 3) ─────────────────────────────────────
+function renderMultipleChoiceOptions(layerNumber) {
+  if (!multipleChoiceOptionsEl) return;
+  multipleChoiceOptionsEl.innerHTML = "";
+
+  const options = getMultipleChoiceOptions(layerNumber, rootMidi);
+
+  for (const option of options) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mc-option-btn";
+    btn.textContent = option.label;
+    btn.dataset.midi = String(option.midi);
+    btn.dataset.correct = option.isCorrect ? "true" : "false";
+
+    btn.addEventListener("click", () => handleMultipleChoiceClick(btn, option));
+    multipleChoiceOptionsEl.appendChild(btn);
+  }
+}
+
+async function handleMultipleChoiceClick(btn, option) {
+  if (!composition || !currentLayerNumber) return;
+
+  // Prevent double-click
+  for (const b of multipleChoiceOptionsEl.querySelectorAll(".mc-option-btn")) {
+    b.disabled = true;
+  }
+
+  if (option.isCorrect) {
+    btn.classList.add("mc-correct");
+    showFeedback(`Correct! ${option.label} is right. Moving to the next layer…`, true);
+
+    try {
+      await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
+        method: "POST",
+        body: JSON.stringify({ pitch: option.midi, durationMs: 500, timingMs: 0, velocity: 100 })
+      });
+      composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+        method: "POST"
+      });
+      const completedLayer = composition.layers.find((l) => l.layerNumber === currentLayerNumber);
+      if (completedLayer) playLayer(completedLayer);
+
+      setTimeout(() => advanceToNextLayer(), 700);
+    } catch (error) {
+      showFeedback(`Error: ${error.message}`, false);
+      for (const b of multipleChoiceOptionsEl.querySelectorAll(".mc-option-btn")) {
+        b.disabled = false;
+      }
+    }
+  } else {
+    btn.classList.add("mc-incorrect");
+    showFeedback("Not quite — try again!", false);
+    setTimeout(() => {
+      btn.classList.remove("mc-incorrect");
+      for (const b of multipleChoiceOptionsEl.querySelectorAll(".mc-option-btn")) {
+        b.disabled = false;
+      }
+    }, 900);
+  }
+}
+
 // ── Render completion panel ───────────────────────────────────────────────────
 function renderCompletion() {
   currentLayerNumber = null;
   puzzleCard.hidden = true;
+  if (multipleChoiceOptionsEl) multipleChoiceOptionsEl.classList.add("hidden");
+  if (pianoSectionEl) pianoSectionEl.hidden = true;
   completionPanel.hidden = false;
+
+  const headingEl = document.getElementById("completion-heading");
+  const ledeEl = document.getElementById("completion-lede");
+  const movementRoman = ["", "I", "II", "III"][movementNumber] ?? movementNumber;
+
+  if (headingEl) headingEl.textContent = `Movement ${movementRoman} complete!`;
+  if (ledeEl) {
+    ledeEl.textContent = movementNumber < 3
+      ? `You have completed all 7 layers of Movement ${movementRoman}. Ready to continue?`
+      : "You have completed all three movements. Your full piece is done!";
+  }
+
+  if (continueMovementBtn) {
+    if (movementNumber < 3) {
+      const nextRoman = ["", "I", "II", "III"][movementNumber + 1] ?? (movementNumber + 1);
+      continueMovementBtn.textContent = `Continue to Movement ${nextRoman} \u2192`;
+      continueMovementBtn.hidden = false;
+    } else {
+      continueMovementBtn.hidden = true;
+    }
+  }
+
   updateProgress();
 }
 
@@ -448,6 +557,19 @@ arpeggioTempoInput?.addEventListener("input", () => {
   if (arpeggioTempoLabel) arpeggioTempoLabel.textContent = `${arpeggioTempoInput.value} BPM`;
 });
 
+continueMovementBtn?.addEventListener("click", async () => {
+  if (!composition) return;
+  continueMovementBtn.disabled = true;
+
+  try {
+    const next = await apiRequest(`${apiBase}/${composition.id}/movements`, { method: "POST" });
+    window.location.href = `/puzzle.html?id=${next.id}`;
+  } catch (error) {
+    showFeedback(`Could not start next movement: ${error.message}`, false);
+    continueMovementBtn.disabled = false;
+  }
+});
+
 playAllBtn.addEventListener("click", () => {
   if (composition) playArpeggio(composition, Number(arpeggioTempoInput?.value ?? 72));
 });
@@ -475,6 +597,7 @@ async function init() {
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
   rootMidi = composition.rootMidi ?? 60;
+  movementNumber = composition.movementNumber ?? 1;
 
   setRootBtn?.addEventListener("click", () => {
     rootSelectionMode = true;

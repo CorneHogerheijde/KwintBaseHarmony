@@ -73,6 +73,25 @@ public class Composition
     public int RootMidi { get; set; } = 60;
 
     /// <summary>
+    /// Movement number within a multi-movement piece: 1 = first, 2 = second, 3 = third.
+    /// A movement chain shares the same tonal centre (RootMidi) and student.
+    /// </summary>
+    [Required]
+    [Range(1, 3)]
+    public int MovementNumber { get; set; } = 1;
+
+    /// <summary>
+    /// Parent composition ID — null for movement 1; points to the movement-1 Composition
+    /// for movements 2 and 3. Used to identify and traverse a movement chain.
+    /// </summary>
+    public Guid? ParentCompositionId { get; set; }
+
+    /// <summary>
+    /// Navigation property to the parent composition (movement 1) for movements 2 and 3.
+    /// </summary>
+    public Composition? ParentComposition { get; set; }
+
+    /// <summary>
     /// Collection of harmonic layers (5-7 layers per Kwintessence structure).
     /// </summary>
     public ICollection<Layer> Layers { get; set; } = new List<Layer>();

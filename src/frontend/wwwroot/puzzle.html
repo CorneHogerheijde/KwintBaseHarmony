@@ -45,7 +45,9 @@
             <div id="circle-of-fifths" class="circle-of-fifths-widget" aria-hidden="true"></div>
         </section>
 
-        <section class="panel panel-wide">
+        <div id="multiple-choice-options" class="multiple-choice-options hidden" aria-label="Choose the correct note"></div>
+
+        <section id="piano-section" class="panel panel-wide">
             <div class="panel-header">
                 <h2>Virtual Piano</h2>
                 <div class="toolbar-actions">
@@ -88,12 +90,13 @@
         </section>
 
         <section class="panel panel-wide puzzle-completion" id="completion-panel" hidden>
-            <p class="eyebrow">Complete</p>
-            <h2>Your composition is complete!</h2>
-            <p class="lede">You have worked through all 7 harmonic layers of the Kwintessence structure.</p>
+            <p class="eyebrow" id="completion-eyebrow">Complete</p>
+            <h2 id="completion-heading">Your composition is complete!</h2>
+            <p class="lede" id="completion-lede">You have worked through all 7 harmonic layers of the Kwintessence structure.</p>
             <div class="hero-actions">
                 <button id="play-full-btn" type="button" class="primary-button">Play Full Composition</button>
-                <a href="/" class="secondary-button">Back to Dashboard</a>
+                <button id="continue-movement-btn" type="button" class="primary-button" hidden>Continue to Movement 2 →</button>
+                <a href="/" class="secondary-button">Back to Home</a>
             </div>
         </section>
         </div>

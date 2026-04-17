@@ -9,6 +9,27 @@
 
 **Phase 3 Status** *(April 16, 2026)*: ✅ **Complete**
 
+**Phase 4A Status** *(April 17, 2026)*: ✅ **Complete**
+
+### Phase 4A Deliverables — Modular Compositions + Puzzle Type Variety
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Movement data model | `MovementNumber` (1–3) + `ParentCompositionId` FK on `Composition` entity | ✅ |
+| DB migration | `20260417000000_AddMovements` — adds columns, self-referencing FK, index | ✅ |
+| Service layer | `CreateNextMovementAsync` + `GetMovementChainAsync` in `CompositionService` | ✅ |
+| API endpoints | `POST /{id}/movements` (201/404/409) + `GET /{id}/movements` | ✅ |
+| Multiple-choice puzzle | `getMultipleChoiceOptions` — 4 shuffled options, 1 correct, for movement 3 | ✅ |
+| Movement-aware puzzle UI | Movement 1 = note-select, 2 = chord, 3 = multiple-choice; piano hidden in movement 3 | ✅ |
+| Completion flow | "Continue to Movement II/III →" button; navigates to new movement after POST | ✅ |
+| Home page grouping | Multi-movement compositions grouped under one entry; navigates to first incomplete movement | ✅ |
+| Multiple-choice styles | `.mc-option-btn`, `.mc-correct`, `.mc-incorrect` CSS classes | ✅ |
+| Backend tests | 4 new xUnit tests for movement endpoints | ✅ |
+| Vitest tests | 5 new tests for `getMultipleChoiceOptions` (62 total) | ✅ |
+| Cypress tests | `movement-flow.cy.js` — 6 E2E scenarios for movement flow + multiple-choice UI | ✅ |
+
+**Test coverage**: 62 Vitest unit tests + 60 Cypress E2E tests (est.)
+
 ### Phase 3 Deliverables — All Merged to Main
 
 | Phase | Feature | Status |

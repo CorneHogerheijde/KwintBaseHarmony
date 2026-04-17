@@ -374,6 +374,44 @@ compositions.MapPost("/import/json", async (
     }
 });
 
+compositions.MapPost("/{id:guid}/movements", async (
+    Guid id,
+    ICompositionService compositionService,
+    ILogger<Program> logger) =>
+{
+    try
+    {
+        var next = await compositionService.CreateNextMovementAsync(id);
+        logger.LogInformation(
+            "Created movement {MovementNumber} composition {CompositionId}",
+            next.MovementNumber, next.Id);
+        return Results.Created($"/api/compositions/{next.Id}", MapToResponse(next));
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.NotFound(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Conflict(new { error = exception.Message });
+    }
+});
+
+compositions.MapGet("/{id:guid}/movements", async (
+    Guid id,
+    ICompositionService compositionService) =>
+{
+    try
+    {
+        var chain = await compositionService.GetMovementChainAsync(id);
+        return Results.Ok(chain.Select(MapToResponse).ToList());
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.NotFound(new { error = exception.Message });
+    }
+});
+
 compositions.MapPatch("/{id:guid}/root-midi", async (
     Guid id,
     UpdateRootMidiRequest request,
@@ -411,6 +449,8 @@ static CompositionResponse MapToResponse(Composition composition)
         composition.CreatedAt,
         composition.UpdatedAt,
         composition.RootMidi,
+        composition.MovementNumber,
+        composition.ParentCompositionId,
         composition.Layers
             .OrderBy(layer => layer.LayerNumber)
             .Select(layer => new LayerResponse(
@@ -452,6 +492,8 @@ public sealed record CompositionResponse(
     DateTime CreatedAt,
     DateTime UpdatedAt,
     int RootMidi,
+    int MovementNumber,
+    Guid? ParentCompositionId,
     List<LayerResponse> Layers);
 
 public sealed record CompleteLayerRequest(int? Attempts, bool? FirstTryCorrect, long? TimeSpentMs);

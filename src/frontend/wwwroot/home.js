@@ -61,28 +61,57 @@ async function apiGet(path) {
 
 // ── Build the composition list ────────────────────────────────────────────────
 
+function getMovementGroups(compositions) {
+  // Bucket compositions by their root ID (movement 1's ID)
+  const byRoot = new Map();
+
+  for (const comp of compositions) {
+    const rootId = comp.movementNumber === 1 ? comp.id : comp.parentCompositionId ?? comp.id;
+    if (!byRoot.has(rootId)) byRoot.set(rootId, []);
+    byRoot.get(rootId).push(comp);
+  }
+
+  // Sort each group by movementNumber, return as array of groups
+  return [...byRoot.values()].map((group) =>
+    group.sort((a, b) => (a.movementNumber ?? 1) - (b.movementNumber ?? 1))
+  );
+}
+
 function renderCompositionList(compositions) {
   compositionList.innerHTML = "";
 
-  for (const comp of compositions) {
-    const completed = comp.layers?.filter((l) => l.completed).length ?? 0;
-    const total = comp.layers?.length ?? 7;
-    const pct = Math.round((completed / total) * 100);
+  const groups = getMovementGroups(compositions);
+
+  for (const group of groups) {
+    const root = group[0];
+    // Sum progress across all movements
+    const totalLayers = group.reduce((sum, c) => sum + (c.layers?.length ?? 7), 0);
+    const completedLayers = group.reduce((sum, c) => sum + (c.layers?.filter((l) => l.completed).length ?? 0), 0);
+    const pct = Math.round((completedLayers / totalLayers) * 100);
+
+    // Find the lowest-numbered incomplete movement to navigate to
+    const incompleteMovement = group.find((c) => {
+      const completed = c.layers?.filter((l) => l.completed).length ?? 0;
+      const total = c.layers?.length ?? 7;
+      return completed < total;
+    }) ?? group[group.length - 1];
+
+    const movementLabel = group.length > 1 ? ` · ${group.length} movements` : "";
 
     const li = document.createElement("li");
     li.className = "composition-list-item";
     li.innerHTML = `
       <div class="comp-info">
-        <strong class="comp-title">${escapeHtml(comp.title)}</strong>
-        <span class="comp-meta">${completed}/${total} layers · ${pct}% complete</span>
+        <strong class="comp-title">${escapeHtml(root.title)}</strong>
+        <span class="comp-meta">${completedLayers}/${totalLayers} layers · ${pct}% complete${escapeHtml(movementLabel)}</span>
       </div>
-      <button type="button" class="primary-button comp-continue-btn" data-id="${escapeHtml(comp.id)}">
+      <button type="button" class="primary-button comp-continue-btn" data-id="${escapeHtml(incompleteMovement.id)}">
         Continue →
       </button>
     `;
 
     li.querySelector(".comp-continue-btn").addEventListener("click", () => {
-      window.location.href = `/puzzle.html?id=${comp.id}`;
+      window.location.href = `/puzzle.html?id=${incompleteMovement.id}`;
     });
 
     compositionList.appendChild(li);
