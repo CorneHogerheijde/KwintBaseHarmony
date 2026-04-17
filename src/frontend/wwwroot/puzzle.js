@@ -54,6 +54,7 @@ let correctNoteSelected = false;
 let selectedChordMidis = [];
 let rootMidi = 60;
 let rootSelectionMode = false;
+let style = "classical";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function compositionUrl(path = "") {
@@ -123,7 +124,7 @@ function highlightHintKeys(midis) {
 }
 
 function getActiveLayers() {
-  return transposeLayers(getPuzzleLayers(difficulty), rootMidi);
+  return transposeLayers(getPuzzleLayers(difficulty, style), rootMidi);
 }
 
 // ── Feedback banner ───────────────────────────────────────────────────────────
@@ -321,7 +322,7 @@ function renderMultipleChoiceOptions(layerNumber) {
   if (!multipleChoiceOptionsEl) return;
   multipleChoiceOptionsEl.innerHTML = "";
 
-  const options = getMultipleChoiceOptions(layerNumber, rootMidi);
+  const options = getMultipleChoiceOptions(layerNumber, rootMidi, style);
 
   for (const option of options) {
     const btn = document.createElement("button");
@@ -412,7 +413,7 @@ function renderCompletion() {
 
 // ── Advance to next layer (or completion) ─────────────────────────────────────
 function advanceToNextLayer() {
-  const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty);
+  const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty, style);
   if (nextLayerNumber === null) {
     renderCompletion();
   } else {
@@ -523,7 +524,7 @@ skipLayerBtn.addEventListener("click", async () => {
   // If navigated back to an already-completed layer, act as "Back to Puzzle"
   const apiLayerForSkip = currentApiLayer();
   if (apiLayerForSkip?.completed) {
-    const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty);
+    const nextLayerNumber = getFirstIncompleteLayer(composition, difficulty, style);
     if (nextLayerNumber === null) renderCompletion();
     else renderLayer(nextLayerNumber);
     return;
@@ -596,8 +597,20 @@ async function init() {
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
   difficulty = composition.difficulty ?? "intermediate";
+  style = composition.style ?? "classical";
   rootMidi = composition.rootMidi ?? 60;
   movementNumber = composition.movementNumber ?? 1;
+
+  // Show style badge when style is not classical
+  const existingBadge = document.getElementById("style-badge");
+  if (existingBadge) existingBadge.remove();
+  if (style !== "classical") {
+    const badge = document.createElement("span");
+    badge.id = "style-badge";
+    badge.className = `style-badge style-badge--${style}`;
+    badge.textContent = style.charAt(0).toUpperCase() + style.slice(1);
+    compositionTitleLabel.insertAdjacentElement("afterend", badge);
+  }
 
   setRootBtn?.addEventListener("click", () => {
     rootSelectionMode = true;
@@ -610,7 +623,7 @@ async function init() {
   renderPianoKeyboard((midi) => onNoteSelected(midi, { preview: true }));
   onNoteSelected(60);
 
-  const firstLayer = getFirstIncompleteLayer(composition, difficulty);
+  const firstLayer = getFirstIncompleteLayer(composition, difficulty, style);
   if (firstLayer === null) {
     renderCompletion();
   } else {

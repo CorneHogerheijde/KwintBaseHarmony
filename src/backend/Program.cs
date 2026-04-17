@@ -106,7 +106,8 @@ compositions.MapPost("", async (
         composition = await compositionService.CreateAsync(
             request.StudentId,
             request.Title,
-            request.Difficulty ?? "beginner");
+            request.Difficulty ?? "beginner",
+            request.Style ?? "classical");
     }
     catch (InvalidOperationException exception)
     {
@@ -440,7 +441,10 @@ compositions.MapPatch("/{id:guid}/root-midi", async (
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CompositionContext>();
-    await db.Database.MigrateAsync();
+    if (db.Database.IsRelational())
+    {
+        await db.Database.MigrateAsync();
+    }
 }
 
 app.Run();
@@ -452,6 +456,7 @@ static CompositionResponse MapToResponse(Composition composition)
         composition.StudentId,
         composition.Title,
         composition.Difficulty,
+        composition.Style,
         composition.CompletionPercentage,
         composition.CreatedAt,
         composition.UpdatedAt,
@@ -480,7 +485,7 @@ static CompositionResponse MapToResponse(Composition composition)
             .ToList());
 }
 
-public sealed record CreateCompositionRequest(string StudentId, string Title, string? Difficulty);
+public sealed record CreateCompositionRequest(string StudentId, string Title, string? Difficulty, string? Style);
 
 public sealed record UpdateCompositionRequest(string? Title, string? Difficulty);
 
@@ -495,6 +500,7 @@ public sealed record CompositionResponse(
     string StudentId,
     string Title,
     string Difficulty,
+    string Style,
     decimal CompletionPercentage,
     DateTime CreatedAt,
     DateTime UpdatedAt,

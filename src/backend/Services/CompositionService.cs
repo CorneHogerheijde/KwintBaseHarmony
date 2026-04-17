@@ -19,13 +19,14 @@ public class CompositionService : ICompositionService
     /// <summary>
     /// Creates a new composition with empty 7 layers (Kwintessence structure).
     /// </summary>
-    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty)
+    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical")
     {
         var composition = new Composition
         {
             StudentId = studentId,
             Title = title,
             Difficulty = difficulty.Trim(),
+            Style = style.Trim(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -225,6 +226,7 @@ public class CompositionService : ICompositionService
             composition.StudentId,
             composition.Title,
             composition.Difficulty,
+            composition.Style,
             composition.CompletionPercentage,
             composition.CreatedAt,
             composition.UpdatedAt,
@@ -287,6 +289,7 @@ public class CompositionService : ICompositionService
             StudentId = exportModel.StudentId,
             Title = exportModel.Title,
             Difficulty = exportModel.Difficulty.Trim(),
+            Style = exportModel.Style.Trim(),
             CompletionPercentage = exportModel.CompletionPercentage,
             CreatedAt = exportModel.CreatedAt,
             UpdatedAt = exportModel.UpdatedAt,
@@ -374,6 +377,7 @@ public class CompositionService : ICompositionService
             StudentId = root.StudentId,
             Title = title + suffix,
             Difficulty = root.Difficulty,
+            Style = root.Style,
             RootMidi = root.RootMidi,
             MovementNumber = maxMovement + 1,
             ParentCompositionId = root.Id,
@@ -453,6 +457,7 @@ public class CompositionService : ICompositionService
         string StudentId,
         string Title,
         string Difficulty,
+        string Style,
         decimal CompletionPercentage,
         DateTime CreatedAt,
         DateTime UpdatedAt,

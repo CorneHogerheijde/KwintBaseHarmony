@@ -11,6 +11,29 @@
 
 **Phase 4A Status** *(April 17, 2026)*: ✅ **Complete**
 
+**Phase 4B Status** *(April 17, 2026)*: ✅ **Complete**
+
+### Phase 4B Deliverables — Branching Style Choices
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Style property | `Style` column on `Composition` — `"classical"` (default), `"jazz"`, `"blues"` | ✅ |
+| DB migration | `20260417000001_AddStyle` — `VARCHAR(50) NOT NULL DEFAULT 'classical'` | ✅ |
+| Validation | `AllowedStyleValues` HashSet in `Composition`; 422 on invalid style | ✅ |
+| API request/response | `CreateCompositionRequest.Style`, `CompositionResponse.Style` | ✅ |
+| Movement inheritance | `CreateNextMovementAsync` inherits `Style` from root movement | ✅ |
+| Jazz layer overrides | Layer 4 → B♭4 (MIDI 70, dominant seventh) for beginner/intermediate/advanced | ✅ |
+| Blues layer overrides | Layer 3 → E♭4 (63), Layer 4 → B♭4 (70), Layer 5 → G♭4 (66) for all difficulties | ✅ |
+| `puzzle-engine.js` | `getPuzzleLayers(difficulty, style)` — routes to style table; all style-aware functions updated | ✅ |
+| Home page style picker | `<select id="style-input">` with classical/jazz/blues options; posted in create request | ✅ |
+| Puzzle page style badge | `#style-badge` with `.style-badge--jazz` / `.style-badge--blues` classes; hidden for classical | ✅ |
+| CSS | `.style-badge`, `.style-badge--jazz` (gold), `.style-badge--blues` (blue) | ✅ |
+| xUnit tests | 3 new tests: jazz style persists, invalid style → 422, no style → classical default | ✅ |
+| Vitest tests | 10 new tests covering jazz + blues layer overrides and unknown-style fallback | ✅ |
+| Cypress tests | `style-presets.cy.js` — style picker UI, POST body assertions, style badge rendering | ✅ |
+
+**Test coverage**: 72 Vitest unit tests + 67 Cypress E2E tests (est.)
+
 ### Phase 4A Deliverables — Modular Compositions + Puzzle Type Variety
 
 | Feature | Description | Status |

@@ -463,3 +463,11 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 Copyright © 2026 Corné Hogerheijde
 
 ---
+
+## Thank You for the Inspiration
+
+**Robijn Tilanus** — the harmonic framework at the heart of this project is inspired by *KWINTessens: Praktische benadering Harmonieleer*, a beautifully practical approach to music theory that made the idea of a layered, progressive harmony puzzle feel natural and achievable.
+
+**Marc Duiker** ([@marcduiker](https://github.com/marcduiker), [Diagrid](https://www.diagrid.io/)) — the Dapr Workflow architecture drew inspiration from Marc's session and the [dapr-workflow-concerto](https://github.com/diagrid-labs/dapr-workflow-concerto/) project, which demonstrated how Dapr Workflows can orchestrate creative, multi-step processes in an elegant and scalable way.
+
+---

@@ -4,6 +4,7 @@ const startForm = document.getElementById("start-form");
 const studentIdInput = document.getElementById("student-id-input");
 const titleInput = document.getElementById("title-input");
 const difficultyInput = document.getElementById("difficulty-input");
+const styleInput = document.getElementById("style-input");
 const startSubmitBtn = document.getElementById("start-submit-btn");
 const startError = document.getElementById("start-error");
 
@@ -137,11 +138,12 @@ startForm.addEventListener("submit", async (event) => {
   const studentId = studentIdInput.value.trim();
   const title = titleInput.value.trim();
   const difficulty = difficultyInput.value;
+  const style = styleInput.value;
 
   setLoading(startSubmitBtn, true);
 
   try {
-    const composition = await apiPost("", { studentId, title, difficulty });
+    const composition = await apiPost("", { studentId, title, difficulty, style });
     window.location.href = `/puzzle.html?id=${composition.id}`;
   } catch (error) {
     showError(startError, error.message);
