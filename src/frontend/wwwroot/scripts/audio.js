@@ -2,7 +2,7 @@ import { midiToFrequency } from "./music.js";
 
 let audioContext = null;
 
-function ensureAudioContext() {
+async function ensureAudioContext() {
   if (!audioContext) {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) {
@@ -13,14 +13,14 @@ function ensureAudioContext() {
   }
 
   if (audioContext.state === "suspended") {
-    void audioContext.resume();
+    await audioContext.resume();
   }
 
   return audioContext;
 }
 
-export function playPreviewNote(midi, log) {
-  const context = ensureAudioContext();
+export async function playPreviewNote(midi, log) {
+  const context = await ensureAudioContext();
   if (!context) {
     log("Web Audio is not available in this browser.");
     return;

@@ -1,4 +1,4 @@
-const API_BASE = "/api/compositions";
+const API_BASE = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const form = document.getElementById("progress-form");

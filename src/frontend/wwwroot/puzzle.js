@@ -597,8 +597,10 @@ async function init() {
   }
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
-  progressLink.href = `/progress.html?id=${encodeURIComponent(composition.id)}`;
-  progressLink.classList.remove("hidden");
+  if (progressLink) {
+    progressLink.href = `/progress.html?id=${encodeURIComponent(composition.id)}`;
+    progressLink.classList.remove("hidden");
+  }
   difficulty = composition.difficulty ?? "intermediate";
   style = composition.style ?? "classical";
   rootMidi = composition.rootMidi ?? 60;
