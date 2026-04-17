@@ -4,7 +4,7 @@ namespace KwintBaseHarmony.Services;
 
 public interface ICompositionService
 {
-    Task<Composition> CreateAsync(string studentId, string title, string difficulty);
+    Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical");
     Task<Composition?> GetByIdAsync(Guid compositionId);
     Task<List<Composition>> GetByStudentIdAsync(string studentId);
     Task<Composition> UpdateAsync(Composition composition);

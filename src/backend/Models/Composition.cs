@@ -17,6 +17,13 @@ public class Composition
         "advanced"
     };
 
+    private static readonly HashSet<string> AllowedStyleValues = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "classical",
+        "jazz",
+        "blues"
+    };
+
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -92,6 +99,14 @@ public class Composition
     public Composition? ParentComposition { get; set; }
 
     /// <summary>
+    /// Style preset: "classical", "jazz", or "blues".
+    /// Determines style-specific target notes for each layer.
+    /// </summary>
+    [Required]
+    [StringLength(50)]
+    public string Style { get; set; } = "classical";
+
+    /// <summary>
     /// Collection of harmonic layers (5-7 layers per Kwintessence structure).
     /// </summary>
     public ICollection<Layer> Layers { get; set; } = new List<Layer>();
@@ -110,6 +125,14 @@ public class Composition
         }
 
         Difficulty = Difficulty.ToLowerInvariant();
+
+        if (!AllowedStyleValues.Contains(Style))
+        {
+            throw new InvalidOperationException(
+                $"Style must be one of: {string.Join(", ", AllowedStyleValues.OrderBy(value => value))}");
+        }
+
+        Style = Style.ToLowerInvariant();
     }
 
     /// <summary>
