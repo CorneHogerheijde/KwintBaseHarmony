@@ -436,6 +436,13 @@ compositions.MapPatch("/{id:guid}/root-midi", async (
     return Results.Ok(MapToResponse(updated));
 });
 
+// ── Apply pending EF Core migrations on startup ───────────────────────────────
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<CompositionContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.Run();
 
 static CompositionResponse MapToResponse(Composition composition)
