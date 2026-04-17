@@ -13,6 +13,25 @@
 
 **Phase 4B Status** *(April 17, 2026)*: ✅ **Complete**
 
+**Phase 4C Status** *(April 17, 2026)*: ✅ **Complete**
+
+### Phase 4C Deliverables — Progress & Analytics Dashboard
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `progress.html` | New standalone page; Chart.js CDN; summary cards + bar charts + layer table | ✅ |
+| `progress.js` | Fetches `GET /api/compositions/{id}/analytics`; renders summary, two Chart.js bar charts, detail table | ✅ |
+| URL pre-population | `?id=<guid>` query param auto-loads analytics on arrival | ✅ |
+| Summary stat cards | Completion %, total time (formatted), first-try rate %, avg attempts per layer | ✅ |
+| Time-per-layer chart | Bar chart — green fill for completed layers, faded for incomplete | ✅ |
+| Attempts chart | Bar chart — green = first-try correct, amber = retried, faded = not yet done | ✅ |
+| Layer detail table | Tabular view: layer #, name, status, time (s), attempts, first-try column | ✅ |
+| Nav integration | "Progress ↗" link in puzzle nav (dynamic href = `?id=<id>`); "Progress" in home footer | ✅ |
+| CSS | `.progress-main`, `.stat-card`, `.stat-value/label`, `.progress-charts`, `.progress-table`, `.progress-nav-link` | ✅ |
+| Cypress tests | `progress-analytics.cy.js` — 11 E2E scenarios covering form, error, display, URL pre-pop, nav links | ✅ |
+
+**Test coverage**: 72 Vitest unit tests (unchanged) + ~78 Cypress E2E tests (est.)
+
 ### Phase 4B Deliverables — Branching Style Choices
 
 | Feature | Description | Status |

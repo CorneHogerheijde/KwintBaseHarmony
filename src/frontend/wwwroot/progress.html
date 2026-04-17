@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwintBaseHarmony — Progress</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="page-shell">
+
+        <header class="hero">
+            <nav class="site-nav">
+                <a href="/" class="nav-home-link">← Home</a>
+            </nav>
+            <p class="eyebrow">KwintBaseHarmony</p>
+            <h1>Your progress</h1>
+            <p class="lede">Layer-by-layer analytics for a composition — accuracy, time spent, first-try rate.</p>
+        </header>
+
+        <main class="progress-main">
+
+            <!-- ── Lookup ─────────────────────────────────────────────── -->
+            <section class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Load analytics</h2>
+                    <p>Paste a composition ID to view its progress details.</p>
+                </div>
+                <form id="progress-form" class="inline-form">
+                    <input id="progress-id-input" type="text" placeholder="Composition GUID" required>
+                    <button type="submit" class="primary-button">Load →</button>
+                </form>
+                <p id="progress-error" class="home-error hidden"></p>
+            </section>
+
+            <!-- ── Summary cards ──────────────────────────────────────── -->
+            <div id="summary-cards" class="progress-summary hidden">
+                <div class="stat-card" id="stat-completion">
+                    <span class="stat-value" id="stat-completion-val">—</span>
+                    <span class="stat-label">Completion</span>
+                </div>
+                <div class="stat-card" id="stat-time">
+                    <span class="stat-value" id="stat-time-val">—</span>
+                    <span class="stat-label">Total time</span>
+                </div>
+                <div class="stat-card" id="stat-ftc">
+                    <span class="stat-value" id="stat-ftc-val">—</span>
+                    <span class="stat-label">First-try rate</span>
+                </div>
+                <div class="stat-card" id="stat-attempts">
+                    <span class="stat-value" id="stat-attempts-val">—</span>
+                    <span class="stat-label">Avg. attempts / layer</span>
+                </div>
+            </div>
+
+            <!-- ── Charts ─────────────────────────────────────────────── -->
+            <section id="charts-section" class="progress-charts hidden">
+
+                <div class="panel progress-chart-panel">
+                    <div class="panel-header">
+                        <h2>Time per layer</h2>
+                        <p>Seconds spent solving each layer.</p>
+                    </div>
+                    <canvas id="chart-time" aria-label="Time per layer bar chart"></canvas>
+                </div>
+
+                <div class="panel progress-chart-panel">
+                    <div class="panel-header">
+                        <h2>Attempts per layer</h2>
+                        <p>How many tries it took to complete each layer.</p>
+                    </div>
+                    <canvas id="chart-attempts" aria-label="Attempts per layer bar chart"></canvas>
+                </div>
+
+            </section>
+
+            <!-- ── Layer table ────────────────────────────────────────── -->
+            <section id="layer-table-section" class="panel panel-wide hidden">
+                <div class="panel-header">
+                    <h2>Layer detail</h2>
+                </div>
+                <table id="layer-table" class="progress-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Time (s)</th>
+                            <th>Attempts</th>
+                            <th>First try?</th>
+                        </tr>
+                    </thead>
+                    <tbody id="layer-table-body"></tbody>
+                </table>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script type="module" src="/progress.js"></script>
+</body>
+</html>

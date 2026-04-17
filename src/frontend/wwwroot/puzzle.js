@@ -15,6 +15,7 @@ import {
 
 // ── DOM references ────────────────────────────────────────────────────────────
 const compositionTitleLabel = document.getElementById("composition-title-label");
+const progressLink = document.getElementById("progress-link");
 const progressBar = document.getElementById("puzzle-progress-bar");
 const progressFill = document.getElementById("puzzle-progress-fill");
 const progressLabel = document.getElementById("puzzle-progress-label");
@@ -596,6 +597,8 @@ async function init() {
   }
 
   compositionTitleLabel.textContent = `${composition.title} · ${composition.studentId}`;
+  progressLink.href = `/progress.html?id=${encodeURIComponent(composition.id)}`;
+  progressLink.classList.remove("hidden");
   difficulty = composition.difficulty ?? "intermediate";
   style = composition.style ?? "classical";
   rootMidi = composition.rootMidi ?? 60;
