@@ -14,4 +14,6 @@ public interface ICompositionService
     Task<Composition> ValidateAndSaveAsync(Composition composition);
     string SerializeToJson(Composition composition);
     Composition DeserializeFromJson(string json);
+    Task<Composition> CreateNextMovementAsync(Guid parentCompositionId);
+    Task<List<Composition>> GetMovementChainAsync(Guid compositionId);
 }

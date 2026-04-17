@@ -6,6 +6,8 @@ export function buildComposition(overrides = {}) {
   const completionPercentage = overrides.completionPercentage ?? 0;
   const notesByLayer = overrides.notesByLayer ?? {};
   const completedLayers = new Set(overrides.completedLayers ?? []);
+  const movementNumber = overrides.movementNumber ?? 1;
+  const parentCompositionId = overrides.parentCompositionId ?? null;
 
   return {
     id,
@@ -13,6 +15,8 @@ export function buildComposition(overrides = {}) {
     title,
     difficulty,
     completionPercentage,
+    movementNumber,
+    parentCompositionId,
     createdAt: "2026-04-14T20:10:36.1954987Z",
     updatedAt: "2026-04-14T20:10:36.195534Z",
     layers: Array.from({ length: 7 }, (_, index) => {

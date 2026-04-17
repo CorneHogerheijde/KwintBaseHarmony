@@ -560,7 +560,117 @@ public class CompositionEndpointsTests
         Assert.True(layer2.FirstTryCorrect);
     }
 
-    private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers);
+    [Fact]
+    public async Task CreateNextMovement_WhenParentComplete_Returns201WithMovement2()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        // Create and complete all 7 layers of movement 1
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-mv-1",
+            title = "Movement Test",
+            difficulty = "beginner"
+        });
+        var parent = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(parent);
+
+        for (var layer = 1; layer <= 7; layer++)
+        {
+            await client.PostAsJsonAsync($"/api/compositions/{parent.Id}/layers/{layer}/complete", new { });
+        }
+
+        var response = await client.PostAsJsonAsync($"/api/compositions/{parent.Id}/movements", new { });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var next = await response.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(next);
+        Assert.Equal(2, next.MovementNumber);
+        Assert.Equal(parent.Id, next.ParentCompositionId);
+    }
+
+    [Fact]
+    public async Task CreateNextMovement_WhenParentIncomplete_Returns409()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-mv-2",
+            title = "Incomplete Movement",
+            difficulty = "beginner"
+        });
+        var parent = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(parent);
+
+        // Only complete 3 of 7 layers
+        for (var layer = 1; layer <= 3; layer++)
+        {
+            await client.PostAsJsonAsync($"/api/compositions/{parent.Id}/layers/{layer}/complete", new { });
+        }
+
+        var response = await client.PostAsJsonAsync($"/api/compositions/{parent.Id}/movements", new { });
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMovementChain_Returns_AllMovementsInChain()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        // Create and complete movement 1
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-mv-3",
+            title = "Chain Test",
+            difficulty = "beginner"
+        });
+        var movement1 = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(movement1);
+
+        for (var layer = 1; layer <= 7; layer++)
+        {
+            await client.PostAsJsonAsync($"/api/compositions/{movement1.Id}/layers/{layer}/complete", new { });
+        }
+
+        var mvResp = await client.PostAsJsonAsync($"/api/compositions/{movement1.Id}/movements", new { });
+        Assert.Equal(HttpStatusCode.Created, mvResp.StatusCode);
+
+        var chainResponse = await client.GetAsync($"/api/compositions/{movement1.Id}/movements");
+        Assert.Equal(HttpStatusCode.OK, chainResponse.StatusCode);
+
+        var chain = await chainResponse.Content.ReadFromJsonAsync<List<CompositionResponseDto>>();
+        Assert.NotNull(chain);
+        Assert.Equal(2, chain.Count);
+        Assert.Equal(1, chain[0].MovementNumber);
+        Assert.Equal(2, chain[1].MovementNumber);
+    }
+
+    [Fact]
+    public async Task CompositionResponse_IncludesMovementNumber()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var createResponse = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-mv-4",
+            title = "Movement Number Check",
+            difficulty = "beginner"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var comp = await createResponse.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(comp);
+        Assert.Equal(1, comp.MovementNumber);
+        Assert.Null(comp.ParentCompositionId);
+    }
+
+    private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers, int MovementNumber = 1, Guid? ParentCompositionId = null);
 
     private sealed record LayerResponseDto(int LayerNumber, string Name, string? Concept, bool Completed, long TimeSpentMs, string? UserNotes, string? PuzzleAnswersJson, List<NoteResponseDto> Notes);
 

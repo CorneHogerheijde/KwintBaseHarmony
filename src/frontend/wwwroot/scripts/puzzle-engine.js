@@ -390,3 +390,52 @@ export function getFirstIncompleteLayer(composition, difficulty = "intermediate"
 
   return null;
 }
+
+/**
+ * Returns 4 multiple-choice options for movement-3 puzzles.
+ * One option is correct; the other 3 are the nearest distinct candidates
+ * from the intermediate layer pool (transposed to rootMidi).
+ *
+ * Each option: { label: string, midi: number, isCorrect: boolean }
+ *
+ * @param {number} layerNumber 1–7
+ * @param {number} rootMidi    MIDI root (60 = C)
+ * @returns {{ label: string, midi: number, isCorrect: boolean }[]}
+ */
+export function getMultipleChoiceOptions(layerNumber, rootMidi = 60) {
+  const NOTE_NAMES = ['C', 'C#/D♭', 'D', 'D#/E♭', 'E', 'F', 'F#/G♭', 'G', 'G#/A♭', 'A', 'A#/B♭', 'B'];
+  const OCTAVE_LABELS = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+
+  function midiLabel(midi) {
+    const pc = midi % 12;
+    const octave = Math.floor(midi / 12) - 1;
+    return `${OCTAVE_LABELS[pc]}${octave}`;
+  }
+
+  // All 7 transposed intermediate targets — these form the candidate pool
+  const baseLayers = transposeLayers(layersByDifficulty.intermediate, rootMidi);
+  const correctLayer = baseLayers.find((l) => l.number === layerNumber);
+  const correctMidi = correctLayer?.targetMidi ?? 60;
+
+  // Candidates: all other target MIDIs
+  const candidates = baseLayers
+    .filter((l) => l.number !== layerNumber)
+    .map((l) => l.targetMidi)
+    .sort((a, b) => Math.abs(a - correctMidi) - Math.abs(b - correctMidi));
+
+  // Pick the 3 closest distractors
+  const distractors = candidates.slice(0, 3);
+
+  const options = [
+    { label: midiLabel(correctMidi), midi: correctMidi, isCorrect: true },
+    ...distractors.map((m) => ({ label: midiLabel(m), midi: m, isCorrect: false }))
+  ];
+
+  // Fisher-Yates shuffle for random positioning
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+
+  return options;
+}

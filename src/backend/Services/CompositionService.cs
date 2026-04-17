@@ -334,6 +334,96 @@ public class CompositionService : ICompositionService
         return composition;
     }
 
+    /// <summary>
+    /// Creates the next movement in a composition chain.
+    /// Movement 2 or 3 is created from a movement-1 (or movement-2) root composition.
+    /// Inherits studentId, rootMidi, difficulty, and title (with suffix appended).
+    /// </summary>
+    public async Task<Composition> CreateNextMovementAsync(Guid parentCompositionId)
+    {
+        var parent = await GetByIdAsync(parentCompositionId)
+            ?? throw new KeyNotFoundException($"Composition {parentCompositionId} not found");
+
+        // Resolve to the movement-1 root so we always link movements 2 and 3 to the same parent.
+        var root = parent.MovementNumber == 1
+            ? parent
+            : await GetByIdAsync(parent.ParentCompositionId!.Value)
+                ?? throw new KeyNotFoundException($"Root composition not found");
+
+        if (root.CompletionPercentage < 100)
+            throw new InvalidOperationException("Movement 1 must be fully complete before creating a next movement.");
+
+        // Find current highest movement in the chain.
+        var chain = await GetMovementChainAsync(root.Id);
+        var maxMovement = chain.Max(c => c.MovementNumber);
+
+        if (maxMovement >= 3)
+            throw new InvalidOperationException("A composition chain cannot have more than 3 movements.");
+
+        // Verify the latest movement is complete before allowing the next.
+        var latest = chain.First(c => c.MovementNumber == maxMovement);
+        if (latest.CompletionPercentage < 100)
+            throw new InvalidOperationException($"Movement {maxMovement} must be fully complete before creating movement {maxMovement + 1}.");
+
+        var suffix = maxMovement + 1 == 2 ? " \u2014 II" : " \u2014 III";
+        var title = root.Title.EndsWith(" \u2014 II") ? root.Title[..^4] : root.Title;
+        title = title.EndsWith(" \u2014 III") ? title[..^5] : title;
+
+        var next = new Composition
+        {
+            StudentId = root.StudentId,
+            Title = title + suffix,
+            Difficulty = root.Difficulty,
+            RootMidi = root.RootMidi,
+            MovementNumber = maxMovement + 1,
+            ParentCompositionId = root.Id,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        for (int i = 1; i <= 7; i++)
+        {
+            next.Layers.Add(new Layer
+            {
+                CompositionId = next.Id,
+                LayerNumber = i,
+                Name = GetDefaultLayerName(i),
+                Concept = GetDefaultLayerConcept(i),
+                Completed = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        _context.Compositions.Add(next);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation(
+            "Created movement {MovementNumber} composition {CompositionId} for student {StudentId}",
+            next.MovementNumber, next.Id, next.StudentId);
+
+        return next;
+    }
+
+    /// <summary>
+    /// Returns all compositions in the movement chain identified by any member composition.
+    /// The chain is identified by the movement-1 root.
+    /// </summary>
+    public async Task<List<Composition>> GetMovementChainAsync(Guid compositionId)
+    {
+        var seed = await _context.Compositions
+            .FirstOrDefaultAsync(c => c.Id == compositionId)
+            ?? throw new KeyNotFoundException($"Composition {compositionId} not found");
+
+        var rootId = seed.MovementNumber == 1 ? seed.Id : seed.ParentCompositionId!.Value;
+
+        return await _context.Compositions
+            .Include(c => c.Layers)
+            .Where(c => c.Id == rootId || c.ParentCompositionId == rootId)
+            .OrderBy(c => c.MovementNumber)
+            .ToListAsync();
+    }
+
     private static string GetDefaultLayerName(int layerNumber) => layerNumber switch
     {
         1 => "Foundation",

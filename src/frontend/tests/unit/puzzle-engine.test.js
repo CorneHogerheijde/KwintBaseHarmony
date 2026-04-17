@@ -4,6 +4,7 @@ import {
   isCorrectNote,
   getFirstIncompleteLayer,
   transposeLayers,
+  getMultipleChoiceOptions,
 } from "../../wwwroot/scripts/puzzle-engine.js";
 
 // ── getPuzzleLayers ───────────────────────────────────────────────────────────
@@ -158,5 +159,52 @@ describe("transposeLayers", () => {
     original.forEach((layer, i) => {
       expect(layer.targetMidi).toBe(originalMidis[i]);
     });
+  });
+});
+
+// ── getMultipleChoiceOptions ──────────────────────────────────────────────────
+
+describe("getMultipleChoiceOptions", () => {
+  it("returns exactly 4 options for layer 1 (default rootMidi)", () => {
+    const options = getMultipleChoiceOptions(1);
+    expect(options).toHaveLength(4);
+  });
+
+  it("exactly one option is correct", () => {
+    for (let layer = 1; layer <= 7; layer++) {
+      const options = getMultipleChoiceOptions(layer);
+      const correct = options.filter((o) => o.isCorrect);
+      expect(correct).toHaveLength(1);
+    }
+  });
+
+  it("correct option midi matches transposed intermediate target for the layer", () => {
+    const rootMidi = 62; // D4
+    const layers = transposeLayers(getPuzzleLayers("intermediate"), rootMidi);
+    for (let layer = 1; layer <= 7; layer++) {
+      const options = getMultipleChoiceOptions(layer, rootMidi);
+      const correct = options.find((o) => o.isCorrect);
+      const expected = layers.find((l) => l.number === layer)?.targetMidi;
+      expect(correct?.midi).toBe(expected);
+    }
+  });
+
+  it("each option has a label string", () => {
+    const options = getMultipleChoiceOptions(3, 60);
+    for (const o of options) {
+      expect(typeof o.label).toBe("string");
+      expect(o.label.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("options are shuffled (not always in same order across runs)", () => {
+    // Run 10 times; the correct option should not always be at index 0
+    const positions = new Set();
+    for (let i = 0; i < 20; i++) {
+      const opts = getMultipleChoiceOptions(1, 60);
+      positions.add(opts.findIndex((o) => o.isCorrect));
+    }
+    // With 4 positions and 20 runs, we expect more than 1 unique position
+    expect(positions.size).toBeGreaterThan(1);
   });
 });
