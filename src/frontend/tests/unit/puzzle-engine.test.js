@@ -208,3 +208,67 @@ describe("getMultipleChoiceOptions", () => {
     expect(positions.size).toBeGreaterThan(1);
   });
 });
+
+// ── Style presets ─────────────────────────────────────────────────────────────
+
+describe("getPuzzleLayers — jazz style", () => {
+  it("jazz intermediate layer 4 uses B♭4 (MIDI 70, dominant seventh)", () => {
+    const layer = getPuzzleLayers("intermediate", "jazz").find((l) => l.number === 4);
+    expect(layer.targetMidi).toBe(70);
+  });
+
+  it("jazz intermediate layer 1 is unchanged from classical (C4=60)", () => {
+    const layer = getPuzzleLayers("intermediate", "jazz").find((l) => l.number === 1);
+    expect(layer.targetMidi).toBe(60);
+  });
+
+  it("jazz beginner layer 4 uses B♭4 (MIDI 70)", () => {
+    const layer = getPuzzleLayers("beginner", "jazz").find((l) => l.number === 4);
+    expect(layer.targetMidi).toBe(70);
+  });
+
+  it("jazz returns 7 layers for all difficulties", () => {
+    for (const difficulty of ["beginner", "intermediate", "advanced"]) {
+      expect(getPuzzleLayers(difficulty, "jazz")).toHaveLength(7);
+    }
+  });
+});
+
+describe("getPuzzleLayers — blues style", () => {
+  it("blues intermediate layer 3 uses E♭4 (MIDI 63, minor third)", () => {
+    const layer = getPuzzleLayers("intermediate", "blues").find((l) => l.number === 3);
+    expect(layer.targetMidi).toBe(63);
+  });
+
+  it("blues intermediate layer 4 uses B♭4 (MIDI 70, flat seven)", () => {
+    const layer = getPuzzleLayers("intermediate", "blues").find((l) => l.number === 4);
+    expect(layer.targetMidi).toBe(70);
+  });
+
+  it("blues intermediate layer 5 uses G♭4 (MIDI 66, blue note/tritone)", () => {
+    const layer = getPuzzleLayers("intermediate", "blues").find((l) => l.number === 5);
+    expect(layer.targetMidi).toBe(66);
+  });
+
+  it("blues intermediate layers 1, 2, 6, 7 are unchanged from classical", () => {
+    const classical = getPuzzleLayers("intermediate", "classical");
+    const blues = getPuzzleLayers("intermediate", "blues");
+    for (const num of [1, 2, 6, 7]) {
+      expect(blues.find((l) => l.number === num).targetMidi)
+        .toBe(classical.find((l) => l.number === num).targetMidi);
+    }
+  });
+
+  it("blues returns 7 layers for all difficulties", () => {
+    for (const difficulty of ["beginner", "intermediate", "advanced"]) {
+      expect(getPuzzleLayers(difficulty, "blues")).toHaveLength(7);
+    }
+  });
+});
+
+describe("getPuzzleLayers — unknown style fallback", () => {
+  it("falls back to classical for unknown style", () => {
+    expect(getPuzzleLayers("intermediate", "baroque"))
+      .toEqual(getPuzzleLayers("intermediate", "classical"));
+  });
+});

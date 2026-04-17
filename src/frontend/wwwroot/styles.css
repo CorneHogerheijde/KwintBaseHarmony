@@ -467,6 +467,32 @@ button:hover,
   margin: 0;
 }
 
+/* ── Style badge ──────────────────────────────────────────────── */
+
+.style-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.15em 0.55em;
+  border-radius: 99px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  background: var(--border);
+  color: var(--muted);
+}
+
+.style-badge--jazz {
+  background: #f5e6c0;
+  color: #7a5500;
+}
+
+.style-badge--blues {
+  background: #d0e4f7;
+  color: #1a4d7a;
+}
+
 /* ── Progress ─────────────────────────────────────────────────── */
 
 .puzzle-progress-wrap {

@@ -3,6 +3,7 @@ export function buildComposition(overrides = {}) {
   const studentId = overrides.studentId ?? "student-001";
   const title = overrides.title ?? "Cypress Composition";
   const difficulty = overrides.difficulty ?? "beginner";
+  const style = overrides.style ?? "classical";
   const completionPercentage = overrides.completionPercentage ?? 0;
   const notesByLayer = overrides.notesByLayer ?? {};
   const completedLayers = new Set(overrides.completedLayers ?? []);
@@ -14,6 +15,7 @@ export function buildComposition(overrides = {}) {
     studentId,
     title,
     difficulty,
+    style,
     completionPercentage,
     movementNumber,
     parentCompositionId,

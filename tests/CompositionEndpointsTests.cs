@@ -429,6 +429,7 @@ public class CompositionEndpointsTests
             studentId = "student-005",
             title,
             difficulty = "advanced",
+            style = "classical",
             completionPercentage = firstLayerCompleted ? 14.3m : 0m,
             createdAt = DateTime.UtcNow,
             updatedAt = DateTime.UtcNow,
@@ -670,7 +671,63 @@ public class CompositionEndpointsTests
         Assert.Null(comp.ParentCompositionId);
     }
 
-    private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers, int MovementNumber = 1, Guid? ParentCompositionId = null);
+    [Fact]
+    public async Task PostCompositions_WithJazzStyle_PersistsStyle()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-jazz-1",
+            title = "Jazz Study",
+            difficulty = "intermediate",
+            style = "jazz"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(payload);
+        Assert.Equal("jazz", payload.Style);
+    }
+
+    [Fact]
+    public async Task PostCompositions_WithInvalidStyle_ReturnsUnprocessableEntity()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-bad-style",
+            title = "Bad Style",
+            difficulty = "beginner",
+            style = "baroque"
+        });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task PostCompositions_WithoutStyle_DefaultsToClassical()
+    {
+        using var factory = new CustomWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/compositions", new
+        {
+            studentId = "student-no-style",
+            title = "No Style Specified",
+            difficulty = "beginner"
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<CompositionResponseDto>();
+        Assert.NotNull(payload);
+        Assert.Equal("classical", payload.Style);
+    }
+
+    private sealed record CompositionResponseDto(Guid Id, string StudentId, string Title, string Difficulty, string Style, decimal CompletionPercentage, DateTime CreatedAt, DateTime UpdatedAt, List<LayerResponseDto> Layers, int MovementNumber = 1, Guid? ParentCompositionId = null);
 
     private sealed record LayerResponseDto(int LayerNumber, string Name, string? Concept, bool Completed, long TimeSpentMs, string? UserNotes, string? PuzzleAnswersJson, List<NoteResponseDto> Notes);
 

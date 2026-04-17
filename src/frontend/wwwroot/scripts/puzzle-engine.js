@@ -277,14 +277,174 @@ const layersByDifficulty = {
   ]
 };
 
+// Jazz style overrides: layer 4 uses B♭4 (MIDI 70, dominant seventh) instead of B4 (71).
+// All other layers are identical to classical.
+const layersByDifficulty_jazz = {
+  beginner: layersByDifficulty.beginner.map((layer) => {
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Dominant Seventh",
+        prompt: "Add the dominant seventh — B♭. This flatted seventh is the defining colour of jazz harmony.",
+        hint: "B♭4 is one semitone below B4 (MIDI 70). It's the black key just before B.",
+        explanation: "The dominant seventh transforms a major chord into a dominant seventh chord (C7). This flatted note creates a tension that wants to resolve — jazz exploits this tension endlessly, delaying or sidestepping it to create momentum and colour.",
+        targetMidi: 70
+      };
+    }
+    return layer;
+  }),
+  intermediate: layersByDifficulty.intermediate.map((layer) => {
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Dominant Seventh",
+        prompt: "Add the dominant seventh — B♭. The flatted seventh is jazz's signature sound.",
+        hint: "B♭4 is a black key, one semitone below B4 (MIDI 70).",
+        explanation: "The dominant seventh (minor seventh interval) gives jazz its characteristic blend of brightness and yearning. Unlike the major seventh, it pushes forward rather than floating — the engine of jazz harmonic movement.",
+        targetMidi: 70
+      };
+    }
+    return layer;
+  }),
+  advanced: layersByDifficulty.advanced.map((layer) => {
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Dominant Seventh",
+        prompt: "Dominant seventh — B♭4. The flatted leading tone that defines the jazz dominant.",
+        hint: "B♭4 (MIDI 70) — minor seventh above C4.",
+        explanation: "The minor seventh placed in this register creates the jazz dominant voicing. Unlike the major seventh's upward float, the dominant seventh presses down — a subtle but harmonically decisive difference that advanced harmonic understanding demands you hear.",
+        targetMidi: 70
+      };
+    }
+    return layer;
+  }),
+  chords: layersByDifficulty.chords
+};
+
+// Blues style overrides:
+//   Layer 3: E♭4 (MIDI 63, minor third — the blues minor/major ambiguity)
+//   Layer 4: B♭4 (MIDI 70, flat seven — dominant seventh like jazz)
+//   Layer 5: G♭4 (MIDI 66, tritone / blue note)
+const layersByDifficulty_blues = {
+  beginner: layersByDifficulty.beginner.map((layer) => {
+    if (layer.number === 3) {
+      return {
+        ...layer,
+        name: "The Blue Third",
+        prompt: "Add E♭ — the minor third. The blues lives in the space between major and minor.",
+        hint: "E♭4 is one semitone below E4 (MIDI 63). It's the black key just before E.",
+        explanation: "The minor third over a major root is the heart of the blues sound — technically 'wrong' in classical major harmony, but expressively right. This tension between E♭ and the underlying C major is what gives the blues its emotional complexity.",
+        targetMidi: 63
+      };
+    }
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Flat Seven",
+        prompt: "Add B♭ — the flat seven. Another blue note that shifts the harmony toward the dominant.",
+        hint: "B♭4 is one semitone below B4 (MIDI 70). It's the black key just before B.",
+        explanation: "The dominant seventh (B♭) stacked over the root and minor third creates the characteristic blues chord sound. This chord appears on every degree of the blues progression, a hallmark of the style.",
+        targetMidi: 70
+      };
+    }
+    if (layer.number === 5) {
+      return {
+        ...layer,
+        name: "The Blue Note",
+        prompt: "Add G♭ — the tritone, the most dissonant interval and the ultimate blue note.",
+        hint: "G♭4 is six semitones above C4 (MIDI 66). It's a black key between F# and G.",
+        explanation: "The tritone (augmented fourth / diminished fifth) is the most dissonant interval in Western music — the 'diabolus in musica'. In the blues, it's embraced as the b5 blue note, a deliberate clash that expresses the emotional tension central to the style.",
+        targetMidi: 66
+      };
+    }
+    return layer;
+  }),
+  intermediate: layersByDifficulty.intermediate.map((layer) => {
+    if (layer.number === 3) {
+      return {
+        ...layer,
+        name: "The Blue Third",
+        prompt: "Add E♭ — the minor third that gives blues its characteristic clash.",
+        hint: "E♭4 is a black key, one semitone below E4 (MIDI 63).",
+        explanation: "The blue minor third creates the tonal ambiguity that defines blues tonality — simultaneously suggesting major (the root) and minor (E♭). This unresolved tension is the essence of blues harmonic understanding.",
+        targetMidi: 63
+      };
+    }
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Flat Seven",
+        prompt: "Add B♭ — the dominant seventh, the other core blues note.",
+        hint: "B♭4 is a black key, one semitone below B4 (MIDI 70).",
+        explanation: "The dominant seventh is as essential to blues as to jazz, but in blues context it appears on every chord of the progression — not just the dominant. This non-functional use of dominant sevenths is a defining feature of blues harmonic understanding.",
+        targetMidi: 70
+      };
+    }
+    if (layer.number === 5) {
+      return {
+        ...layer,
+        name: "The Blue Note",
+        prompt: "Add G♭ — the tritone blue note, the most dissonant and expressive sound in the blues.",
+        hint: "G♭4 is a black key, six semitones above C (MIDI 66).",
+        explanation: "The b5 (tritone) occupies the exact halfway point of the octave — maximally dissonant, maximally tense. In the blues it's deployed as a passing note or bend target that evokes the style's raw emotional power. True blues harmonic understanding means hearing it as an expressive choice, not an error.",
+        targetMidi: 66
+      };
+    }
+    return layer;
+  }),
+  advanced: layersByDifficulty.advanced.map((layer) => {
+    if (layer.number === 3) {
+      return {
+        ...layer,
+        name: "The Blue Third",
+        prompt: "Minor third — E♭4. The ambiguous tonal clash that defines the blues sound.",
+        hint: "E♭4 (MIDI 63) — minor third above C4.",
+        explanation: "Introducing the minor third against a major root in the tenor register creates the blues harmonic collision at its most intimate. This inner-voice dissonance sits beneath the dominant seventh and above the bass, creating layered tension that advanced blues understanding demands you voice precisely.",
+        targetMidi: 63
+      };
+    }
+    if (layer.number === 4) {
+      return {
+        ...layer,
+        name: "The Flat Seven",
+        prompt: "Dominant seventh — B♭4. The flat seven above, completing the blues dominant sound.",
+        hint: "B♭4 (MIDI 70) — minor seventh above C4.",
+        explanation: "Set against E♭4 below, B♭4 creates a diminished fifth — a powerful internal dissonance within the chord. This interval (E♭–B♭) is the engine of blues harmonic tension at the advanced level, where every interval placement is a deliberate expressive choice.",
+        targetMidi: 70
+      };
+    }
+    if (layer.number === 5) {
+      return {
+        ...layer,
+        name: "The Blue Note",
+        prompt: "Tritone — G♭4. The most dissonant note in the blues palette.",
+        hint: "G♭4 (MIDI 66) — diminished fifth above C4.",
+        explanation: "Placing the tritone in the same register as E♭ and B♭ creates a cluster of maximum dissonance. At this level, blues harmonic understanding means recognising that these clashes are not mistakes but deliberate architecture — the blues aesthetic expressed in full advanced voicing.",
+        targetMidi: 66
+      };
+    }
+    return layer;
+  }),
+  chords: layersByDifficulty.chords
+};
+
+const _styleLayerTables = {
+  classical: layersByDifficulty,
+  jazz: layersByDifficulty_jazz,
+  blues: layersByDifficulty_blues
+};
+
 /**
- * Returns the puzzle layer definitions for the given difficulty.
- * Falls back to intermediate for any unrecognised value.
+ * Returns the puzzle layer definitions for the given difficulty and style.
+ * Falls back to intermediate difficulty and classical style for unrecognised values.
  * @param {string} difficulty  "beginner" | "intermediate" | "advanced"
+ * @param {string} [style]     "classical" | "jazz" | "blues"
  * @returns {Array}
  */
-export function getPuzzleLayers(difficulty) {
-  return layersByDifficulty[difficulty] ?? layersByDifficulty.intermediate;
+export function getPuzzleLayers(difficulty, style = 'classical') {
+  const table = _styleLayerTables[style] ?? _styleLayerTables.classical;
+  return table[difficulty] ?? table.intermediate;
 }
 
 /**
@@ -292,9 +452,10 @@ export function getPuzzleLayers(difficulty) {
  * @param {number} layerNumber 1–7
  * @param {number} midi MIDI note number 0–127
  * @param {string} [difficulty] "beginner" | "intermediate" | "advanced"
+ * @param {string} [style] "classical" | "jazz" | "blues"
  */
-export function isCorrectNote(layerNumber, midi, difficulty = "intermediate") {
-  const layers = getPuzzleLayers(difficulty);
+export function isCorrectNote(layerNumber, midi, difficulty = "intermediate", style = "classical") {
+  const layers = getPuzzleLayers(difficulty, style);
   const layer = layers.find((l) => l.number === layerNumber);
   return layer?.targetMidi === midi;
 }
@@ -305,9 +466,10 @@ export function isCorrectNote(layerNumber, midi, difficulty = "intermediate") {
  * @param {number} layerNumber 1–7
  * @param {number[]} selectedMidis Array of selected MIDI note numbers
  * @param {string} [difficulty] "beginner" | "intermediate" | "advanced"
+ * @param {string} [style] "classical" | "jazz" | "blues"
  */
-export function isCorrectChord(layerNumber, selectedMidis, difficulty = "intermediate") {
-  const layers = getPuzzleLayers(difficulty);
+export function isCorrectChord(layerNumber, selectedMidis, difficulty = "intermediate", style = "classical") {
+  const layers = getPuzzleLayers(difficulty, style);
   const layer = layers.find((l) => l.number === layerNumber);
   if (!layer?.targetMidis) return false;
   if (selectedMidis.length !== layer.targetMidis.length) return false;
@@ -379,8 +541,8 @@ export function transposeLayers(layers, rootMidi) {
  * @param {object} composition API composition response
  * @param {string} [difficulty] "beginner" | "intermediate" | "advanced"
  */
-export function getFirstIncompleteLayer(composition, difficulty = "intermediate") {
-  const layers = getPuzzleLayers(difficulty);
+export function getFirstIncompleteLayer(composition, difficulty = "intermediate", style = "classical") {
+  const layers = getPuzzleLayers(difficulty, style);
   for (const puzzleLayer of layers) {
     const apiLayer = composition.layers.find((l) => l.layerNumber === puzzleLayer.number);
     if (!apiLayer?.completed) {
@@ -402,9 +564,9 @@ export function getFirstIncompleteLayer(composition, difficulty = "intermediate"
  * @param {number} rootMidi    MIDI root (60 = C)
  * @returns {{ label: string, midi: number, isCorrect: boolean }[]}
  */
-export function getMultipleChoiceOptions(layerNumber, rootMidi = 60) {
-  const NOTE_NAMES = ['C', 'C#/D♭', 'D', 'D#/E♭', 'E', 'F', 'F#/G♭', 'G', 'G#/A♭', 'A', 'A#/B♭', 'B'];
-  const OCTAVE_LABELS = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+export function getMultipleChoiceOptions(layerNumber, rootMidi = 60, style = "classical") {
+  const NOTE_NAMES = ['C', 'C#/D\u266d', 'D', 'D#/E\u266d', 'E', 'F', 'F#/G\u266d', 'G', 'G#/A\u266d', 'A', 'A#/B\u266d', 'B'];
+  const OCTAVE_LABELS = ['C', 'C\u266f', 'D', 'D\u266f', 'E', 'F', 'F\u266f', 'G', 'G\u266f', 'A', 'A\u266f', 'B'];
 
   function midiLabel(midi) {
     const pc = midi % 12;
@@ -412,8 +574,8 @@ export function getMultipleChoiceOptions(layerNumber, rootMidi = 60) {
     return `${OCTAVE_LABELS[pc]}${octave}`;
   }
 
-  // All 7 transposed intermediate targets — these form the candidate pool
-  const baseLayers = transposeLayers(layersByDifficulty.intermediate, rootMidi);
+  // All 7 transposed targets — use style-appropriate intermediate layers as the candidate pool
+  const baseLayers = transposeLayers(getPuzzleLayers('intermediate', style), rootMidi);
   const correctLayer = baseLayers.find((l) => l.number === layerNumber);
   const correctMidi = correctLayer?.targetMidi ?? 60;
 

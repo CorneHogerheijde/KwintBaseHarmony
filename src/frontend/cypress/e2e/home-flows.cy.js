@@ -29,7 +29,7 @@ describe("Home page — start a new composition", () => {
 
     cy.wait("@createComposition")
       .its("request.body")
-      .should("deep.equal", { studentId: "Ada", title: "Test Piece", difficulty: "beginner" });
+      .should("deep.equal", { studentId: "Ada", title: "Test Piece", difficulty: "beginner", style: "classical" });
 
     cy.url().should("include", `/puzzle.html?id=${COMPOSITION_ID}`);
   });
