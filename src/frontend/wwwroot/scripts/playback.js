@@ -2,7 +2,7 @@ import { midiToFrequency } from "./music.js";
 
 let audioContext = null;
 
-function ensureAudioContext() {
+async function ensureAudioContext() {
   if (!audioContext) {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
@@ -10,7 +10,7 @@ function ensureAudioContext() {
   }
 
   if (audioContext.state === "suspended") {
-    void audioContext.resume();
+    await audioContext.resume();
   }
 
   return audioContext;
@@ -67,8 +67,8 @@ function scheduleNote(context, midi, startTime, durationSecs) {
  * No-ops if the layer has no notes.
  * @param {{ notes: Array<{pitch:number, durationMs:number, timingMs:number}> }} layer
  */
-export function playLayer(layer) {
-  const context = ensureAudioContext();
+export async function playLayer(layer) {
+  const context = await ensureAudioContext();
   if (!context || !layer.notes || layer.notes.length === 0) return;
 
   const now = context.currentTime;
@@ -86,8 +86,8 @@ export function playLayer(layer) {
  * No-ops if the composition has no notes at all.
  * @param {{ layers: Array<{notes: Array<{pitch:number}>}> }} composition
  */
-export function playEverythingSoFar(composition) {
-  const context = ensureAudioContext();
+export async function playEverythingSoFar(composition) {
+  const context = await ensureAudioContext();
   if (!context) return;
 
   const allNotes = composition.layers.flatMap((l) => l.notes ?? []);
@@ -106,8 +106,8 @@ export function playEverythingSoFar(composition) {
  * @param {{ layers: Array<{notes: Array<{pitch:number, timingMs:number}>}> }} composition
  * @param {number} [bpm=72] Beats per minute — controls spacing between notes
  */
-export function playArpeggio(composition, bpm = 72) {
-  const context = ensureAudioContext();
+export async function playArpeggio(composition, bpm = 72) {
+  const context = await ensureAudioContext();
   if (!context) return;
 
   const beatSecs = 60 / bpm;

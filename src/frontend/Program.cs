@@ -13,7 +13,7 @@ if (app.Environment.IsDevelopment())
         OnPrepareResponse = ctx =>
         {
             var ext = Path.GetExtension(ctx.File.Name);
-            if (ext is ".js" or ".css")
+            if (ext is ".js" or ".css" or ".html")
             {
                 ctx.Context.Response.Headers.CacheControl = "no-cache";
             }
