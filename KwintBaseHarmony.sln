@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwintBaseHarmony", "src\bac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwintBaseHarmony.Frontend", "src\frontend\KwintBaseHarmony.Frontend.csproj", "{9B96A4B1-8D10-4B91-B9EF-9E52E03E6440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwintBaseHarmony.Tests", "tests\KwintBaseHarmony.Tests.csproj", "{47E4B90E-0AF7-4CD7-91DB-75A0B6E68C16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwintBaseHarmony.Tests", "tests\KwintBaseHarmony.Tests\KwintBaseHarmony.Tests.csproj", "{47E4B90E-0AF7-4CD7-91DB-75A0B6E68C16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

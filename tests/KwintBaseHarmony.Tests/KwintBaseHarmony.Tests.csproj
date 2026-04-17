@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\backend\KwintBaseHarmony.csproj" />
+    <ProjectReference Include="..\..\src\backend\KwintBaseHarmony.csproj" />
   </ItemGroup>
 
 </Project>
