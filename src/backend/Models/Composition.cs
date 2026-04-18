@@ -107,6 +107,17 @@ public class Composition
     public string Style { get; set; } = "classical";
 
     /// <summary>
+    /// Optional FK to a registered User account. Null for anonymous compositions created
+    /// before authentication was introduced, or when created without a token.
+    /// </summary>
+    public Guid? UserId { get; set; }
+
+    /// <summary>
+    /// Navigation property to the owning User account (may be null).
+    /// </summary>
+    public User? User { get; set; }
+
+    /// <summary>
     /// Collection of harmonic layers (5-7 layers per Kwintessence structure).
     /// </summary>
     public ICollection<Layer> Layers { get; set; } = new List<Layer>();

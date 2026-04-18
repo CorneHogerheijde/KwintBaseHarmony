@@ -1,4 +1,6 @@
 import { request } from "./scripts/api.js";
+import { renderAuthNav } from "./scripts/nav-auth.js";
+renderAuthNav("auth-nav");
 
 const startForm = document.getElementById("start-form");
 const studentIdInput = document.getElementById("student-id-input");

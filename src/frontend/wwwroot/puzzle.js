@@ -3,6 +3,8 @@ import { midiToLabel, normalizeMidi, LAYER_COUNT } from "./scripts/music.js";
 import { renderPianoKeyboard, syncSelectedPitchDisplay, scrollPianoToMidi, zoomIn, zoomOut } from "./scripts/piano.js";
 import { renderNotation } from "./scripts/notation.js";
 import { playLayer, playArpeggio } from "./scripts/playback.js";
+import { renderAuthNav } from "./scripts/nav-auth.js";
+renderAuthNav("auth-nav");
 import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
 import { request } from "./scripts/api.js";
 import {

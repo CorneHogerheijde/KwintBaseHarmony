@@ -17,6 +17,7 @@ public class CompositionContext : DbContext
     public DbSet<Composition> Compositions { get; set; } = null!;
     public DbSet<Layer> Layers { get; set; } = null!;
     public DbSet<Note> Notes { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -112,6 +113,33 @@ public class CompositionContext : DbContext
             // Index for timing-based queries (e.g., notes in playback order)
             entity.HasIndex(e => new { e.LayerId, e.TimingMs })
                 .HasDatabaseName("IX_Notes_LayerId_TimingMs");
+        });
+
+        // User configuration
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            entity.HasIndex(e => e.Email)
+                .HasDatabaseName("IX_Users_Email")
+                .IsUnique();
+
+            entity.Property(e => e.PasswordHash)
+                .IsRequired();
+
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasConversion<string>();
+
+            // Compositions owned by this user
+            entity.HasMany(e => e.Compositions)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

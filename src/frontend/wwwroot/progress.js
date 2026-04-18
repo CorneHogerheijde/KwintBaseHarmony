@@ -1,5 +1,5 @@
-import { request } from "./scripts/api.js";
-
+import { request } from "./scripts/api.js";import { renderAuthNav } from "./scripts/nav-auth.js";
+renderAuthNav("auth-nav");
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const form = document.getElementById("progress-form");
 const idInput = document.getElementById("progress-id-input");
