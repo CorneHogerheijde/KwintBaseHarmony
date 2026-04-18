@@ -1,4 +1,4 @@
-const API_BASE = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
+import { request } from "./scripts/api.js";
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const form = document.getElementById("progress-form");
@@ -8,6 +8,7 @@ const summaryCards = document.getElementById("summary-cards");
 const chartsSection = document.getElementById("charts-section");
 const layerTableSection = document.getElementById("layer-table-section");
 const layerTableBody = document.getElementById("layer-table-body");
+const backToPuzzleLink = document.getElementById("back-to-puzzle-link");
 
 // Chart.js instances — kept so we can destroy/rebuild on reload
 let timeChart = null;
@@ -33,19 +34,18 @@ form.addEventListener("submit", (e) => {
 async function loadAnalytics(id) {
     setError("");
 
-    const response = await fetch(`${API_BASE}/${encodeURIComponent(id)}/analytics`);
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        setError(body.error ?? `Server returned ${response.status}`);
+    try {
+        const data = await request(`/${encodeURIComponent(id)}/analytics`);
+        backToPuzzleLink.href = `/puzzle.html?id=${encodeURIComponent(id)}`;
+        backToPuzzleLink.classList.remove("hidden");
+        renderSummary(data.summary, data.completionPercentage);
+        renderCharts(data.layers);
+        renderTable(data.layers);
+        showResults();
+    } catch (error) {
+        setError(error.message);
         hideResults();
-        return;
     }
-
-    const data = await response.json();
-    renderSummary(data.summary, data.completionPercentage);
-    renderCharts(data.layers);
-    renderTable(data.layers);
-    showResults();
 }
 
 // ── Render helpers ────────────────────────────────────────────────────────────

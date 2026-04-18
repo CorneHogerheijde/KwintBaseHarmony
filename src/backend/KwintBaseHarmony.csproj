@@ -11,8 +11,6 @@
   <ItemGroup>
     <!-- Dapr -->
     <PackageReference Include="Dapr.AspNetCore" Version="1.17.8" />
-    <PackageReference Include="Dapr.Workflow" Version="1.17.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     
     <!-- Web API -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
@@ -25,9 +23,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
-    
-    <!-- Audio Processing -->
-    <PackageReference Include="NAudio" Version="2.3.0" />
   </ItemGroup>
 
 </Project>
