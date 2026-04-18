@@ -15,6 +15,54 @@
 
 **Phase 5.2 Status** *(April 18, 2026)*: ✅ **Complete** — Auth enforcement on all endpoints
 
+**Phase 5.3 Status**: ⬜ **Planned** — Circle of Fifths puzzle expansion (multi-key, sharps/flats, root variety)
+
+**Phase 5.4 Status**: ⬜ **Planned** — Notation preview fix (octave-aware, bass/treble clef switching at middle C)
+
+---
+
+### Phase 5.4 Deliverables — Notation Preview Fix
+
+Notation currently renders all notes without octave context, making it impossible to distinguish C3 from C4. Clef selection is also static — all notes appear in treble regardless of their register.
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Octave-aware note labels | Display notes as `C4`, `G3`, `F♯5` etc. in both the puzzle hint and the notation canvas | ⬜ |
+| Grand staff rendering | Treble + bass staves always rendered; notes ≥ MIDI 60 go on treble, notes < 60 go on bass | ⬜ |
+| Simultaneous notes (chords) | Multiple notes on the same beat rendered as a chord on the appropriate staff | ⬜ |
+| Middle C ledger line | C4 (MIDI 60) shown with its ledger line between the two staves | ⬜ |
+| Scaled-down canvas | Canvas height increased to fit both staves; note/staff size reduced slightly to maintain layout | ⬜ |
+| `midiToOctaveLabel(midi)` helper | Centralised function used by piano, notation, and puzzle hints; `Math.floor(midi/12)-1` for octave | ⬜ |
+| Regression tests | Vitest unit tests for `midiToOctaveLabel`, staff assignment, chord grouping logic | ⬜ |
+
+---
+
+### Phase 5.3 Deliverables — Circle of Fifths Puzzle Expansion
+
+Current puzzles always use C major / A minor as the tonal centre. This milestone introduces key-aware puzzles that progress through the circle of fifths, exposing students to sharp keys (G, D, A, E, B, F♯), flat keys (F, B♭, E♭, A♭, D♭, G♭), and the associated accidentals.
+
+**Theory foundation (Hoffman Academy / standard music theory):**
+- Circle of fifths: C → G → D → A → E → B → F♯ (sharp keys, clockwise) / C → F → B♭ → E♭ → A♭ → D♭ → G♭ (flat keys, counter-clockwise)
+- Each clockwise step adds one sharp (the 7th scale degree of the new key)
+- Each counter-clockwise step adds one flat (the 4th scale degree of the new key)
+- Identification trick: last sharp + half-step up = key name; next-to-last flat = key name
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `keyProfile` data model | Per-key definition: root MIDI (reuses existing `rootMidi` column), scale degrees, accidentals list | ⬜ |
+| `rootMidi` extended to all 12 keys | No new DB column; `rootMidi` already stored — UI and layer data now use it as the key selector | ⬜ |
+| Key picker replaces root picker | Home page key dropdown replaces the existing root selector (same data, richer UI) | ⬜ |
+| Sharp-key puzzles (4 keys) | G, D, A, E major — layer targets transpose via `rootMidi` offset from C | ⬜ |
+| Flat-key puzzles (4 keys) | F, B♭, E♭, A♭ major — same transposition logic; ♭ accidentals applied | ⬜ |
+| Accidental notation rendering | ♯ and ♭ symbols rendered correctly before note heads on the grand staff | ⬜ |
+| Key signature display | Sharps/flats drawn at start of both treble and bass staves | ⬜ |
+| Educator progression mode | Ordered journey through keys: C → G → D → A (easier) then flat side | ⬜ |
+| Theory panel per key | Collapsible panel explaining the key's sharps/flats and their circle-of-fifths position | ⬜ |
+| Vitest unit tests | Tests for key transposition, accidental labelling, scale-degree lookup per key | ⬜ |
+| Cypress E2E tests | Select G major → verify F♯ appears in notation; select B♭ → verify B♭ and E♭ appear | ⬜ |
+
+---
+
 ### Phase 5.2 Deliverables — Auth Enforcement
 
 | Feature | Description | Status |
