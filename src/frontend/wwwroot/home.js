@@ -1,4 +1,4 @@
-const API_BASE = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
+import { request } from "./scripts/api.js";
 
 const startForm = document.getElementById("start-form");
 const studentIdInput = document.getElementById("student-id-input");
@@ -32,32 +32,12 @@ function setLoading(btn, loading) {
   btn.textContent = loading ? "Please wait…" : btn.dataset.originalText;
 }
 
-async function apiPost(path, body) {
-  const response = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    const message = data?.error ?? `Request failed (${response.status})`;
-    throw new Error(message);
-  }
-
-  return data;
+function apiPost(path, body) {
+  return request(path, { method: "POST", body: JSON.stringify(body) });
 }
 
-async function apiGet(path) {
-  const response = await fetch(`${API_BASE}${path}`);
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed (${response.status})`);
-  }
-
-  return response.json();
+function apiGet(path) {
+  return request(path);
 }
 
 // ── Build the composition list ────────────────────────────────────────────────

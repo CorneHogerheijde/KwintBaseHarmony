@@ -4,6 +4,7 @@ import { renderPianoKeyboard, syncSelectedPitchDisplay, scrollPianoToMidi, zoomI
 import { renderNotation } from "./scripts/notation.js";
 import { playLayer, playArpeggio } from "./scripts/playback.js";
 import { renderCircleOfFifths } from "./scripts/circle-of-fifths.js";
+import { request } from "./scripts/api.js";
 import {
   getPuzzleLayers,
   isCorrectNote,
@@ -45,7 +46,6 @@ const setRootBtn      = document.getElementById("set-root-btn");
 const rootNoteLabel   = document.getElementById("root-note-label");
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const apiBase = `${window.APP_CONFIG?.apiBase ?? "http://localhost:5000"}/api/compositions`;
 let composition = null;
 let difficulty = "intermediate";
 let movementNumber = 1;
@@ -56,24 +56,12 @@ let selectedChordMidis = [];
 let rootMidi = 60;
 let rootSelectionMode = false;
 let style = "classical";
+let layerStartTime = null;
+let layerWrongAttempts = 0;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function compositionUrl(path = "") {
-  return `${apiBase}/${composition.id}${path}`;
-}
-
-async function apiRequest(url, options = {}) {
-  const response = await fetch(url, {
-    headers: { "Content-Type": "application/json", ...(options.headers ?? {}) },
-    ...options
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed: ${response.status}`);
-  }
-
-  return response.json();
+  return `/${composition.id}${path}`;
 }
 
 function currentApiLayer() {
@@ -158,7 +146,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     updateRootLabel();
     // Persist the new transposition to the backend (fire-and-forget)
     if (composition) {
-      apiRequest(compositionUrl("/root-midi"), {
+      request(compositionUrl("/root-midi"), {
         method: "PATCH",
         body: JSON.stringify({ rootMidi })
       }).catch((err) => console.warn("Failed to save rootMidi:", err));
@@ -222,6 +210,7 @@ function onNoteSelected(midi, { preview = false } = {}) {
     showFeedback(`Correct! ${midiToLabel(selectedMidi)} is the right note. Click "Mark Layer Complete" to continue.`, true);
     markCompleteBtn.disabled = false;
   } else {
+    layerWrongAttempts++;
     markCompleteBtn.disabled = true;
   }
 }
@@ -230,6 +219,8 @@ function onNoteSelected(midi, { preview = false } = {}) {
 function renderLayer(layerNumber) {
   currentLayerNumber = layerNumber;
   correctNoteSelected = false;
+  layerStartTime = Date.now();
+  layerWrongAttempts = 0;
 
   const layers = getActiveLayers();
   const puzzleLayer = layers.find((l) => l.number === layerNumber);
@@ -351,12 +342,13 @@ async function handleMultipleChoiceClick(btn, option) {
     showFeedback(`Correct! ${option.label} is right. Moving to the next layer…`, true);
 
     try {
-      await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
+      await request(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
         method: "POST",
         body: JSON.stringify({ pitch: option.midi, durationMs: 500, timingMs: 0, velocity: 100 })
       });
-      composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
-        method: "POST"
+      composition = await request(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+        method: "POST",
+        body: JSON.stringify({ attempts: layerWrongAttempts + 1, firstTryCorrect: layerWrongAttempts === 0, timeSpentMs: layerStartTime ? Date.now() - layerStartTime : null })
       });
       const completedLayer = composition.layers.find((l) => l.layerNumber === currentLayerNumber);
       if (completedLayer) playLayer(completedLayer);
@@ -370,6 +362,7 @@ async function handleMultipleChoiceClick(btn, option) {
     }
   } else {
     btn.classList.add("mc-incorrect");
+    layerWrongAttempts++;
     showFeedback("Not quite — try again!", false);
     setTimeout(() => {
       btn.classList.remove("mc-incorrect");
@@ -432,7 +425,7 @@ markCompleteBtn.addEventListener("click", async () => {
 
   try {
     // Add the note to the layer, then mark the layer complete
-    await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
+    await request(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
       method: "POST",
       body: JSON.stringify({
         pitch: selectedMidi,
@@ -442,8 +435,9 @@ markCompleteBtn.addEventListener("click", async () => {
       })
     });
 
-    composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
-      method: "POST"
+    composition = await request(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+      method: "POST",
+      body: JSON.stringify({ attempts: layerWrongAttempts + 1, firstTryCorrect: layerWrongAttempts === 0, timeSpentMs: layerStartTime ? Date.now() - layerStartTime : null })
     });
 
     // Play the layer back before advancing
@@ -487,6 +481,7 @@ submitChordBtn.addEventListener("click", async () => {
 
   if (!correct) {
     showFeedback("Not quite — try again. Select all the required notes and click Submit chord.", false);
+    layerWrongAttempts++;
     return;
   }
 
@@ -496,14 +491,15 @@ submitChordBtn.addEventListener("click", async () => {
 
   try {
     for (const pitch of selectedChordMidis) {
-      await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
+      await request(compositionUrl(`/layers/${currentLayerNumber}/notes`), {
         method: "POST",
         body: JSON.stringify({ pitch, durationMs: 500, timingMs: 0, velocity: 100 })
       });
     }
 
-    composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
-      method: "POST"
+    composition = await request(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+      method: "POST",
+      body: JSON.stringify({ attempts: layerWrongAttempts + 1, firstTryCorrect: layerWrongAttempts === 0, timeSpentMs: layerStartTime ? Date.now() - layerStartTime : null })
     });
 
     const completedLayer = composition.layers.find((l) => l.layerNumber === currentLayerNumber);
@@ -536,8 +532,9 @@ skipLayerBtn.addEventListener("click", async () => {
   showAnswerBtn.disabled = true;
 
   try {
-    composition = await apiRequest(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
-      method: "POST"
+    composition = await request(compositionUrl(`/layers/${currentLayerNumber}/complete`), {
+      method: "POST",
+      body: JSON.stringify({ timeSpentMs: layerStartTime ? Date.now() - layerStartTime : null })
     });
 
     advanceToNextLayer();
@@ -564,7 +561,7 @@ continueMovementBtn?.addEventListener("click", async () => {
   continueMovementBtn.disabled = true;
 
   try {
-    const next = await apiRequest(`${apiBase}/${composition.id}/movements`, { method: "POST" });
+    const next = await request(`/${composition.id}/movements`, { method: "POST" });
     window.location.href = `/puzzle.html?id=${next.id}`;
   } catch (error) {
     showFeedback(`Could not start next movement: ${error.message}`, false);
@@ -590,7 +587,7 @@ async function init() {
   }
 
   try {
-    composition = await apiRequest(`${apiBase}/${id}`);
+    composition = await request(`/${id}`);
   } catch (error) {
     promptEl.textContent = `Could not load composition: ${error.message}`;
     return;
