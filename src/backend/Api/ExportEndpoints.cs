@@ -30,7 +30,7 @@ public static class ExportEndpoints
                 return Results.NotFound(new { error = $"Composition {id} not found" });
 
             var json = compositionService.SerializeToJson(composition);
-            return Results.Text(json, "application/json");
+            return Results.Ok(json);
         });
 
         compositions.MapPost("/import/json", async (
@@ -41,7 +41,6 @@ public static class ExportEndpoints
             try
             {
                 var composition = compositionService.DeserializeFromJson(request.Json);
-                composition.Id = Guid.NewGuid();
                 composition.CreatedAt = DateTime.UtcNow;
                 composition.UpdatedAt = DateTime.UtcNow;
 

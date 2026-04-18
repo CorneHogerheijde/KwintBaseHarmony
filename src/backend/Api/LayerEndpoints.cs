@@ -15,6 +15,9 @@ public static class LayerEndpoints
             AddNoteRequest request,
             ICompositionService compositionService) =>
         {
+            if (request.Pitch is < 0 or > 127)
+                return Results.BadRequest(new { error = "Pitch must be between 0 and 127." });
+
             try
             {
                 var note = new Note
@@ -41,13 +44,13 @@ public static class LayerEndpoints
         compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/complete", async (
             Guid id,
             int layerNumber,
-            CompleteLayerRequest request,
+            CompleteLayerRequest? request,
             ICompositionService compositionService) =>
         {
             try
             {
                 var composition = await compositionService.CompleteLayerAsync(
-                    id, layerNumber, request.Attempts, request.FirstTryCorrect, request.TimeSpentMs);
+                    id, layerNumber, request?.Attempts, request?.FirstTryCorrect, request?.TimeSpentMs);
 
                 return Results.Ok(composition.ToResponse());
             }
