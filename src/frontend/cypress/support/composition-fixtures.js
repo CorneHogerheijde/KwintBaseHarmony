@@ -9,6 +9,7 @@ export function buildComposition(overrides = {}) {
   const completedLayers = new Set(overrides.completedLayers ?? []);
   const movementNumber = overrides.movementNumber ?? 1;
   const parentCompositionId = overrides.parentCompositionId ?? null;
+  const rootMidi = overrides.rootMidi ?? 60;
 
   return {
     id,
@@ -16,6 +17,7 @@ export function buildComposition(overrides = {}) {
     title,
     difficulty,
     style,
+    rootMidi,
     completionPercentage,
     movementNumber,
     parentCompositionId,

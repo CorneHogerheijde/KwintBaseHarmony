@@ -13,7 +13,8 @@ import {
   isCorrectChord,
   transposeLayers,
   getFirstIncompleteLayer,
-  getMultipleChoiceOptions
+  getMultipleChoiceOptions,
+  getKeyProfile
 } from "./scripts/puzzle-engine.js";
 
 // ── DOM references ────────────────────────────────────────────────────────────
@@ -75,8 +76,8 @@ function countCompleted() {
 }
 
 function updateRootLabel() {
-  const name = midiToLabel(rootMidi).replace(/\d+$/, "");
-  if (rootNoteLabel) rootNoteLabel.textContent = `Root: ${name}`;
+  const profile = getKeyProfile(rootMidi);
+  if (rootNoteLabel) rootNoteLabel.textContent = profile.name;
 }
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
@@ -302,10 +303,10 @@ function renderLayer(layerNumber) {
 
   const rootNoteEl = document.getElementById("layer-root-note");
   if (rootNoteEl) {
-    const rootName = midiToLabel(rootMidi).replace(/\d+$/, "");
-    rootNoteEl.textContent = rootMidi === 60
-      ? `Playing in the default key of C.`
-      : `Transposed to root: ${rootName}. Note names in the explanation above refer to the default key of C.`;
+    const profile = getKeyProfile(rootMidi);
+    rootNoteEl.textContent = profile.accidentals.length === 0
+      ? `Playing in ${profile.name} (no accidentals).`
+      : `Playing in ${profile.name}: ${profile.label.split("\u2014")[1]?.trim() ?? ""}`;  
   }
 
   puzzleCard.hidden = false;
