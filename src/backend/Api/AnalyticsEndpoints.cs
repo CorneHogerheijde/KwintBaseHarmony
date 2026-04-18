@@ -77,7 +77,7 @@ public static class AnalyticsEndpoints
                 composition.CompletionPercentage,
                 summary,
                 layerAnalytics));
-        });
+        }).RequireAuthorization();
 
         return app;
     }

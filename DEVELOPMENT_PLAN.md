@@ -7,6 +7,47 @@
 **Timeline**: Active development  
 **Target Users**: Musicians and music educators
 
+---
+
+## Phase 5 — Authentication & Authorization
+
+**Phase 5.1 Status** *(April 18, 2026)*: ✅ **Complete** — PR #38 merged
+
+**Phase 5.2 Status** *(April 18, 2026)*: ✅ **Complete** — Auth enforcement on all endpoints
+
+### Phase 5.2 Deliverables — Auth Enforcement
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `RequireAuthorization()` | Added to all 5 endpoint groups: compositions, layers, movements, export, analytics | ✅ |
+| Composition `UserId` FK | `POST /api/compositions` extracts `sub` claim and stores `UserId` on composition | ✅ |
+| `GET /api/compositions` | New endpoint — returns only the authenticated user's compositions via `GetByUserIdAsync` | ✅ |
+| `ICompositionService` | Added `GetByUserIdAsync(Guid userId)` + updated `CreateAsync` signature with `Guid? userId` | ✅ |
+| `TestAuthHandler` | Auto-authenticates all test HTTP requests so existing tests remain green with `RequireAuthorization()` | ✅ |
+| JWT `MapInboundClaims = false` | Keeps JWT claim names as-is (`sub` stays `sub`) so claim lookups work correctly | ✅ |
+| 3 new auth tests | `Me_WithValidToken`, `Compositions_WithoutToken`, `GetMyCompositions_ReturnsOnlyOwnCompositions` | ✅ |
+
+**Test coverage**: 49 passing tests (47 original + new auth integration tests)
+
+### Phase 5.1 Deliverables — Authentication MVP
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `User` entity | `Id`, `Email`, `PasswordHash` (BCrypt), `Role` (Student/Educator), `CreatedAt`, nav to `Compositions` | ✅ |
+| EF migration `AddAuthentication` | `Users` table + nullable `UserId` FK on `Compositions` (SetNull on delete) | ✅ |
+| `POST /api/auth/register` | Validate email/password, hash, return JWT | ✅ |
+| `POST /api/auth/login` | Verify BCrypt hash, return JWT | ✅ |
+| `GET /api/auth/me` | RequireAuthorization — returns claims from token | ✅ |
+| `JwtService` | Generates signed JWT; reads `Jwt:Key/Issuer/Audience` from config | ✅ |
+| `scripts/auth.js` | `getToken`/`setAuth`/`clearAuth`/`isLoggedIn`/`requireAuth` helpers | ✅ |
+| `scripts/nav-auth.js` | Renders login/logout nav widget; injected on all pages | ✅ |
+| `scripts/api.js` | Attaches `Authorization: Bearer` header when token present | ✅ |
+| `login.html` / `login.js` | Email + password form; stores token in `sessionStorage` | ✅ |
+| `register.html` / `register.js` | Email + password + role form | ✅ |
+| Auth nav on all pages | `index.html`, `puzzle.html`, `progress.html` | ✅ |
+
+---
+
 **Phase 3 Status** *(April 16, 2026)*: ✅ **Complete**
 
 **Phase 4A Status** *(April 17, 2026)*: ✅ **Complete**

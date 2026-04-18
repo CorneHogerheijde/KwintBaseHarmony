@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using KwintBaseHarmony.Services;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace KwintBaseHarmony.Api;
 
@@ -6,10 +8,11 @@ public static class CompositionEndpoints
 {
     public static IEndpointRouteBuilder MapCompositionEndpoints(this IEndpointRouteBuilder app)
     {
-        var compositions = app.MapGroup("/api/compositions");
+        var compositions = app.MapGroup("/api/compositions").RequireAuthorization();
 
         compositions.MapPost("", async (
             CreateCompositionRequest request,
+            ClaimsPrincipal principal,
             ICompositionService compositionService,
             ILogger<Program> logger) =>
         {
@@ -19,13 +22,17 @@ public static class CompositionEndpoints
             if (string.IsNullOrWhiteSpace(request.Title))
                 return Results.BadRequest(new { error = "Title is required" });
 
+            var userIdClaim = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            Guid? userId = userIdClaim is not null && Guid.TryParse(userIdClaim, out var uid) ? uid : null;
+
             try
             {
                 var composition = await compositionService.CreateAsync(
                     request.StudentId,
                     request.Title,
                     request.Difficulty ?? "beginner",
-                    request.Style ?? "classical");
+                    request.Style ?? "classical",
+                    userId);
 
                 logger.LogInformation(
                     "Created composition {CompositionId} for student {StudentId}",
@@ -37,6 +44,18 @@ public static class CompositionEndpoints
             {
                 return Results.UnprocessableEntity(new { error = exception.Message });
             }
+        });
+
+        compositions.MapGet("", async (
+            ClaimsPrincipal principal,
+            ICompositionService compositionService) =>
+        {
+            var userIdClaim = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            if (userIdClaim is null || !Guid.TryParse(userIdClaim, out var userId))
+                return Results.Unauthorized();
+
+            var results = await compositionService.GetByUserIdAsync(userId);
+            return Results.Ok(results.Select(c => c.ToResponse()).ToList());
         });
 
         compositions.MapGet("/{id:guid}", async (Guid id, ICompositionService compositionService) =>
