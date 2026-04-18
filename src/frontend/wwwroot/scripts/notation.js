@@ -1,5 +1,6 @@
 import { notationClefSelect, notationStaff, notationSummary } from "./dom.js";
 import { getNoteDescriptor } from "./music.js";
+import { getKeyProfile, KEY_SIG_DIATONIC } from "./key-profiles.js";
 
 function getRecentNotationNotes(selectedPitch, composition, rootMidi = 60) {
   const offset = rootMidi - 60;
@@ -121,9 +122,32 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   }
   svg.appendChild(clefText);
 
-  // 4/4 time signature
+  // ── Key signature ────────────────────────────────────────────────────────────
+  const keyProfile = getKeyProfile(rootMidi);
+  const numAccidentals = keyProfile.accidentals.length;
+  const keySigStartX = staffStartX + 8;
+  const keySigSymbol = keyProfile.accidentalType === "sharp" ? "\u266f" : "\u266d";
+  const diatonicPositions = KEY_SIG_DIATONIC[clef]?.[keyProfile.accidentalType] ?? [];
+
+  for (let i = 0; i < numAccidentals; i++) {
+    const diatonicIdx = diatonicPositions[i];
+    const symY = bottomLineY - (diatonicIdx - clefReference.bottomLineIndex) * noteSpacing;
+    const symX = keySigStartX + i * 11;
+    const sym = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    sym.setAttribute("x", String(symX));
+    sym.setAttribute("y", String(symY + 5));
+    sym.setAttribute("fill", "#2f241d");
+    sym.setAttribute("font-size", "15");
+    sym.setAttribute("font-family", "serif");
+    sym.textContent = keySigSymbol;
+    svg.appendChild(sym);
+  }
+
+  // ── 4/4 time signature (x shifts right when key signature is present) ────────
+  const timeSigX = keySigStartX + numAccidentals * 11 + (numAccidentals > 0 ? 5 : 0);
+
   const timeSigTop = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigTop.setAttribute("x", String(staffStartX + 8));
+  timeSigTop.setAttribute("x", String(timeSigX + 8));
   timeSigTop.setAttribute("y", String(topLineY + noteSpacing * 2));
   timeSigTop.setAttribute("fill", "#2f241d");
   timeSigTop.setAttribute("font-size", "16");
@@ -133,7 +157,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   svg.appendChild(timeSigTop);
 
   const timeSigBottom = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigBottom.setAttribute("x", String(staffStartX + 8));
+  timeSigBottom.setAttribute("x", String(timeSigX + 8));
   timeSigBottom.setAttribute("y", String(topLineY + noteSpacing * 6));
   timeSigBottom.setAttribute("fill", "#2f241d");
   timeSigBottom.setAttribute("font-size", "16");
@@ -143,7 +167,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   svg.appendChild(timeSigBottom);
 
   // Spread notes across the staff horizontally (oldest left → newest/selected right)
-  const noteAreaStart = staffStartX + 30;
+  const noteAreaStart = timeSigX + 24;
   const noteAreaEnd = staffEndX - 20;
   const noteStep = notes.length > 1 ? (noteAreaEnd - noteAreaStart) / (notes.length - 1) : 0;
 

@@ -1,5 +1,7 @@
 import { getPuzzleLayers } from "./puzzle-layers-data.js";
 export { getPuzzleLayers };
+import { getKeyProfile, KEY_PROFILES } from "./key-profiles.js";
+export { getKeyProfile, KEY_PROFILES };
 
 
 /**
