@@ -7,7 +7,7 @@ public static class LayerEndpoints
 {
     public static IEndpointRouteBuilder MapLayerEndpoints(this IEndpointRouteBuilder app)
     {
-        var compositions = app.MapGroup("/api/compositions");
+        var compositions = app.MapGroup("/api/compositions").RequireAuthorization();
 
         compositions.MapPost("/{id:guid}/layers/{layerNumber:int}/notes", async (
             Guid id,

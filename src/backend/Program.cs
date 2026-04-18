@@ -31,6 +31,7 @@ var jwtKey = builder.Configuration["Jwt:Key"] ?? "test-only-secret-key-not-for-p
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

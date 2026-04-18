@@ -19,7 +19,7 @@ public class CompositionService : ICompositionService
     /// <summary>
     /// Creates a new composition with empty 7 layers (Kwintessence structure).
     /// </summary>
-    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical")
+    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical", Guid? userId = null)
     {
         var composition = new Composition
         {
@@ -27,6 +27,7 @@ public class CompositionService : ICompositionService
             Title = title,
             Difficulty = difficulty.Trim(),
             Style = style.Trim(),
+            UserId = userId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -76,6 +77,15 @@ public class CompositionService : ICompositionService
     {
         return await _context.Compositions
             .Where(c => c.StudentId == studentId)
+            .Include(c => c.Layers)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<List<Composition>> GetByUserIdAsync(Guid userId)
+    {
+        return await _context.Compositions
+            .Where(c => c.UserId == userId)
             .Include(c => c.Layers)
             .OrderByDescending(c => c.CreatedAt)
             .ToListAsync();

@@ -6,7 +6,7 @@ public static class ExportEndpoints
 {
     public static IEndpointRouteBuilder MapExportEndpoints(this IEndpointRouteBuilder app)
     {
-        var compositions = app.MapGroup("/api/compositions");
+        var compositions = app.MapGroup("/api/compositions").RequireAuthorization();
 
         compositions.MapGet("/{id:guid}/export/midi", async (
             Guid id,

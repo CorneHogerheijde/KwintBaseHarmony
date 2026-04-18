@@ -6,7 +6,7 @@ public static class MovementEndpoints
 {
     public static IEndpointRouteBuilder MapMovementEndpoints(this IEndpointRouteBuilder app)
     {
-        var compositions = app.MapGroup("/api/compositions");
+        var compositions = app.MapGroup("/api/compositions").RequireAuthorization();
 
         compositions.MapPost("/{id:guid}/movements", async (
             Guid id,
