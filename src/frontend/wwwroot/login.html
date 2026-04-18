@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwintBaseHarmony — Log in</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app-config.js"></script>
+</head>
+<body>
+    <div class="page-shell auth-shell">
+
+        <main class="auth-card panel">
+            <p class="eyebrow">KwintBaseHarmony</p>
+            <h1>Log in</h1>
+            <p class="lede">Welcome back — log in to continue your compositions.</p>
+
+            <form id="login-form" class="stacked-form">
+                <label>
+                    Email
+                    <input id="email-input" type="email" autocomplete="email" required placeholder="you@example.com">
+                </label>
+                <label>
+                    Password
+                    <input id="password-input" type="password" autocomplete="current-password" required placeholder="••••••••">
+                </label>
+                <p id="login-error" class="home-error hidden"></p>
+                <button type="submit" class="primary-button">Log in →</button>
+            </form>
+
+            <p class="auth-switch-link">No account yet? <a href="/register.html">Register</a></p>
+            <p class="auth-switch-link"><a href="/">Home</a></p>
+        </main>
+
+    </div>
+    <script type="module" src="/login.js"></script>
+</body>
+</html>

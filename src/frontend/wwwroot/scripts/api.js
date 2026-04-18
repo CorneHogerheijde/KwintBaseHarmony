@@ -1,10 +1,15 @@
 import { apiBaseUrl, backendBaseUrl } from "./dom.js";
 import { setStatus } from "./logging.js";
+import { getToken } from "./auth.js";
 
 export async function request(path, options = {}) {
+  const token = getToken();
+  const authHeader = token ? { "Authorization": `Bearer ${token}` } : {};
+
   const response = await fetch(`${apiBaseUrl}${path}`, {
     headers: {
       "Content-Type": "application/json",
+      ...authHeader,
       ...(options.headers ?? {})
     },
     ...options

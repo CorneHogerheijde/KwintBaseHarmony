@@ -1,9 +1,13 @@
+using System.Text;
 using Dapr.Client;
 using KwintBaseHarmony.Api;
+using KwintBaseHarmony.Auth;
 using KwintBaseHarmony.Data;
 using KwintBaseHarmony.Infrastructure;
 using KwintBaseHarmony.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +25,24 @@ builder.Services.AddDbContext<CompositionContext>(options =>
 // Register application services
 builder.Services.AddScoped<ICompositionService, CompositionService>();
 builder.Services.AddScoped<IMidiExportService, MidiExportService>();
+
+// Add JWT authentication
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "test-only-secret-key-not-for-production!!!";
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+builder.Services.AddAuthorization();
 
 
 // Add CORS for frontend
@@ -61,6 +83,8 @@ if (!app.Environment.IsEnvironment("Testing"))
 }
 
 app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
 if (!app.Environment.IsEnvironment("Testing")
     && HttpsRedirectionPolicy.ShouldUseHttpsRedirection(app.Configuration))
 {
@@ -74,6 +98,7 @@ app.MapSubscribeHandler();
 
 // Map API endpoint groups
 app
+    .MapAuthEndpoints()
     .MapCompositionEndpoints()
     .MapLayerEndpoints()
     .MapAnalyticsEndpoints()
