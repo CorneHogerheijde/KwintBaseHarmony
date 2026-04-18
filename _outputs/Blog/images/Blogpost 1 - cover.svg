@@ -1,0 +1,303 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg"
+     font-family="'Segoe UI', 'Trebuchet MS', sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6f0e5"/>
+      <stop offset="100%" stop-color="#efe5d6"/>
+    </linearGradient>
+    <linearGradient id="wKey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffdf8"/>
+      <stop offset="100%" stop-color="#efe6d8"/>
+    </linearGradient>
+    <linearGradient id="bKey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3e3129"/>
+      <stop offset="100%" stop-color="#1f1713"/>
+    </linearGradient>
+    <linearGradient id="aKey" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d7f1eb"/>
+      <stop offset="100%" stop-color="#9ed9cb"/>
+    </linearGradient>
+    <filter id="panelShadow" x="-6%" y="-6%" width="112%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#2f241d" flood-opacity="0.11"/>
+    </filter>
+    <filter id="smallShadow" x="-6%" y="-6%" width="112%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="11" flood-color="#2f241d" flood-opacity="0.07"/>
+    </filter>
+  </defs>
+
+  <!-- ── BACKGROUND ── -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <ellipse cx="60"  cy="30"  rx="380" ry="270" fill="#126e5a" fill-opacity="0.15"/>
+  <ellipse cx="1150" cy="20" rx="310" ry="250" fill="#db8d40" fill-opacity="0.13"/>
+
+  <!-- ── HEADER ── -->
+  <text x="600" y="48" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="0.22em" fill="#126e5a">KWINTBASEHARMONY</text>
+  <text x="600" y="102" text-anchor="middle" font-size="44" font-weight="800" fill="#2f241d" letter-spacing="-0.02em">Build your harmonic foundation</text>
+  <text x="600" y="136" text-anchor="middle" font-size="16.5" fill="#6d5b4b">Music theory puzzles — layer by layer, note by note</text>
+
+  <!-- ═══════════════════ LEFT PANELS ═══════════════════ -->
+
+  <!-- Home form panel -->
+  <rect x="20" y="162" width="268" height="186" rx="20" fill="rgba(255,250,242,0.93)" stroke="rgba(47,36,29,0.10)" stroke-width="1" filter="url(#smallShadow)"/>
+  <text x="40" y="192" font-size="12.5" font-weight="700" fill="#2f241d">Start a new composition</text>
+  <text x="40" y="208" font-size="9" fill="#6d5b4b">Enter your name and title to begin.</text>
+  <rect x="40" y="216" width="228" height="23" rx="7" fill="rgba(255,255,255,0.85)" stroke="rgba(47,36,29,0.13)" stroke-width="1"/>
+  <text x="54" y="231" font-size="9" fill="#9e8a7a">Your name · e.g. Ada</text>
+  <rect x="40" y="245" width="228" height="23" rx="7" fill="rgba(255,255,255,0.85)" stroke="rgba(47,36,29,0.13)" stroke-width="1"/>
+  <text x="54" y="260" font-size="9" fill="#9e8a7a">Composition title</text>
+  <rect x="40" y="274" width="228" height="23" rx="7" fill="rgba(255,255,255,0.85)" stroke="rgba(47,36,29,0.13)" stroke-width="1"/>
+  <text x="54" y="289" font-size="9" fill="#9e8a7a">C major — no accidentals</text>
+  <rect x="40" y="305" width="228" height="26" rx="10" fill="#126e5a"/>
+  <text x="154" y="322" text-anchor="middle" font-size="10.5" font-weight="600" fill="#f8f6f2">Start Puzzle →</text>
+
+  <!-- Stats panel -->
+  <rect x="20" y="358" width="268" height="204" rx="20" fill="rgba(255,250,242,0.93)" stroke="rgba(47,36,29,0.10)" stroke-width="1" filter="url(#smallShadow)"/>
+  <!-- Stat chips row -->
+  <rect x="33" y="370" width="72" height="52" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="69" y="396" text-anchor="middle" font-size="18" font-weight="700" fill="#126e5a">86%</text>
+  <text x="69" y="411" text-anchor="middle" font-size="7" letter-spacing="0.07em" fill="#6d5b4b">COMPLETION</text>
+  <rect x="113" y="370" width="72" height="52" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="149" y="396" text-anchor="middle" font-size="18" font-weight="700" fill="#126e5a">53s</text>
+  <text x="149" y="411" text-anchor="middle" font-size="7" letter-spacing="0.07em" fill="#6d5b4b">TOTAL TIME</text>
+  <rect x="193" y="370" width="82" height="52" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="234" y="396" text-anchor="middle" font-size="18" font-weight="700" fill="#126e5a">1.7</text>
+  <text x="234" y="411" text-anchor="middle" font-size="7" letter-spacing="0.05em" fill="#6d5b4b">AVG ATTEMPTS</text>
+  <!-- Bar chart -->
+  <text x="33" y="441" font-size="9.5" font-weight="600" fill="#2f241d">Time per layer</text>
+  <line x1="33" y1="534" x2="278" y2="534" stroke="rgba(47,36,29,0.12)" stroke-width="1"/>
+  <rect x="37"  y="498" width="20" height="36" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="63"  y="514" width="20" height="20" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="89"  y="490" width="20" height="44" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="115" y="508" width="20" height="26" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="141" y="480" width="20" height="54" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="167" y="496" width="20" height="38" rx="2" fill="#126e5a" opacity="0.85"/>
+  <rect x="193" y="520" width="20" height="14" rx="2" fill="#126e5a" opacity="0.45"/>
+  <text x="47"  y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L1</text>
+  <text x="73"  y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L2</text>
+  <text x="99"  y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L3</text>
+  <text x="125" y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L4</text>
+  <text x="151" y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L5</text>
+  <text x="177" y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L6</text>
+  <text x="203" y="546" text-anchor="middle" font-size="7.5" fill="#6d5b4b">L7</text>
+
+  <!-- ═══════════════════ RIGHT PANELS ═══════════════════ -->
+
+  <!-- Notation preview panel -->
+  <rect x="912" y="162" width="268" height="186" rx="20" fill="rgba(255,250,242,0.93)" stroke="rgba(47,36,29,0.10)" stroke-width="1" filter="url(#smallShadow)"/>
+  <text x="932" y="192" font-size="12.5" font-weight="700" fill="#2f241d">Notation Preview</text>
+  <!-- Staff lines -->
+  <line x1="958" y1="228" x2="1158" y2="228" stroke="#2f241d" stroke-width="0.9"/>
+  <line x1="958" y1="239" x2="1158" y2="239" stroke="#2f241d" stroke-width="0.9"/>
+  <line x1="958" y1="250" x2="1158" y2="250" stroke="#2f241d" stroke-width="0.9"/>
+  <line x1="958" y1="261" x2="1158" y2="261" stroke="#2f241d" stroke-width="0.9"/>
+  <line x1="958" y1="272" x2="1158" y2="272" stroke="#2f241d" stroke-width="0.9"/>
+  <!-- Treble clef -->
+  <text x="931" y="278" font-size="58" fill="#2f241d" opacity="0.88">𝄞</text>
+  <!-- Ledger line for C4 -->
+  <line x1="977" y1="283" x2="1002" y2="283" stroke="#2f241d" stroke-width="0.9"/>
+  <!-- Notes -->
+  <ellipse cx="989"  cy="283" rx="7.5" ry="5"   fill="#2f241d" transform="rotate(-12,989,283)"/>
+  <line   x1="996"  y1="283" x2="996"  y2="248" stroke="#2f241d" stroke-width="1.4"/>
+  <ellipse cx="1020" cy="267" rx="7.5" ry="5"   fill="#2f241d" transform="rotate(-12,1020,267)"/>
+  <line   x1="1027" y1="267" x2="1027" y2="232" stroke="#2f241d" stroke-width="1.4"/>
+  <ellipse cx="1051" cy="272" rx="7.5" ry="5"   fill="#2f241d" transform="rotate(-12,1051,272)"/>
+  <line   x1="1058" y1="272" x2="1058" y2="237" stroke="#2f241d" stroke-width="1.4"/>
+  <ellipse cx="1082" cy="250" rx="7.5" ry="5"   fill="#2f241d" transform="rotate(-12,1082,250)"/>
+  <line   x1="1089" y1="250" x2="1089" y2="215" stroke="#2f241d" stroke-width="1.4"/>
+  <!-- Final note teal (C4) -->
+  <line x1="1110" y1="283" x2="1135" y2="283" stroke="#2f241d" stroke-width="0.9"/>
+  <ellipse cx="1122" cy="283" rx="7.5" ry="5"   fill="#126e5a" transform="rotate(-12,1122,283)"/>
+  <line   x1="1129" y1="283" x2="1129" y2="248" stroke="#126e5a" stroke-width="1.4"/>
+  <!-- Labels -->
+  <text x="989"  y="299" text-anchor="middle" font-size="8" fill="#6d5b4b">C4</text>
+  <text x="1020" y="299" text-anchor="middle" font-size="8" fill="#6d5b4b">G4</text>
+  <text x="1051" y="299" text-anchor="middle" font-size="8" fill="#6d5b4b">E4</text>
+  <text x="1082" y="299" text-anchor="middle" font-size="8" fill="#6d5b4b">B4</text>
+  <text x="1122" y="299" text-anchor="middle" font-size="8" fill="#126e5a">C4</text>
+  <!-- Complete badge -->
+  <rect x="932" y="314" width="228" height="22" rx="8" fill="rgba(18,110,90,0.10)"/>
+  <text x="1046" y="329" text-anchor="middle" font-size="9" font-weight="600" fill="#126e5a">✓  Movement III complete!</text>
+
+  <!-- Resume composition panel -->
+  <rect x="912" y="358" width="268" height="204" rx="20" fill="rgba(255,250,242,0.93)" stroke="rgba(47,36,29,0.10)" stroke-width="1" filter="url(#smallShadow)"/>
+  <text x="932" y="388" font-size="12.5" font-weight="700" fill="#2f241d">Resume a composition</text>
+  <!-- item 1 -->
+  <rect x="932" y="400" width="228" height="42" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="948" y="417" font-size="9.5" font-weight="600" fill="#2f241d">testcorne2</text>
+  <text x="948" y="432" font-size="8" fill="#6d5b4b">2/7 layers · 29% complete</text>
+  <rect x="1118" y="408" width="34" height="23" rx="8" fill="#126e5a"/>
+  <text x="1135" y="423" text-anchor="middle" font-size="11" font-weight="700" fill="#f8f6f2">→</text>
+  <!-- item 2 -->
+  <rect x="932" y="449" width="228" height="42" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="948" y="466" font-size="9.5" font-weight="600" fill="#2f241d">testcorne</text>
+  <text x="948" y="481" font-size="8" fill="#6d5b4b">1/7 layers · 14% complete</text>
+  <rect x="1118" y="457" width="34" height="23" rx="8" fill="#126e5a" opacity="0.7"/>
+  <text x="1135" y="472" text-anchor="middle" font-size="11" font-weight="700" fill="#f8f6f2">→</text>
+  <!-- item 3 -->
+  <rect x="932" y="498" width="228" height="42" rx="10" fill="rgba(255,255,255,0.75)" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <text x="948" y="515" font-size="9.5" font-weight="600" fill="#2f241d">testing transpose</text>
+  <text x="948" y="530" font-size="8" fill="#6d5b4b">3/7 layers · 43% complete</text>
+  <rect x="1118" y="506" width="34" height="23" rx="8" fill="#126e5a" opacity="0.7"/>
+  <text x="1135" y="521" text-anchor="middle" font-size="11" font-weight="700" fill="#f8f6f2">→</text>
+
+  <!-- ═══════════════════════════════════════════════
+       CENTER PIANO PANEL — HERO
+  ════════════════════════════════════════════════ -->
+  <rect x="300" y="155" width="600" height="410" rx="24" fill="rgba(255,250,242,0.97)" stroke="rgba(47,36,29,0.13)" stroke-width="1.5" filter="url(#panelShadow)"/>
+
+  <!-- Panel header -->
+  <text x="323" y="190" font-size="15.5" font-weight="700" fill="#2f241d">Virtual Piano</text>
+  <text x="323" y="207" font-size="8.5" letter-spacing="0.07em" fill="#6d5b4b">SELECTED NOTE</text>
+  <text x="323" y="223" font-size="12.5" font-weight="700" fill="#2f241d">C4 · MIDI 60</text>
+
+  <!-- Toolbar buttons -->
+  <rect x="476" y="197" width="84" height="21" rx="8" fill="rgba(255,250,242,0.9)" stroke="rgba(47,36,29,0.14)" stroke-width="1"/>
+  <text x="518" y="212" text-anchor="middle" font-size="8" fill="#2f241d">Play Everything So Far</text>
+  <rect x="567" y="197" width="56" height="21" rx="8" fill="rgba(255,250,242,0.9)" stroke="rgba(47,36,29,0.14)" stroke-width="1"/>
+  <text x="595" y="212" text-anchor="middle" font-size="8" fill="#2f241d">C major</text>
+  <rect x="630" y="197" width="70" height="21" rx="8" fill="rgba(255,250,242,0.9)" stroke="rgba(47,36,29,0.14)" stroke-width="1"/>
+  <text x="665" y="212" text-anchor="middle" font-size="8" fill="#2f241d">Change Root</text>
+  <text x="710" y="212" font-size="8" fill="#6d5b4b">Tempo</text>
+  <rect x="745" y="206" width="68" height="5" rx="2.5" fill="rgba(47,36,29,0.15)"/>
+  <rect x="745" y="206" width="38" height="5" rx="2.5" fill="#126e5a"/>
+  <circle cx="783" cy="208.5" r="5.5" fill="#126e5a"/>
+  <text x="820" y="213" font-size="8" fill="#2f241d">72 BPM</text>
+
+  <!-- Progress bar (full — 7/7 complete) -->
+  <rect x="315" y="234" width="570" height="6" rx="3" fill="rgba(47,36,29,0.10)"/>
+  <rect x="315" y="234" width="570" height="6" rx="3" fill="#126e5a"/>
+  <text x="315" y="252" font-size="8" fill="#6d5b4b">7 of 7 layers complete</text>
+
+  <!-- ── PIANO KEYBOARD ──
+       22 white keys (C3–C6), key width=25, spacing=25.5
+       start x=322, key height=140, y=258
+       C4 = index 7 → x = 322 + 7*25.5 = 500.5
+  -->
+  <!-- Piano rail background -->
+  <rect x="313" y="258" width="574" height="148" rx="10" fill="rgba(195,182,168,0.35)"/>
+
+  <!-- White keys (fill normal or teal for C4) -->
+  <!-- C3  i=0  x=322   --> <rect x="322"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- D3  i=1  x=347.5 --> <rect x="347.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- E3  i=2  x=373   --> <rect x="373"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- F3  i=3  x=398.5 --> <rect x="398.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- G3  i=4  x=424   --> <rect x="424"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- A3  i=5  x=449.5 --> <rect x="449.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- B3  i=6  x=475   --> <rect x="475"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- C4  i=7  x=500.5 HIGHLIGHTED -->
+  <rect x="500.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#aKey)" stroke="rgba(18,110,90,0.45)" stroke-width="0.8"/>
+  <!-- D4  i=8  x=526   --> <rect x="526"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- E4  i=9  x=551.5 --> <rect x="551.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- F4  i=10 x=577   --> <rect x="577"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- G4  i=11 x=602.5 --> <rect x="602.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- A4  i=12 x=628   --> <rect x="628"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- B4  i=13 x=653.5 --> <rect x="653.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- C5  i=14 x=679   --> <rect x="679"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- D5  i=15 x=704.5 --> <rect x="704.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- E5  i=16 x=730   --> <rect x="730"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- F5  i=17 x=755.5 --> <rect x="755.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- G5  i=18 x=781   --> <rect x="781"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- A5  i=19 x=806.5 --> <rect x="806.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- B5  i=20 x=832   --> <rect x="832"   y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+  <!-- C6  i=21 x=857.5 --> <rect x="857.5" y="260" width="25" height="143" rx="0 0 5 5" fill="url(#wKey)" stroke="rgba(47,36,29,0.18)" stroke-width="0.8"/>
+
+  <!-- Black keys (width=15, height=89)
+       C# = C_x + 17,  D# = D_x + 10,  F# = F_x + 17,  G# = G_x + 14,  A# = A_x + 10
+       Octave offset = 7 * 25.5 = 178.5
+  -->
+  <!-- Octave 3 (C3=322) -->
+  <rect x="339"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- C#3 -->
+  <rect x="357.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- D#3 -->
+  <rect x="415.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- F#3 -->
+  <rect x="438"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- G#3 -->
+  <rect x="459.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- A#3 -->
+  <!-- Octave 4 (C4=500.5, offset 178.5) -->
+  <rect x="517.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- C#4 -->
+  <rect x="536"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- D#4 -->
+  <rect x="594"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- F#4 -->
+  <rect x="616.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- G#4 -->
+  <rect x="638"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- A#4 -->
+  <!-- Octave 5 (C5=679, offset 357) -->
+  <rect x="696"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- C#5 -->
+  <rect x="714.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- D#5 -->
+  <rect x="772.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- F#5 -->
+  <rect x="795"   y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- G#5 -->
+  <rect x="816.5" y="260" width="15" height="89" rx="0 0 4 4" fill="url(#bKey)" stroke="rgba(31,23,19,0.7)" stroke-width="0.7"/><!-- A#5 -->
+
+  <!-- C4 note name label on highlighted key -->
+  <text x="513" y="393" text-anchor="middle" font-size="8" font-weight="700" fill="#126e5a">C4</text>
+
+  <!-- Octave labels below keys -->
+  <text x="334.5" y="419" text-anchor="middle" font-size="9" fill="#6d5b4b">C3</text>
+  <text x="513"   y="419" text-anchor="middle" font-size="9" fill="#126e5a" font-weight="600">C4</text>
+  <text x="691.5" y="419" text-anchor="middle" font-size="9" fill="#6d5b4b">C5</text>
+  <text x="870"   y="419" text-anchor="middle" font-size="9" fill="#6d5b4b">C6</text>
+
+  <!-- ── Puzzle card strip below piano ── -->
+  <rect x="314" y="430" width="572" height="126" rx="14" fill="rgba(18,110,90,0.05)" stroke="rgba(18,110,90,0.14)" stroke-width="1"/>
+
+  <!-- Layer info (left) -->
+  <text x="334" y="453" font-size="9" font-weight="700" letter-spacing="0.14em" fill="#126e5a">LAYER 1 · FOUNDATION</text>
+  <text x="334" y="474" font-size="14.5" font-weight="700" fill="#2f241d">Find the Root Note</text>
+  <text x="334" y="492" font-size="10" fill="#6d5b4b">Press C on the piano to build your harmonic base.</text>
+
+  <!-- Layer progress pills -->
+  <rect x="334" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="361" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="388" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="415" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="442" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="469" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <rect x="496" y="504" width="22" height="8" rx="4" fill="#126e5a"/>
+  <text x="334" y="524" font-size="8.5" fill="#126e5a">7 of 7 layers complete</text>
+
+  <!-- Circle of Fifths (right side of puzzle card) -->
+  <!-- cx=800, cy=492, R=48 -->
+  <!-- Outer ring ring (light) -->
+  <circle cx="800" cy="492" r="52" fill="none" stroke="rgba(47,36,29,0.08)" stroke-width="1"/>
+  <!-- Dashed line from center to C (top) -->
+  <line x1="800" y1="492" x2="800" y2="444" stroke="#126e5a" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <!-- Note circles (R=48 from center, node r=11) -->
+  <!-- C  pos0  top      (800, 444)  → teal highlighted -->
+  <circle cx="800"   cy="444"   r="12" fill="#126e5a" stroke="#0b4e40" stroke-width="1.5"/>
+  <text x="800"   y="448.5" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">C</text>
+  <!-- G  pos1  (824, 450.4) -->
+  <circle cx="824"   cy="450.4" r="11" fill="rgba(18,110,90,0.20)" stroke="rgba(18,110,90,0.4)" stroke-width="1"/>
+  <text x="824"   y="454.5" text-anchor="middle" font-size="8.5" fill="#126e5a">G</text>
+  <!-- D  pos2  (841.6, 468) -->
+  <circle cx="841.6" cy="468"   r="11" fill="rgba(18,110,90,0.20)" stroke="rgba(18,110,90,0.4)" stroke-width="1"/>
+  <text x="841.6" y="472"   text-anchor="middle" font-size="8.5" fill="#126e5a">D</text>
+  <!-- A  pos3  (848, 492) -->
+  <circle cx="848"   cy="492"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="848"   y="496"   text-anchor="middle" font-size="8.5" fill="#6d5b4b">A</text>
+  <!-- E  pos4  (841.6, 516) -->
+  <circle cx="841.6" cy="516"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="841.6" y="520"   text-anchor="middle" font-size="8.5" fill="#6d5b4b">E</text>
+  <!-- B  pos5  (824, 533.6) -->
+  <circle cx="824"   cy="533.6" r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="824"   y="537.5" text-anchor="middle" font-size="8.5" fill="#6d5b4b">B</text>
+  <!-- F# pos6  bottom   (800, 540) -->
+  <circle cx="800"   cy="540"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="800"   y="544"   text-anchor="middle" font-size="7.5" fill="#6d5b4b">F♯</text>
+  <!-- Db pos7  (776, 533.6) -->
+  <circle cx="776"   cy="533.6" r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="776"   y="537.5" text-anchor="middle" font-size="7.5" fill="#6d5b4b">D♭</text>
+  <!-- Ab pos8  (758.4, 516) -->
+  <circle cx="758.4" cy="516"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="758.4" y="520"   text-anchor="middle" font-size="7.5" fill="#6d5b4b">A♭</text>
+  <!-- Eb pos9  (752, 492) -->
+  <circle cx="752"   cy="492"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="752"   y="496"   text-anchor="middle" font-size="7.5" fill="#6d5b4b">E♭</text>
+  <!-- Bb pos10 (758.4, 468) -->
+  <circle cx="758.4" cy="468"   r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="758.4" y="472"   text-anchor="middle" font-size="7.5" fill="#6d5b4b">B♭</text>
+  <!-- F  pos11 (776, 450.4) -->
+  <circle cx="776"   cy="450.4" r="11" fill="rgba(47,36,29,0.06)" stroke="rgba(47,36,29,0.15)" stroke-width="1"/>
+  <text x="776"   y="454.5" text-anchor="middle" font-size="8.5" fill="#6d5b4b">F</text>
+
+  <!-- Circle of Fifths label -->
+  <text x="800" y="562" text-anchor="middle" font-size="8" fill="#6d5b4b">Circle of Fifths · <tspan font-weight="700">C</tspan></text>
+
+  <!-- ── FOOTER ── -->
+  <text x="600" y="608" text-anchor="middle" font-size="10" fill="#6d5b4b" letter-spacing="0.05em">kwintbaseharmony.azurewebsites.net · Built with .NET 9 · Dapr · Blazor</text>
+</svg>
