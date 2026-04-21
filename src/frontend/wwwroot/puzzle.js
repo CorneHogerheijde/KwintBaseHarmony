@@ -16,6 +16,7 @@ import {
   getMultipleChoiceOptions,
   getKeyProfile
 } from "./scripts/puzzle-engine.js";
+import { getKeyTheory, getNextKey } from "./scripts/key-profiles.js";
 
 // ── DOM references ────────────────────────────────────────────────────────────
 const compositionTitleLabel = document.getElementById("composition-title-label");
@@ -47,6 +48,7 @@ const multipleChoiceOptionsEl = document.getElementById("multiple-choice-options
 const pianoSectionEl = document.getElementById("piano-section");
 const setRootBtn      = document.getElementById("set-root-btn");
 const rootNoteLabel   = document.getElementById("root-note-label");
+const nextKeyBtn      = document.getElementById("next-key-btn");
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let composition = null;
@@ -309,6 +311,11 @@ function renderLayer(layerNumber) {
       : `Playing in ${profile.name}: ${profile.label.split("\u2014")[1]?.trim() ?? ""}`;  
   }
 
+  const keyTheoryEl = document.getElementById("key-theory-text");
+  if (keyTheoryEl) {
+    keyTheoryEl.textContent = getKeyTheory(rootMidi);
+  }
+
   puzzleCard.hidden = false;
 }
 
@@ -402,6 +409,21 @@ function renderCompletion() {
       continueMovementBtn.hidden = false;
     } else {
       continueMovementBtn.hidden = true;
+    }
+  }
+
+  // Educator progression — suggest the next key in the circle-of-fifths journey
+  if (nextKeyBtn) {
+    const nextRoot = getNextKey(rootMidi);
+    if (nextRoot !== null && movementNumber >= 3) {
+      const nextProfile = getKeyProfile(nextRoot);
+      nextKeyBtn.textContent = `Try ${nextProfile.name} next \u2192`;
+      nextKeyBtn.hidden = false;
+      nextKeyBtn.onclick = () => {
+        window.location.href = `/?nextKey=${nextRoot}`;
+      };
+    } else {
+      nextKeyBtn.hidden = true;
     }
   }
 

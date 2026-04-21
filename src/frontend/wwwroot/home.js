@@ -1,5 +1,6 @@
 import { request } from "./scripts/api.js";
 import { renderAuthNav } from "./scripts/nav-auth.js";
+import { KEY_PROFILES, KEY_JOURNEY, getKeyProfile } from "./scripts/key-profiles.js";
 renderAuthNav("auth-nav");
 
 const startForm = document.getElementById("start-form");
@@ -161,3 +162,57 @@ lookupForm.addEventListener("submit", async (event) => {
     setLoading(lookupBtn, false);
   }
 });
+
+// ── Key Journey guide ─────────────────────────────────────────────────────────
+
+function renderKeyJourneyGuide(selectedRootMidi) {
+  const container = document.getElementById("key-journey-guide");
+  if (!container) return;
+
+  const chips = KEY_JOURNEY.map((rootMidi) => {
+    const profile = getKeyProfile(rootMidi);
+    const isSelected = rootMidi === selectedRootMidi;
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = `key-journey-chip${isSelected ? " key-journey-chip--active" : ""}`;
+    chip.textContent = profile.name.replace(" major", "");
+    chip.setAttribute("aria-pressed", String(isSelected));
+    chip.dataset.rootMidi = String(rootMidi);
+    chip.addEventListener("click", () => {
+      keyInput.value = String(rootMidi);
+      renderKeyJourneyGuide(rootMidi);
+    });
+    return chip;
+  });
+
+  container.innerHTML = "";
+  const label = document.createElement("p");
+  label.className = "key-journey-guide__label";
+  label.textContent = "Key journey (circle of fifths order):";
+  container.appendChild(label);
+
+  const row = document.createElement("div");
+  row.className = "key-journey-guide__row";
+  chips.forEach((chip) => row.appendChild(chip));
+  container.appendChild(row);
+}
+
+// Sync guide when key dropdown changes
+keyInput.addEventListener("change", () => {
+  renderKeyJourneyGuide(Number(keyInput.value));
+});
+
+// ── Initialisation ────────────────────────────────────────────────────────────
+
+// Pre-select key from ?nextKey= param (set by completion panel educator progression)
+const params = new URLSearchParams(window.location.search);
+const nextKeyParam = params.get("nextKey");
+if (nextKeyParam) {
+  const nextKeyMidi = Number(nextKeyParam);
+  const isKnown = KEY_PROFILES.some((k) => k.rootMidi === nextKeyMidi);
+  if (isKnown) {
+    keyInput.value = String(nextKeyMidi);
+  }
+}
+
+renderKeyJourneyGuide(Number(keyInput.value));
