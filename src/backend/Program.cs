@@ -30,7 +30,7 @@ builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
 // Add JWT authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "test-only-secret-key-not-for-production!!!";
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+var authBuilder = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
@@ -44,28 +44,47 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
-    })
-    .AddGoogle(options =>
+    });
+
+var googleClientId     = builder.Configuration["Auth:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
     {
-        options.ClientId = builder.Configuration["Auth:Google:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"] ?? "";
+        options.ClientId     = googleClientId;
+        options.ClientSecret = googleClientSecret;
         options.CallbackPath = "/api/auth/oauth/google/callback";
         options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
-    })
-    .AddMicrosoftAccount(options =>
+    });
+}
+
+var msClientId     = builder.Configuration["Auth:Microsoft:ClientId"];
+var msClientSecret = builder.Configuration["Auth:Microsoft:ClientSecret"];
+if (!string.IsNullOrEmpty(msClientId) && !string.IsNullOrEmpty(msClientSecret))
+{
+    authBuilder.AddMicrosoftAccount(options =>
     {
-        options.ClientId = builder.Configuration["Auth:Microsoft:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Auth:Microsoft:ClientSecret"] ?? "";
+        options.ClientId     = msClientId;
+        options.ClientSecret = msClientSecret;
         options.CallbackPath = "/api/auth/oauth/microsoft/callback";
         options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
-    })
-    .AddLinkedIn(options =>
+    });
+}
+
+var linkedInClientId     = builder.Configuration["Auth:LinkedIn:ClientId"];
+var linkedInClientSecret = builder.Configuration["Auth:LinkedIn:ClientSecret"];
+if (!string.IsNullOrEmpty(linkedInClientId) && !string.IsNullOrEmpty(linkedInClientSecret))
+{
+    authBuilder.AddLinkedIn(options =>
     {
-        options.ClientId = builder.Configuration["Auth:LinkedIn:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Auth:LinkedIn:ClientSecret"] ?? "";
+        options.ClientId     = linkedInClientId;
+        options.ClientSecret = linkedInClientSecret;
         options.CallbackPath = "/api/auth/oauth/linkedin/callback";
         options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
     });
+}
+
 builder.Services.AddAuthorization();
 
 

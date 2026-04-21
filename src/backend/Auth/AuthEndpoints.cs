@@ -92,6 +92,15 @@ public static class AuthEndpoints
             if (scheme is null)
                 return Results.BadRequest(new { error = $"Unknown provider '{provider}'." });
 
+            // Only issue a challenge if the scheme was actually registered
+            // (i.e. its credentials were configured). Avoids a 500 when the
+            // provider is not yet set up.
+            var schemeProvider = httpContext.RequestServices
+                .GetRequiredService<Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider>();
+            var registered = schemeProvider.GetSchemeAsync(scheme).GetAwaiter().GetResult();
+            if (registered is null)
+                return Results.BadRequest(new { error = $"Provider '{provider}' is not configured on this server." });
+
             var props = new AuthenticationProperties
             {
                 RedirectUri = $"/api/auth/oauth/{provider}/callback"
