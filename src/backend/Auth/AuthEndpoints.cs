@@ -14,6 +14,24 @@ public static class AuthEndpoints
     {
         var auth = app.MapGroup("/api/auth");
 
+        // Returns the list of OAuth providers currently registered (i.e. configured).
+        // The frontend uses this to show only the buttons that are actually usable.
+        auth.MapGet("/providers", async (IAuthenticationSchemeProvider schemeProvider) =>
+        {
+            var all = await schemeProvider.GetAllSchemesAsync();
+            var knownOAuth = new Dictionary<string, string>
+            {
+                [GoogleDefaults.AuthenticationScheme]          = "google",
+                [MicrosoftAccountDefaults.AuthenticationScheme] = "microsoft",
+                ["LinkedIn"]                                    = "linkedin"
+            };
+            var available = all
+                .Where(s => knownOAuth.ContainsKey(s.Name))
+                .Select(s => knownOAuth[s.Name])
+                .ToArray();
+            return Results.Ok(available);
+        }).AllowAnonymous();
+
         auth.MapPost("/register", async (
             RegisterRequest request,
             CompositionContext db,

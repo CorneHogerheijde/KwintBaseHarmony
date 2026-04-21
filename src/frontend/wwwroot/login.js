@@ -1,4 +1,7 @@
 import { setAuth, isLoggedIn } from "./scripts/auth.js";
+import { renderOAuthButtons } from "./scripts/oauth-providers.js";
+
+renderOAuthButtons();
 
 // If already logged in, redirect straight to home
 if (isLoggedIn()) {

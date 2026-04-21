@@ -1,4 +1,7 @@
 import { setAuth, isLoggedIn } from "./scripts/auth.js";
+import { renderOAuthButtons } from "./scripts/oauth-providers.js";
+
+renderOAuthButtons();
 
 if (isLoggedIn()) {
     window.location.href = "/";
