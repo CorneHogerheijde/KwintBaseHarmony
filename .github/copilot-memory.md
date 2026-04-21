@@ -12,14 +12,24 @@
 - Prefer one focused question over guessing
 
 ## PR & Merge Pattern (always do this at end of a milestone/feature)
-1. Update `DEVELOPMENT_PLAN.md` with milestone status + deliverables table
-2. Update the matching planning-artifact file in `_outputs/planning-artifacts/` to reflect current milestone numbering and status
+
+**This is mandatory — NEVER skip steps 1–2 or 6–7, even for small features.**
+
+1. **Update docs** — for every feature that changes how something is configured, run, or used:
+   - Update `RUNNING_LOCALLY.md` (setup steps, config, env vars)
+   - Update `README.md` if public-facing behaviour changes
+   - Update `DEVELOPMENT_PLAN.md` with milestone status + deliverables table
+   - Update the matching planning-artifact file in `_outputs/planning-artifacts/`
+2. **Commit the doc changes together with the code** — docs and code go in the same PR, not as an afterthought.
 3. `git checkout -b feature/<branch-name>`
 4. `git add -A && git commit -m "..."`
 5. `git push -u origin <branch-name>`
 6. `gh pr create --title "..." --body "..." --base main`
 7. **STOP — ask user to review the PR before merging**
 8. After user confirms: `gh pr merge <number> --merge --delete-branch`
+
+### Why this exists
+Copilot and BMAD agents have repeatedly shipped code without updating docs or creating a PR. The rule is: **if you touched code, you touch docs and open a PR**. No exceptions.
 
 ## PRs merged so far
 - PR #37 — Bug fixes (getPuzzleLayers, /complete body, time/attempts tracking, Back to Puzzle button)

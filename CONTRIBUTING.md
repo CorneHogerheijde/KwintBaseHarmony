@@ -80,11 +80,14 @@ Brief explanation of what this PR does.
 - Unit tests added/updated: ✅
 - Manual testing: ✅
 - Build verification: ✅
+- **Documentation updated** (`RUNNING_LOCALLY.md`, `README.md`, or relevant docs): ✅
 
 ## Checklist
 - [ ] Code compiles without errors
 - [ ] All tests pass
-- [ ] Documentation updated
+- [ ] `RUNNING_LOCALLY.md` updated if setup/config changed
+- [ ] `README.md` updated if public behaviour changed
+- [ ] `DEVELOPMENT_PLAN.md` updated with milestone status (if applicable)
 - [ ] Commits are clean and logical
 - [ ] Branch is up-to-date with main
 ```
