@@ -233,6 +233,94 @@ dapr run -f .
 - `state.yaml` — Redis state store for workflow/actor storage via the local Dapr Redis instance on `localhost:6379`
 - Add more components as needed (databases, message brokers, etc.)
 
+---
+
+## Social OAuth Providers (Optional)
+
+KwintBaseHarmony supports sign-in via Google, Microsoft, and LinkedIn. These providers are **optional** — the app starts and works normally without them. Sign-in buttons are shown in the UI only for providers that are actually configured.
+
+### How it works
+
+Each provider is registered at startup only if its `ClientId` **and** `ClientSecret` are non-empty in configuration. A `GET /api/auth/providers` endpoint returns the list of active providers; the login/register pages fetch this and render buttons accordingly.
+
+### Step-by-step: register a provider
+
+#### Google
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create (or select) a project.
+3. Navigate to **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**.
+4. Application type: **Web application**.
+5. Under **Authorised redirect URIs**, add:
+   ```
+   http://localhost:5000/signin-google
+   ```
+6. Copy the **Client ID** and **Client Secret**.
+
+#### Microsoft
+
+1. Go to the [Azure Portal — App registrations](https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade).
+2. Click **New registration**.
+3. Name: anything (e.g. `KwintBaseHarmony-local`).
+4. Supported account types: *Accounts in any organizational directory and personal Microsoft accounts*.
+5. Redirect URI: **Web** → `http://localhost:5000/signin-microsoft`.
+6. After creation, go to **Certificates & secrets → New client secret** and copy the value.
+7. Copy the **Application (client) ID** from the Overview page.
+
+#### LinkedIn
+
+1. Go to [LinkedIn Developer Apps](https://www.linkedin.com/developers/apps/new).
+2. Create an app and associate it with a LinkedIn Page.
+3. Under **Auth**, add this Authorized redirect URL:
+   ```
+   http://localhost:5000/signin-linkedin
+   ```
+4. Enable the **Sign In with LinkedIn using OpenID Connect** product on the **Products** tab.
+5. Copy the **Client ID** and **Client Secret** from the Auth tab.
+
+### Configure credentials locally
+
+Open `src/backend/appsettings.json` and fill in the values for the providers you want to enable. Leave the strings empty (or omit them) to disable a provider.
+
+```json
+{
+  "Auth": {
+    "Google": {
+      "ClientId": "YOUR_GOOGLE_CLIENT_ID",
+      "ClientSecret": "YOUR_GOOGLE_CLIENT_SECRET"
+    },
+    "Microsoft": {
+      "ClientId": "YOUR_MICROSOFT_CLIENT_ID",
+      "ClientSecret": "YOUR_MICROSOFT_CLIENT_SECRET"
+    },
+    "LinkedIn": {
+      "ClientId": "YOUR_LINKEDIN_CLIENT_ID",
+      "ClientSecret": "YOUR_LINKEDIN_CLIENT_SECRET"
+    }
+  }
+}
+```
+
+> **Security note**: Never commit real credentials to source control. For production, inject these values via environment variables or Azure Key Vault. The `appsettings.json` entries ship as empty strings intentionally.
+
+### Environment-variable override
+
+You can also supply credentials via environment variables without touching `appsettings.json`:
+
+```bash
+# PowerShell (Windows)
+$env:Auth__Google__ClientId     = "..."
+$env:Auth__Google__ClientSecret = "..."
+
+# bash (Linux/macOS)
+export Auth__Google__ClientId="..."
+export Auth__Google__ClientSecret="..."
+```
+
+ASP.NET Core's configuration system picks these up automatically (double-underscore `__` is the section separator).
+
+---
+
 ## Testing the API
 
 ### Option 1: Swagger UI (Easiest)

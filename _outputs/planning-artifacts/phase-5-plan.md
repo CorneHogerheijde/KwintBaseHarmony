@@ -12,6 +12,7 @@
 |-----------|-------|--------|
 | 5.1 | Auth MVP | ✅ Complete (PR #38) |
 | 5.2 | Auth Enforcement | ✅ Complete (PR #39) |
+| 5.2b | Social OAuth & User-Linked Compositions | ✅ Complete (PR #49) |
 | 5.3 | Circle of Fifths Puzzle Expansion | ⬜ Planned |
 | 5.4 | Notation Preview Fix | ⬜ Planned |
 | 5.5 | Educator View / Class Management | ⬜ Backlog |

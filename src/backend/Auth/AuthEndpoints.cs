@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using KwintBaseHarmony.Data;
 using KwintBaseHarmony.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.EntityFrameworkCore;
 
 namespace KwintBaseHarmony.Auth;
@@ -10,6 +13,24 @@ public static class AuthEndpoints
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
         var auth = app.MapGroup("/api/auth");
+
+        // Returns the list of OAuth providers currently registered (i.e. configured).
+        // The frontend uses this to show only the buttons that are actually usable.
+        auth.MapGet("/providers", async (IAuthenticationSchemeProvider schemeProvider) =>
+        {
+            var all = await schemeProvider.GetAllSchemesAsync();
+            var knownOAuth = new Dictionary<string, string>
+            {
+                [GoogleDefaults.AuthenticationScheme]          = "google",
+                [MicrosoftAccountDefaults.AuthenticationScheme] = "microsoft",
+                ["LinkedIn"]                                    = "linkedin"
+            };
+            var available = all
+                .Where(s => knownOAuth.ContainsKey(s.Name))
+                .Select(s => knownOAuth[s.Name])
+                .ToArray();
+            return Results.Ok(available);
+        }).AllowAnonymous();
 
         auth.MapPost("/register", async (
             RegisterRequest request,
@@ -54,7 +75,7 @@ public static class AuthEndpoints
             var email = request.Email.Trim().ToLowerInvariant();
 
             var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 return Results.Unauthorized();
 
             var token = JwtService.GenerateToken(user, configuration);
@@ -72,6 +93,39 @@ public static class AuthEndpoints
 
             return Results.Ok(new MeResponse(Guid.Parse(userId), email, role ?? "Student"));
         }).RequireAuthorization();
+
+        // ── OAuth / Social login ──────────────────────────────────────────────
+        // Initiates a social-login flow by issuing a Challenge for the requested
+        // scheme. The middleware then redirects the browser to the provider.
+        auth.MapGet("/oauth/{provider}", (string provider, HttpContext httpContext) =>
+        {
+            var scheme = provider.ToLowerInvariant() switch
+            {
+                "google"    => GoogleDefaults.AuthenticationScheme,
+                "microsoft" => MicrosoftAccountDefaults.AuthenticationScheme,
+                "linkedin"  => "LinkedIn",
+                _           => null
+            };
+
+            if (scheme is null)
+                return Results.BadRequest(new { error = $"Unknown provider '{provider}'." });
+
+            // Only issue a challenge if the scheme was actually registered
+            // (i.e. its credentials were configured). Avoids a 500 when the
+            // provider is not yet set up.
+            var schemeProvider = httpContext.RequestServices
+                .GetRequiredService<Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider>();
+            var registered = schemeProvider.GetSchemeAsync(scheme).GetAwaiter().GetResult();
+            if (registered is null)
+                return Results.BadRequest(new { error = $"Provider '{provider}' is not configured on this server." });
+
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = $"/api/auth/oauth/{provider}/callback"
+            };
+
+            return Results.Challenge(props, new[] { scheme });
+        }).AllowAnonymous();
 
         return app;
     }

@@ -15,6 +15,8 @@
 
 **Phase 5.2 Status** *(April 18, 2026)*: ✅ **Complete** — Auth enforcement on all endpoints
 
+**Phase 5.2b Status** *(April 21, 2026)*: ✅ **Complete** — Social OAuth providers + user-linked compositions (PR #49)
+
 **Phase 5.3 Status**: ⬜ **Planned** — Circle of Fifths puzzle expansion (multi-key, sharps/flats, root variety)
 
 **Phase 5.4 Status**: ⬜ **Planned** — Notation preview fix (octave-aware, bass/treble clef switching at middle C)
@@ -60,6 +62,25 @@ Current puzzles always use C major / A minor as the tonal centre. This milestone
 | Theory panel per key | Collapsible panel explaining the key's sharps/flats and their circle-of-fifths position | ⬜ |
 | Vitest unit tests | Tests for key transposition, accidental labelling, scale-degree lookup per key | ⬜ |
 | Cypress E2E tests | Select G major → verify F♯ appears in notation; select B♭ → verify B♭ and E♭ appear | ⬜ |
+
+---
+
+### Phase 5.2b Deliverables — Social OAuth & User-Linked Compositions
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `User` model extended | `PasswordHash` → nullable; `ExternalProvider` (varchar 50) + `ExternalProviderId` (varchar 255) added | ✅ |
+| EF migration `AddExternalAuth` | Alters PasswordHash to nullable, adds two provider columns + composite index | ✅ |
+| `OAuthCallbackHandler` | Shared `OnTicketReceived` handler — finds/creates user, links provider, issues JWT, redirects to `/login.html?token=…` | ✅ |
+| Conditional OAuth registration | Google / Microsoft / LinkedIn only registered at startup when `ClientId` **and** `ClientSecret` are non-empty | ✅ |
+| `GET /api/auth/providers` | Returns array of configured provider slugs; anonymous endpoint used by frontend | ✅ |
+| `GET /api/auth/oauth/{provider}` | Issues OAuth challenge; returns 400 if provider not registered | ✅ |
+| `appsettings.json` auth sections | Empty `Auth:Google/Microsoft/LinkedIn` config slots added | ✅ |
+| Dynamic OAuth buttons | `scripts/oauth-providers.js` fetches `/api/auth/providers` and renders only available buttons | ✅ |
+| OAuth callback in `login.js` | Reads `?token=` / `?error=` from redirect URL and stores/displays result | ✅ |
+| Auto-load user compositions | `home.js` auto-fetches compositions when user is logged in (no manual lookup needed) | ✅ |
+| OAuth provider setup docs | `RUNNING_LOCALLY.md` — step-by-step guide for Google, Microsoft, LinkedIn registration | ✅ |
+| Test social auth providers | End-to-end test with real credentials for Google, Microsoft, LinkedIn flows | ⬜ |
 
 ---
 

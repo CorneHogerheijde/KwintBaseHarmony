@@ -1,5 +1,6 @@
 import { request } from "./scripts/api.js";
 import { renderAuthNav } from "./scripts/nav-auth.js";
+import { isLoggedIn } from "./scripts/auth.js";
 import { KEY_PROFILES, KEY_JOURNEY, getKeyProfile } from "./scripts/key-profiles.js";
 renderAuthNav("auth-nav");
 
@@ -216,3 +217,34 @@ if (nextKeyParam) {
 }
 
 renderKeyJourneyGuide(Number(keyInput.value));
+
+// ── Auto-load compositions for logged-in users ────────────────────────────────
+// When a user is authenticated we immediately fetch their linked compositions
+// via GET /api/compositions (requires a valid JWT) and populate the resume list.
+// The manual lookup form is hidden since it is superseded by the account link.
+if (isLoggedIn()) {
+  const resumePanel = document.querySelector(".home-resume-panel");
+  const resumeHeader = resumePanel?.querySelector(".panel-header p");
+  if (resumeHeader) {
+    resumeHeader.textContent = "Your saved compositions — linked to your account.";
+  }
+  // Hide the manual lookup form; compositions load automatically.
+  lookupForm?.classList.add("hidden");
+
+  (async () => {
+    try {
+      const compositions = await request("", { method: "GET" });
+      if (compositions.length === 0) {
+        noCompositions.classList.remove("hidden");
+      } else {
+        renderCompositionList(compositions);
+      }
+    } catch {
+      // Non-fatal: show a gentle message rather than crashing the page.
+      const p = document.createElement("p");
+      p.className = "home-error";
+      p.textContent = "Could not load your compositions. Please refresh.";
+      compositionList.parentElement?.appendChild(p);
+    }
+  })();
+}

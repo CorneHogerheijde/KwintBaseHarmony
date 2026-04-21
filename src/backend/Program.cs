@@ -1,4 +1,5 @@
 using System.Text;
+using AspNet.Security.OAuth.LinkedIn;
 using Dapr.Client;
 using KwintBaseHarmony.Api;
 using KwintBaseHarmony.Auth;
@@ -29,7 +30,7 @@ builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
 // Add JWT authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "test-only-secret-key-not-for-production!!!";
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+var authBuilder = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
@@ -44,6 +45,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
+
+var googleClientId     = builder.Configuration["Auth:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId     = googleClientId;
+        options.ClientSecret = googleClientSecret;
+        options.CallbackPath = "/api/auth/oauth/google/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
+    });
+}
+
+var msClientId     = builder.Configuration["Auth:Microsoft:ClientId"];
+var msClientSecret = builder.Configuration["Auth:Microsoft:ClientSecret"];
+if (!string.IsNullOrEmpty(msClientId) && !string.IsNullOrEmpty(msClientSecret))
+{
+    authBuilder.AddMicrosoftAccount(options =>
+    {
+        options.ClientId     = msClientId;
+        options.ClientSecret = msClientSecret;
+        options.CallbackPath = "/api/auth/oauth/microsoft/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
+    });
+}
+
+var linkedInClientId     = builder.Configuration["Auth:LinkedIn:ClientId"];
+var linkedInClientSecret = builder.Configuration["Auth:LinkedIn:ClientSecret"];
+if (!string.IsNullOrEmpty(linkedInClientId) && !string.IsNullOrEmpty(linkedInClientSecret))
+{
+    authBuilder.AddLinkedIn(options =>
+    {
+        options.ClientId     = linkedInClientId;
+        options.ClientSecret = linkedInClientSecret;
+        options.CallbackPath = "/api/auth/oauth/linkedin/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
+    });
+}
+
 builder.Services.AddAuthorization();
 
 

@@ -19,8 +19,13 @@ public class User
     [StringLength(255)]
     public string Email { get; set; } = "";
 
-    [Required]
-    public string PasswordHash { get; set; } = "";
+    public string? PasswordHash { get; set; }
+
+    [StringLength(50)]
+    public string? ExternalProvider { get; set; }
+
+    [StringLength(255)]
+    public string? ExternalProviderId { get; set; }
 
     [Required]
     public UserRole Role { get; set; } = UserRole.Student;
