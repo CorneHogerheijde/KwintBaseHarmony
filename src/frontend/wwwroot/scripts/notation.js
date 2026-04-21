@@ -41,14 +41,14 @@ const TREBLE_BOTTOM_Y = 78;
 
 /**
  * Vertical gap between treble bottom line and bass top line.
- * 40 px gives enough room so the treble clef's descending scroll does not
- * intrude into the bass staff area, while still keeping both staves visually
- * close and the middle-C ledger line clearly between them.
+ * 32 px = 4 diatonic steps × 8 px, keeping the note-Y formula consistent
+ * across both staves so middle C (d=28) lands at the same pixel whether
+ * calculated from the treble or the bass staff.
  */
-const STAFF_GAP = 40;
+const STAFF_GAP = 32;
 
-const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 104
-const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 168
+const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 110
+const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 174
 
 /** Note label area below bass staff. */
 const LABEL_AREA_H = 22;
@@ -151,8 +151,9 @@ function drawTrebleClef(svg) {
 }
 
 function drawBassClef(svg) {
-  // Font-size 64, baseline BASS_TOP_Y+46=164 places the glyph well across the bass staff.
-  svg.appendChild(svgText(18, BASS_TOP_Y + 46, "\u{1D122}", 64, "#2f241d")); // 𝄢
+  // Font-size 64, baseline BASS_TOP_Y+54=164 (absolute) keeps visual position
+  // unchanged despite the smaller STAFF_GAP (110+54=164).
+  svg.appendChild(svgText(18, BASS_TOP_Y + 54, "\u{1D122}", 64, "#2f241d")); // 𝄢
 }
 
 // ── Key signature ────────────────────────────────────────────────────────────

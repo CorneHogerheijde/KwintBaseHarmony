@@ -144,7 +144,9 @@ function clearChordSelection() {
 function onNoteSelected(midi, { preview = false } = {}) {
   // Root-selection mode: the next key click sets the root note
   if (rootSelectionMode) {
-    rootMidi = midi;
+    // Normalize to octave-4 reference (all KEY_PROFILES use rootMidi 60–71).
+    // This way clicking G3 (55) or G5 (79) both resolve to G major (67).
+    rootMidi = 60 + (midi % 12);
     rootSelectionMode = false;
     setRootBtn.textContent = "Change Root";
     setRootBtn.classList.remove("is-active");
