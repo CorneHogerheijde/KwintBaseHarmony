@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KwintBaseHarmony — Song Analysis</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="page-shell">
+
+        <nav class="puzzle-nav">
+            <a href="/" class="back-link">← Dashboard</a>
+            <p class="puzzle-composition-title">Song Analysis</p>
+            <div id="auth-nav" class="auth-nav"></div>
+        </nav>
+
+        <main class="home-main">
+
+            <!-- ── Input panel ──────────────────────────────────────── -->
+            <section class="panel home-start-panel">
+                <div class="panel-header">
+                    <h2>Analyse a chord chart</h2>
+                    <p>
+                        Paste a chord progression (e.g. <code>C - G - Am - F</code>) to instantly
+                        create a composition and discover the harmonic story behind the chords.
+                    </p>
+                </div>
+
+                <form id="analysis-form" class="stacked-form">
+                    <label>
+                        Your name
+                        <input id="student-id-input" name="studentId" type="text"
+                               placeholder="e.g. Ada" autocomplete="name" required>
+                    </label>
+                    <label>
+                        Composition title
+                        <input id="title-input" name="title" type="text"
+                               placeholder="e.g. Axis of Awesome" required>
+                    </label>
+                    <label>
+                        Chord chart
+                        <textarea id="chord-chart-input" name="chordChart" rows="3"
+                                  placeholder="C - G - Am - F" required
+                                  aria-describedby="chord-chart-hint"></textarea>
+                        <span id="chord-chart-hint" class="input-hint">
+                            Separate chords with spaces, dashes, or commas. Supports major, minor (m),
+                            7th, maj7, min7, dim, aug.
+                        </span>
+                    </label>
+                    <button type="submit" id="analyse-btn" class="primary-button">Analyse & create composition</button>
+                </form>
+
+                <p id="analysis-error" class="form-error hidden" role="alert"></p>
+            </section>
+
+            <!-- ── Results panel (hidden until analysis runs) ─────── -->
+            <section class="panel" id="analysis-results" hidden aria-live="polite">
+
+                <div class="panel-header">
+                    <h2>Harmonic analysis</h2>
+                </div>
+
+                <!-- Chord list -->
+                <div id="chord-list" class="chord-list" aria-label="Parsed chords"></div>
+
+                <!-- Explanation -->
+                <details class="harmonic-understanding" open>
+                    <summary>Harmonic explanation</summary>
+                    <pre id="analysis-explanation" class="harmonic-understanding__text analysis-explanation"></pre>
+                </details>
+
+                <!-- CTA to open the composition -->
+                <div class="home-cta-row">
+                    <a id="open-composition-link" href="#" class="primary-button">
+                        Open in puzzle →
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script type="module" src="/analysis.js"></script>
+</body>
+</html>
