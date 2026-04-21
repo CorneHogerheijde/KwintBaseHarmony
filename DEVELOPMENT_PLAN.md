@@ -37,6 +37,12 @@ Notation currently renders all notes without octave context, making it impossibl
 | `midiToOctaveLabel(midi)` helper | Centralised function used by piano, notation, and puzzle hints; `Math.floor(midi/12)-1` for octave | ✅ |
 | Regression tests | Vitest unit tests for `midiToOctaveLabel`, staff assignment, chord grouping logic | ✅ |
 
+**Future improvements (notation preview):**
+
+| Improvement | Description |
+|-------------|-------------|
+| Time signature display | Render a 4/4 (or configurable) time signature symbol at the start of both treble and bass staves. Currently omitted; notation preview is a visual aid rather than a strict score. |
+
 ---
 
 ### Phase 5.3 Deliverables — Circle of Fifths Puzzle Expansion

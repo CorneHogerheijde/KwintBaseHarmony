@@ -41,10 +41,11 @@ const TREBLE_BOTTOM_Y = 78;
 
 /**
  * Vertical gap between treble bottom line and bass top line.
- * 32 px = 4 diatonic half-steps, which makes the note-spacing continuous across
- * both staves and centres the middle-C ledger line exactly halfway between them.
+ * 40 px gives enough room so the treble clef's descending scroll does not
+ * intrude into the bass staff area, while still keeping both staves visually
+ * close and the middle-C ledger line clearly between them.
  */
-const STAFF_GAP = 32;
+const STAFF_GAP = 40;
 
 const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 104
 const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 168
@@ -145,7 +146,10 @@ function drawStaff(svg, bottomY, staffStartX, staffEndX) {
 // ── Clef glyphs ──────────────────────────────────────────────────────────────
 
 function drawTrebleClef(svg) {
-  svg.appendChild(svgText(4, TREBLE_BOTTOM_Y + 14, "\u{1D11E}", 72, "#2f241d")); // 𝄞
+  // Baseline raised 8 px vs the natural descent position so the G-line curl
+  // visually aligns with the G4 staff line. Font-size 64 (down from 72) reduces
+  // the descending scroll depth, preventing overlap with the bass staff.
+  svg.appendChild(svgText(4, TREBLE_BOTTOM_Y + 6, "\u{1D11E}", 64, "#2f241d")); // 𝄞
 }
 
 function drawBassClef(svg) {
@@ -174,25 +178,11 @@ function drawKeySignature(svg, keySigStartX, keyProfile) {
       const dIdx = positions[i];
       const symY = bottomY - (dIdx - bottomD) * NOTE_SPACING;
       const symX = keySigStartX + i * 10;
-      svg.appendChild(svgText(symX, symY + 5, sym, 14, "#2f241d"));
+      svg.appendChild(svgText(symX, symY + 5, sym, 16, "#2f241d"));
     }
   }
 
   return keySigStartX + n * 10 + (n > 0 ? 4 : 0);
-}
-
-// ── Time signature ───────────────────────────────────────────────────────────
-
-function drawTimeSignature(svg, x) {
-  const trebleTopY = TREBLE_BOTTOM_Y - 4 * 2 * NOTE_SPACING;
-  const bassTopY   = BASS_TOP_Y;
-
-  for (const topY of [trebleTopY, bassTopY]) {
-    svg.appendChild(svgText(x + 8, topY + NOTE_SPACING * 2, "4", 15, "#2f241d", "middle"));
-    svg.appendChild(svgText(x + 8, topY + NOTE_SPACING * 6, "4", 15, "#2f241d", "middle"));
-  }
-
-  return x + 20;
 }
 
 // ── Note collection ──────────────────────────────────────────────────────────
@@ -263,7 +253,7 @@ function renderBeat(svg, beat, x, keyProfile, keySigPcs) {
     // Only draw an accidental when it is NOT already implied by the key signature.
     if (desc.accidental && !keySigPcs.has(note.midi % 12)) {
       const fill = note.isSelected ? "#126e5a" : "#2f241d";
-      svg.appendChild(svgText(x - 12, y + 4, desc.accidental, 16, fill));
+      svg.appendChild(svgText(x - 12, y + 4, desc.accidental, 18, fill));
     }
 
     drawNoteHead(svg, x, y, note.isSelected);
@@ -326,9 +316,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   // Key signature (on both staves)
   const keySigStartX  = staffStartX + 8;
   let   noteAreaStart = drawKeySignature(svg, keySigStartX, keyProfile);
-
-  // Time signature (on both staves)
-  noteAreaStart = drawTimeSignature(svg, noteAreaStart) + 8;
+  noteAreaStart += 8; // padding after key signature before first note
 
   // Notes / chord columns
   const noteAreaEnd = staffEndX - 20;
