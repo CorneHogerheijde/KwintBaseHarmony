@@ -148,8 +148,6 @@ function drawStaff(svg, bottomY, staffStartX, staffEndX) {
 function drawTrebleClef(svg) {
   // Baseline 78 = bottom staff line Y, placing the G-curl on G4. Font-size 80 spans 5 lines.
   svg.appendChild(svgText(18, 78, "\u{1D11E}", 80, "#2f241d")); // 𝄞
-  // Colon decoration mirroring the bass clef dots, centred on the treble staff.
-  svg.appendChild(svgText(50, 52, ":", 22, "#2f241d"));
 }
 
 function drawBassClef(svg) {
