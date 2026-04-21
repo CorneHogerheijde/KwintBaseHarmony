@@ -146,15 +146,17 @@ function drawStaff(svg, bottomY, staffStartX, staffEndX) {
 // ── Clef glyphs ──────────────────────────────────────────────────────────────
 
 function drawTrebleClef(svg) {
-  // Baseline at G4_y + 0.55*fontSize aligns the G-curl with the G4 staff line (y≈62).
-  // staffStartX is set so the clef sits inside the staff lines.
-  svg.appendChild(svgText(4, 97, "\u{1D11E}", 64, "#2f241d")); // 𝄞
+  // x=18 gives a small left margin inside the staff lines (staffStartX=8).
+  // Font-size 80 spans the full 5-line height. Baseline 90 keeps the G-curl
+  // close to the G4 staff line while sitting visually higher on the staff.
+  svg.appendChild(svgText(18, 90, "\u{1D11E}", 80, "#2f241d")); // 𝄞
 }
 
 function drawBassClef(svg) {
-  // Baseline at F3 staff line so the two dots straddle the F-line correctly.
-  // Font-size 44 gives the clef better visual weight to match the treble.
-  svg.appendChild(svgText(5, BASS_TOP_Y + 26, "\u{1D122}", 44, "#2f241d")); // 𝄢
+  // x=18 matches treble left margin. Font-size 54 fills the bass staff height.
+  // Baseline BASS_TOP_Y+38 places the curl below centre so the F-dots straddle
+  // the F3 line and the glyph extends well towards the bass bottom line.
+  svg.appendChild(svgText(18, BASS_TOP_Y + 38, "\u{1D122}", 54, "#2f241d")); // 𝄢
 }
 
 // ── Key signature ────────────────────────────────────────────────────────────
@@ -178,12 +180,12 @@ function drawKeySignature(svg, keySigStartX, keyProfile) {
     for (let i = 0; i < n; i++) {
       const dIdx = positions[i];
       const symY = bottomY - (dIdx - bottomD) * NOTE_SPACING;
-      const symX = keySigStartX + i * 10;
-      svg.appendChild(svgText(symX, symY + 5, sym, 16, "#2f241d"));
+      const symX = keySigStartX + i * 13;
+      svg.appendChild(svgText(symX, symY + 5, sym, 22, "#2f241d"));
     }
   }
 
-  return keySigStartX + n * 10 + (n > 0 ? 4 : 0);
+  return keySigStartX + n * 13 + (n > 0 ? 6 : 0);
 }
 
 // ── Note collection ──────────────────────────────────────────────────────────
@@ -254,7 +256,7 @@ function renderBeat(svg, beat, x, keyProfile, keySigPcs) {
     // Only draw an accidental when it is NOT already implied by the key signature.
     if (desc.accidental && !keySigPcs.has(note.midi % 12)) {
       const fill = note.isSelected ? "#126e5a" : "#2f241d";
-      svg.appendChild(svgText(x - 12, y + 4, desc.accidental, 18, fill));
+      svg.appendChild(svgText(x - 14, y + 5, desc.accidental, 22, fill));
     }
 
     drawNoteHead(svg, x, y, note.isSelected);
@@ -315,7 +317,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   drawBassClef(svg);
 
   // Key signature (on both staves)
-  const keySigStartX  = 42;  // fixed: leaves room for clef glyph (~35px wide at font-size 64)
+  const keySigStartX  = 58;  // fixed: leaves room for clef glyph at x=18 + ~35px width
   let   noteAreaStart = drawKeySignature(svg, keySigStartX, keyProfile);
   noteAreaStart += 8; // padding after key signature before first note
 
