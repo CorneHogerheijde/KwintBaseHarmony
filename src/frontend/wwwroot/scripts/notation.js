@@ -1,219 +1,333 @@
-import { notationClefSelect, notationStaff, notationSummary } from "./dom.js";
+/**
+ * notation.js — Grand-staff SVG notation renderer.
+ *
+ * Always renders a treble + bass grand staff. Notes are auto-assigned:
+ *   - MIDI ≥ 60 (C4 and above) → treble staff
+ *   - MIDI < 60                 → bass staff
+ *   - Middle C (MIDI 60) gets a ledger line between the two staves.
+ *
+ * Notes sharing the same timingMs are rendered as a chord (same x column).
+ *
+ * Public API
+ * ----------
+ * renderNotation(selectedPitch, composition, rootMidi?)
+ *   selectedPitch – MIDI number of the currently selected / highlighted note
+ *   composition   – Composition object (may be null/undefined)
+ *   rootMidi      – Key root in MIDI (default 60 = C major)
+ */
+
+import { notationStaff, notationSummary } from "./dom.js";
 import { getNoteDescriptor } from "./music.js";
 import { getKeyProfile, KEY_SIG_DIATONIC } from "./key-profiles.js";
 
-function getRecentNotationNotes(selectedPitch, composition, rootMidi = 60) {
-  const offset = rootMidi - 60;
-  const selected = { midi: selectedPitch + offset, isSelected: true };
+
+// ── Grand-staff layout constants ────────────────────────────────────────────
+
+/** Pixels per diatonic half-step (staff line spacing ÷ 2). */
+const NOTE_SPACING = 8;
+
+/** Diatonic index of the bottom line of each staff. */
+const TREBLE_BOTTOM_LINE_D = 30; // E4
+const BASS_BOTTOM_LINE_D   = 18; // G2
+
+/** Y coordinate of the bottom staff line (treble). */
+const TREBLE_BOTTOM_Y = 78;
+
+/** Vertical gap between treble bottom line and bass top line (room for C4 ledger). */
+const STAFF_GAP = 26;
+
+const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 104
+const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 168
+
+/** Note label area below bass staff. */
+const LABEL_AREA_H = 22;
+
+const CANVAS_WIDTH  = 580;
+const CANVAS_HEIGHT = BASS_BOTTOM_Y + LABEL_AREA_H + 4;       // ≈ 194
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Y pixel position of a note given its diatonic index and which staff it lives on. */
+function noteY(diatonicIndex, onTreble) {
+  return onTreble
+    ? TREBLE_BOTTOM_Y - (diatonicIndex - TREBLE_BOTTOM_LINE_D) * NOTE_SPACING
+    : BASS_BOTTOM_Y   - (diatonicIndex - BASS_BOTTOM_LINE_D)   * NOTE_SPACING;
+}
+
+/** True when the note belongs on the treble staff (MIDI ≥ 60). */
+function isTreble(midi) {
+  return midi >= 60;
+}
+
+// ── SVG element builders ────────────────────────────────────────────────────
+
+function svgEl(tag) {
+  return document.createElementNS("http://www.w3.org/2000/svg", tag);
+}
+
+function svgLine(x1, y1, x2, y2, stroke, strokeWidth) {
+  const el = svgEl("line");
+  el.setAttribute("x1", String(x1));
+  el.setAttribute("y1", String(y1));
+  el.setAttribute("x2", String(x2));
+  el.setAttribute("y2", String(y2));
+  el.setAttribute("stroke", stroke);
+  el.setAttribute("stroke-width", String(strokeWidth));
+  return el;
+}
+
+function svgText(x, y, content, fontSize, fill, anchor = null) {
+  const el = svgEl("text");
+  el.setAttribute("x", String(x));
+  el.setAttribute("y", String(y));
+  el.setAttribute("fill", fill);
+  el.setAttribute("font-size", String(fontSize));
+  el.setAttribute("font-family", "serif");
+  if (anchor) el.setAttribute("text-anchor", anchor);
+  el.textContent = content;
+  return el;
+}
+
+// ── Ledger line drawing ──────────────────────────────────────────────────────
+
+/**
+ * Draws ledger lines above/below a staff for notes outside the 5-line range.
+ * Middle C (diatonic 28 = C4) always receives its ledger line between the two staves.
+ */
+function drawLedgerLines(svg, x, diatonicIndex, onTreble) {
+  const bottomD = onTreble ? TREBLE_BOTTOM_LINE_D : BASS_BOTTOM_LINE_D;
+  const topD    = bottomD + 8;
+
+  // Middle C ledger between staves
+  if (diatonicIndex === 28) {
+    const midCY = noteY(28, onTreble);
+    svg.appendChild(svgLine(x - 14, midCY, x + 14, midCY, "#2f241d", 1.6));
+    return;
+  }
+
+  // Below-bottom ledgers
+  if (diatonicIndex < bottomD) {
+    for (let d = bottomD - 2; d >= diatonicIndex; d -= 2) {
+      const ly = noteY(d, onTreble);
+      svg.appendChild(svgLine(x - 14, ly, x + 14, ly, "#2f241d", 1.6));
+    }
+  }
+
+  // Above-top ledgers
+  if (diatonicIndex > topD) {
+    for (let d = topD + 2; d <= diatonicIndex; d += 2) {
+      const ly = noteY(d, onTreble);
+      svg.appendChild(svgLine(x - 14, ly, x + 14, ly, "#2f241d", 1.6));
+    }
+  }
+}
+
+// ── Staff drawing ────────────────────────────────────────────────────────────
+
+function drawStaff(svg, bottomY, staffStartX, staffEndX) {
+  const topY = bottomY - 4 * 2 * NOTE_SPACING;
+  for (let i = 0; i < 5; i++) {
+    const y = topY + i * 2 * NOTE_SPACING;
+    svg.appendChild(svgLine(staffStartX, y, staffEndX, y, "#7c6858", 1.4));
+  }
+}
+
+// ── Clef glyphs ──────────────────────────────────────────────────────────────
+
+function drawTrebleClef(svg) {
+  svg.appendChild(svgText(4, TREBLE_BOTTOM_Y + 14, "\u{1D11E}", 72, "#2f241d")); // 𝄞
+}
+
+function drawBassClef(svg) {
+  svg.appendChild(svgText(6, BASS_TOP_Y + 18, "\u{1D122}", 38, "#2f241d")); // 𝄢
+}
+
+// ── Key signature ────────────────────────────────────────────────────────────
+
+/**
+ * Draws key signature accidentals on both treble and bass staves.
+ * Returns the X position after the last symbol (where the time sig starts).
+ */
+function drawKeySignature(svg, keySigStartX, keyProfile) {
+  const { accidentals, accidentalType } = keyProfile;
+  const n = accidentals.length;
+  if (n === 0) return keySigStartX;
+
+  const sym = accidentalType === "sharp" ? "\u266f" : "\u266d";
+
+  for (const clef of ["treble", "bass"]) {
+    const positions = KEY_SIG_DIATONIC[clef]?.[accidentalType] ?? [];
+    const bottomD   = clef === "treble" ? TREBLE_BOTTOM_LINE_D : BASS_BOTTOM_LINE_D;
+    const bottomY   = clef === "treble" ? TREBLE_BOTTOM_Y      : BASS_BOTTOM_Y;
+
+    for (let i = 0; i < n; i++) {
+      const dIdx = positions[i];
+      const symY = bottomY - (dIdx - bottomD) * NOTE_SPACING;
+      const symX = keySigStartX + i * 10;
+      svg.appendChild(svgText(symX, symY + 5, sym, 14, "#2f241d"));
+    }
+  }
+
+  return keySigStartX + n * 10 + (n > 0 ? 4 : 0);
+}
+
+// ── Time signature ───────────────────────────────────────────────────────────
+
+function drawTimeSignature(svg, x) {
+  const trebleTopY = TREBLE_BOTTOM_Y - 4 * 2 * NOTE_SPACING;
+  const bassTopY   = BASS_TOP_Y;
+
+  for (const topY of [trebleTopY, bassTopY]) {
+    svg.appendChild(svgText(x + 8, topY + NOTE_SPACING * 2, "4", 15, "#2f241d", "middle"));
+    svg.appendChild(svgText(x + 8, topY + NOTE_SPACING * 6, "4", 15, "#2f241d", "middle"));
+  }
+
+  return x + 20;
+}
+
+// ── Note collection ──────────────────────────────────────────────────────────
+
+/**
+ * Returns an array of "beat" arrays: each inner array holds notes that share
+ * the same timingMs and should be rendered as a chord column.
+ */
+function getRecentNotationNotes(selectedPitch, composition, rootMidi) {
+  const offset   = rootMidi - 60;
+  const selected = { midi: selectedPitch + offset, timingMs: Infinity, isSelected: true };
 
   if (!composition?.layers) {
-    return [selected];
+    return [[selected]];
   }
 
-  const recentNotes = composition.layers
+  const allNotes = composition.layers
     .flatMap((layer) => (layer.notes ?? []).map((note) => ({
-      midi: note.pitch + offset,
-      timingMs: note.timingMs ?? 0,
+      midi:        note.pitch + offset,
+      timingMs:    note.timingMs ?? 0,
       layerNumber: layer.layerNumber,
-      isSelected: false
+      isSelected:  false
     })))
-    .sort((left, right) => left.timingMs - right.timingMs || left.layerNumber - right.layerNumber)
-    .slice(-7);
+    .sort((a, b) => a.timingMs - b.timingMs || a.layerNumber - b.layerNumber);
 
-  return [...recentNotes, selected].slice(-8);
-}
+  const recent = allNotes.slice(-7);
+  const flat   = [...recent, selected].slice(-8);
 
-function drawLedgerLines(svg, x, y, diatonicIndex, clefReference, noteSpacing) {
-  const topLineIndex = clefReference.bottomLineIndex + 8;
-
-  if (diatonicIndex < clefReference.bottomLineIndex) {
-    for (let lineIndex = clefReference.bottomLineIndex - 2; lineIndex >= diatonicIndex; lineIndex -= 2) {
-      const ledgerY = y + (diatonicIndex - lineIndex) * noteSpacing;
-      const ledger = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      ledger.setAttribute("x1", String(x - 14));
-      ledger.setAttribute("x2", String(x + 14));
-      ledger.setAttribute("y1", String(ledgerY));
-      ledger.setAttribute("y2", String(ledgerY));
-      ledger.setAttribute("stroke", "#2f241d");
-      ledger.setAttribute("stroke-width", "1.6");
-      svg.appendChild(ledger);
-    }
+  // Group into chord columns by timingMs
+  const beatMap = new Map();
+  for (const note of flat) {
+    const key = note.timingMs;
+    if (!beatMap.has(key)) beatMap.set(key, []);
+    beatMap.get(key).push(note);
   }
 
-  if (diatonicIndex > topLineIndex) {
-    for (let lineIndex = topLineIndex + 2; lineIndex <= diatonicIndex; lineIndex += 2) {
-      const ledgerY = y - (lineIndex - diatonicIndex) * noteSpacing;
-      const ledger = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      ledger.setAttribute("x1", String(x - 14));
-      ledger.setAttribute("x2", String(x + 14));
-      ledger.setAttribute("y1", String(ledgerY));
-      ledger.setAttribute("y2", String(ledgerY));
-      ledger.setAttribute("stroke", "#2f241d");
-      ledger.setAttribute("stroke-width", "1.6");
-      svg.appendChild(ledger);
-    }
-  }
+  return [...beatMap.values()];
 }
 
+// ── Note rendering ───────────────────────────────────────────────────────────
+
+function drawNoteHead(svg, x, y, isSelected) {
+  const fill = isSelected ? "#126e5a" : "#2f241d";
+  const el   = svgEl("ellipse");
+  el.setAttribute("cx", String(x));
+  el.setAttribute("cy", String(y));
+  el.setAttribute("rx", "9");
+  el.setAttribute("ry", "6.5");
+  el.setAttribute("fill", fill);
+  el.setAttribute("transform", `rotate(-18 ${x} ${y})`);
+  svg.appendChild(el);
+}
+
+function drawStem(svg, x, y, isSelected) {
+  const color = isSelected ? "#126e5a" : "#2f241d";
+  svg.appendChild(svgLine(x + 7, y, x + 7, y - 32, color, 1.6));
+}
+
+/** Renders a single beat (one or more simultaneous notes) at position x. */
+function renderBeat(svg, beat, x) {
+  for (const note of beat) {
+    const desc     = getNoteDescriptor(note.midi);
+    const onTreble = isTreble(note.midi);
+    const y        = noteY(desc.diatonicIndex, onTreble);
+
+    drawLedgerLines(svg, x, desc.diatonicIndex, onTreble);
+
+    if (desc.accidental) {
+      const fill = note.isSelected ? "#126e5a" : "#2f241d";
+      svg.appendChild(svgText(x - 12, y + 4, desc.accidental, 16, fill));
+    }
+
+    drawNoteHead(svg, x, y, note.isSelected);
+    drawStem(svg, x, y, note.isSelected);
+  }
+
+  // Label: prefer the selected note, fall back to last note in beat
+  const labelNote = beat.find((n) => n.isSelected) ?? beat[beat.length - 1];
+  const labelDesc = getNoteDescriptor(labelNote.midi);
+  const labelEl   = svgText(x, BASS_BOTTOM_Y + LABEL_AREA_H - 4, labelDesc.label, 10,
+    labelNote.isSelected ? "#126e5a" : "#6d5b4b", "middle");
+  svg.appendChild(labelEl);
+}
+
+// ── Main export ──────────────────────────────────────────────────────────────
+
+/**
+ * Renders a grand-staff (treble + bass) SVG notation preview into #notation-staff.
+ *
+ * @param {number}      selectedPitch  MIDI number of the active note
+ * @param {object|null} composition    Current composition (may be null)
+ * @param {number}      [rootMidi=60]  Key root MIDI (default = C major)
+ */
 export function renderNotation(selectedPitch, composition, rootMidi = 60) {
-  const notes = getRecentNotationNotes(selectedPitch, composition, rootMidi).map((note) => ({
-    ...note,
-    descriptor: getNoteDescriptor(note.midi)
-  }));
+  const beats      = getRecentNotationNotes(selectedPitch, composition, rootMidi);
+  const totalNotes = beats.reduce((acc, b) => acc + b.length, 0);
+  const selNote    = beats.flatMap((b) => b).find((n) => n.isSelected);
+  const selLabel   = selNote
+    ? getNoteDescriptor(selNote.midi).label
+    : getNoteDescriptor(selectedPitch).label;
 
-  const clef = notationClefSelect.value;
-  const clefReference = clef === "bass"
-    ? { bottomLineIndex: 18, label: "bass" }
-    : { bottomLineIndex: 30, label: "treble" };
-  const noteSpacing = 10;
-  const bottomLineY = 120;
-  const topLineY = bottomLineY - noteSpacing * 8;
-  const width = 580;
-  const height = 175;
+  notationSummary.textContent = totalNotes === 1
+    ? `Previewing ${selLabel} on the grand staff.`
+    : `Showing ${totalNotes} recent notes on the grand staff with ${selLabel} selected.`;
 
-  notationSummary.textContent = notes.length === 1
-    ? `Previewing ${notes[0].descriptor.label} on the ${clefReference.label} clef.`
-    : `Showing ${notes.length} recent notes on the ${clefReference.label} clef with ${getNoteDescriptor(selectedPitch).label} selected.`;
+  const staffStartX = 56;
+  const staffEndX   = CANVAS_WIDTH - 16;
 
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  const svg = svgEl("svg");
+  svg.setAttribute("viewBox", `0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", `${clefReference.label} notation preview`);
+  svg.setAttribute("aria-label", "Grand staff notation preview");
 
-  const staffStartX = 58;
-  const staffEndX = width - 16;
+  // Staves
+  drawStaff(svg, TREBLE_BOTTOM_Y, staffStartX, staffEndX);
+  drawStaff(svg, BASS_BOTTOM_Y,   staffStartX, staffEndX);
 
-  // Left barline
-  const barLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  barLine.setAttribute("x1", String(staffStartX));
-  barLine.setAttribute("x2", String(staffStartX));
-  barLine.setAttribute("y1", String(topLineY));
-  barLine.setAttribute("y2", String(bottomLineY));
-  barLine.setAttribute("stroke", "#7c6858");
-  barLine.setAttribute("stroke-width", "1.8");
-  svg.appendChild(barLine);
+  // Grand barline spanning both staves
+  const trebleTopY = TREBLE_BOTTOM_Y - 4 * 2 * NOTE_SPACING;
+  svg.appendChild(svgLine(staffStartX, trebleTopY, staffStartX, BASS_BOTTOM_Y, "#7c6858", 1.8));
 
-  for (let line = 0; line < 5; line += 1) {
-    const y = topLineY + line * noteSpacing * 2;
-    const staffLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    staffLine.setAttribute("x1", String(staffStartX));
-    staffLine.setAttribute("x2", String(staffEndX));
-    staffLine.setAttribute("y1", String(y));
-    staffLine.setAttribute("y2", String(y));
-    staffLine.setAttribute("stroke", "#7c6858");
-    staffLine.setAttribute("stroke-width", "1.4");
-    svg.appendChild(staffLine);
-  }
+  // Clef symbols
+  drawTrebleClef(svg);
+  drawBassClef(svg);
 
-  // Clef symbol (𝄞 treble / 𝄢 bass)
-  const clefText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  clefText.setAttribute("fill", "#2f241d");
-  clefText.setAttribute("font-family", "serif");
-  if (clef === "bass") {
-    clefText.setAttribute("x", "6");
-    clefText.setAttribute("y", "92");
-    clefText.setAttribute("font-size", "42");
-    clefText.textContent = "\u{1D122}"; // 𝄢
-  } else {
-    clefText.setAttribute("x", "4");
-    clefText.setAttribute("y", "128");
-    clefText.setAttribute("font-size", "82");
-    clefText.textContent = "\u{1D11E}"; // 𝄞
-  }
-  svg.appendChild(clefText);
+  // Key signature (on both staves)
+  const keyProfile    = getKeyProfile(rootMidi);
+  const keySigStartX  = staffStartX + 8;
+  let   noteAreaStart = drawKeySignature(svg, keySigStartX, keyProfile);
 
-  // ── Key signature ────────────────────────────────────────────────────────────
-  const keyProfile = getKeyProfile(rootMidi);
-  const numAccidentals = keyProfile.accidentals.length;
-  const keySigStartX = staffStartX + 8;
-  const keySigSymbol = keyProfile.accidentalType === "sharp" ? "\u266f" : "\u266d";
-  const diatonicPositions = KEY_SIG_DIATONIC[clef]?.[keyProfile.accidentalType] ?? [];
+  // Time signature (on both staves)
+  noteAreaStart = drawTimeSignature(svg, noteAreaStart) + 8;
 
-  for (let i = 0; i < numAccidentals; i++) {
-    const diatonicIdx = diatonicPositions[i];
-    const symY = bottomLineY - (diatonicIdx - clefReference.bottomLineIndex) * noteSpacing;
-    const symX = keySigStartX + i * 11;
-    const sym = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    sym.setAttribute("x", String(symX));
-    sym.setAttribute("y", String(symY + 5));
-    sym.setAttribute("fill", "#2f241d");
-    sym.setAttribute("font-size", "15");
-    sym.setAttribute("font-family", "serif");
-    sym.textContent = keySigSymbol;
-    svg.appendChild(sym);
-  }
-
-  // ── 4/4 time signature (x shifts right when key signature is present) ────────
-  const timeSigX = keySigStartX + numAccidentals * 11 + (numAccidentals > 0 ? 5 : 0);
-
-  const timeSigTop = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigTop.setAttribute("x", String(timeSigX + 8));
-  timeSigTop.setAttribute("y", String(topLineY + noteSpacing * 2));
-  timeSigTop.setAttribute("fill", "#2f241d");
-  timeSigTop.setAttribute("font-size", "16");
-  timeSigTop.setAttribute("font-family", "serif");
-  timeSigTop.setAttribute("text-anchor", "middle");
-  timeSigTop.textContent = "4";
-  svg.appendChild(timeSigTop);
-
-  const timeSigBottom = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  timeSigBottom.setAttribute("x", String(timeSigX + 8));
-  timeSigBottom.setAttribute("y", String(topLineY + noteSpacing * 6));
-  timeSigBottom.setAttribute("fill", "#2f241d");
-  timeSigBottom.setAttribute("font-size", "16");
-  timeSigBottom.setAttribute("font-family", "serif");
-  timeSigBottom.setAttribute("text-anchor", "middle");
-  timeSigBottom.textContent = "4";
-  svg.appendChild(timeSigBottom);
-
-  // Spread notes across the staff horizontally (oldest left → newest/selected right)
-  const noteAreaStart = timeSigX + 24;
+  // Notes / chord columns
   const noteAreaEnd = staffEndX - 20;
-  const noteStep = notes.length > 1 ? (noteAreaEnd - noteAreaStart) / (notes.length - 1) : 0;
+  const beatCount   = beats.length;
+  const beatStep    = beatCount > 1 ? (noteAreaEnd - noteAreaStart) / (beatCount - 1) : 0;
 
-  notes.forEach((note, index) => {
-    const x = notes.length > 1 ? noteAreaStart + index * noteStep : (noteAreaStart + noteAreaEnd) / 2;
-    const y = bottomLineY - (note.descriptor.diatonicIndex - clefReference.bottomLineIndex) * noteSpacing;
-    drawLedgerLines(svg, x, y, note.descriptor.diatonicIndex, clefReference, noteSpacing);
-
-    if (note.descriptor.accidental) {
-      const accidental = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      accidental.setAttribute("x", String(x - 13));
-      accidental.setAttribute("y", String(y + 5));
-      accidental.setAttribute("fill", "#2f241d");
-      accidental.setAttribute("font-size", "18");
-      accidental.setAttribute("font-family", "serif");
-      accidental.textContent = note.descriptor.accidental;
-      svg.appendChild(accidental);
-    }
-
-    const noteHead = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-    noteHead.setAttribute("cx", String(x));
-    noteHead.setAttribute("cy", String(y));
-    noteHead.setAttribute("rx", "10");
-    noteHead.setAttribute("ry", "7.5");
-    noteHead.setAttribute("fill", note.isSelected ? "#126e5a" : "#2f241d");
-    noteHead.setAttribute("transform", `rotate(-18 ${x} ${y})`);
-    svg.appendChild(noteHead);
-
-    const stem = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    stem.setAttribute("x1", String(x + 8));
-    stem.setAttribute("x2", String(x + 8));
-    stem.setAttribute("y1", String(y));
-    stem.setAttribute("y2", String(y - 36));
-    stem.setAttribute("stroke", note.isSelected ? "#126e5a" : "#2f241d");
-    stem.setAttribute("stroke-width", "1.8");
-    svg.appendChild(stem);
-
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(x));
-    label.setAttribute("y", "163");
-    label.setAttribute("text-anchor", "middle");
-    label.setAttribute("fill", note.isSelected ? "#126e5a" : "#6d5b4b");
-    label.setAttribute("font-size", "11");
-    label.textContent = note.descriptor.label;
-    svg.appendChild(label);
+  beats.forEach((beat, i) => {
+    const x = beatCount > 1
+      ? noteAreaStart + i * beatStep
+      : (noteAreaStart + noteAreaEnd) / 2;
+    renderBeat(svg, beat, x);
   });
 
   notationStaff.replaceChildren(svg);
 }
+

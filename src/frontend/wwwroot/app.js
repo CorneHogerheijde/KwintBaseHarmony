@@ -10,7 +10,6 @@ import {
   jsonEditor,
   loadForm,
   loadJsonIntoEditorButton,
-  notationClefSelect,
   pitchInput,
   previewSelectedNoteButton,
   refreshStatusButton,
@@ -197,10 +196,6 @@ pitchInput.addEventListener("input", () => {
 
 pitchInput.addEventListener("change", () => {
   setSelectedPitch(pitchInput.value);
-});
-
-notationClefSelect.addEventListener("change", () => {
-  updateNotation();
 });
 
 importJsonButton.addEventListener("click", async () => {

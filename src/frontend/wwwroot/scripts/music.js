@@ -17,6 +17,13 @@ export function midiToLabel(midi) {
   return `${noteNames[normalized % 12]}${octave}`;
 }
 
+/**
+ * Returns an octave-qualified note label for the given MIDI number (e.g. C4, G♯3).
+ * This is the canonical helper used by piano keys, grand-staff notation, and puzzle hints.
+ * Equivalent to midiToLabel — provided as a semantically explicit alias.
+ */
+export const midiToOctaveLabel = midiToLabel;
+
 export function getNoteDescriptor(midi) {
   const normalized = normalizeMidi(midi);
   const pc        = normalized % 12;
