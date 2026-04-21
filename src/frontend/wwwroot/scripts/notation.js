@@ -37,7 +37,7 @@ const TREBLE_BOTTOM_LINE_D = 30; // E4
 const BASS_BOTTOM_LINE_D   = 18; // G2
 
 /** Y coordinate of the bottom staff line (treble). */
-const TREBLE_BOTTOM_Y = 78;
+const TREBLE_BOTTOM_Y = 108; // extra top margin for ledger lines above treble
 
 /**
  * Vertical gap between treble bottom line and bass top line.
@@ -47,14 +47,22 @@ const TREBLE_BOTTOM_Y = 78;
  */
 const STAFF_GAP = 32;
 
-const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 110
-const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 174
+const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 140
+const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 204
 
-/** Note label area below bass staff. */
+/** Note label area below bass staff + bottom padding for ledger lines below bass. */
 const LABEL_AREA_H = 22;
+const BOTTOM_PAD   = 32;
 
 const CANVAS_WIDTH  = 580;
-const CANVAS_HEIGHT = BASS_BOTTOM_Y + LABEL_AREA_H + 4;       // ≈ 194
+const CANVAS_HEIGHT = BASS_BOTTOM_Y + LABEL_AREA_H + BOTTOM_PAD; // 258
+
+/**
+ * Thresholds (in canvas-Y) beyond which a note is shifted one octave inward
+ * and marked with an "8" ottava indicator.
+ */
+const NOTE_TOP_LIMIT    = 8;                    // above this: 8va (treble note too high)
+const NOTE_BOTTOM_LIMIT = BASS_BOTTOM_Y + 22;  // below this: 8vb (bass note too low)
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -146,8 +154,8 @@ function drawStaff(svg, bottomY, staffStartX, staffEndX) {
 // ── Clef glyphs ──────────────────────────────────────────────────────────────
 
 function drawTrebleClef(svg) {
-  // Baseline 78 = bottom staff line Y, placing the G-curl on G4. Font-size 80 spans 5 lines.
-  svg.appendChild(svgText(18, 78, "\u{1D11E}", 80, "#2f241d")); // 𝄞
+  // Baseline = TREBLE_BOTTOM_Y keeps the G-curl near the G4 line regardless of margin.
+  svg.appendChild(svgText(18, TREBLE_BOTTOM_Y, "\u{1D11E}", 80, "#2f241d")); // 𝄞
 }
 
 function drawBassClef(svg) {
@@ -191,9 +199,10 @@ function drawKeySignature(svg, keySigStartX, keyProfile) {
  * Returns an array of "beat" arrays: each inner array holds notes that share
  * the same timingMs and should be rendered as a chord column.
  */
-function getRecentNotationNotes(selectedPitch, composition, rootMidi) {
-  const offset   = rootMidi - 60;
-  const selected = { midi: selectedPitch + offset, timingMs: Infinity, isSelected: true };
+// Notes stored in composition.layers and selectedPitch are already absolute MIDI values;
+// rootMidi is only used for the key-signature profile, not as a transposition offset here.
+function getRecentNotationNotes(selectedPitch, composition) {
+  const selected = { midi: selectedPitch, timingMs: Infinity, isSelected: true };
 
   if (!composition?.layers) {
     return [[selected]];
@@ -201,7 +210,7 @@ function getRecentNotationNotes(selectedPitch, composition, rootMidi) {
 
   const allNotes = composition.layers
     .flatMap((layer) => (layer.notes ?? []).map((note) => ({
-      midi:        note.pitch + offset,
+      midi:        note.pitch,
       timingMs:    note.timingMs ?? 0,
       layerNumber: layer.layerNumber,
       isSelected:  false
@@ -246,13 +255,31 @@ function renderBeat(svg, beat, x, keyProfile, keySigPcs) {
   for (const note of beat) {
     const desc     = getNoteDescriptorForKey(note.midi, keyProfile);
     const onTreble = isTreble(note.midi);
-    const y        = noteY(desc.diatonicIndex, onTreble);
+    const fill     = note.isSelected ? "#126e5a" : "#2f241d";
 
-    drawLedgerLines(svg, x, desc.diatonicIndex, onTreble);
+    // Check if the note would go off-canvas; if so shift by one diatonic octave
+    // and add an ottava "8" marker (8va above treble, 8vb below bass).
+    let dIdx      = desc.diatonicIndex;
+    let tentativeY = noteY(dIdx, onTreble);
+    let ottava    = 0;
+    if (onTreble && tentativeY < NOTE_TOP_LIMIT) {
+      dIdx   -= 7;   // shift down one diatonic octave for display
+      ottava  = 1;   // sounds 8va (one octave higher than written)
+    } else if (!onTreble && tentativeY > NOTE_BOTTOM_LIMIT) {
+      dIdx   += 7;   // shift up one diatonic octave for display
+      ottava  = -1;  // sounds 8vb (one octave lower than written)
+    }
+    const y = noteY(dIdx, onTreble);
+
+    drawLedgerLines(svg, x, dIdx, onTreble);
+
+    if (ottava !== 0) {
+      const octY = ottava > 0 ? y - 14 : y + 18;
+      svg.appendChild(svgText(x, octY, "8", 11, fill, "middle"));
+    }
 
     // Only draw an accidental when it is NOT already implied by the key signature.
     if (desc.accidental && !keySigPcs.has(note.midi % 12)) {
-      const fill = note.isSelected ? "#126e5a" : "#2f241d";
       svg.appendChild(svgText(x - 18, y + 5, desc.accidental, 32, fill));
     }
 
@@ -278,7 +305,7 @@ function renderBeat(svg, beat, x, keyProfile, keySigPcs) {
  * @param {number}      [rootMidi=60]  Key root MIDI (default = C major)
  */
 export function renderNotation(selectedPitch, composition, rootMidi = 60) {
-  const beats      = getRecentNotationNotes(selectedPitch, composition, rootMidi);
+  const beats      = getRecentNotationNotes(selectedPitch, composition);
   const keyProfile = getKeyProfile(rootMidi);
   // Set of pitch classes already covered by the key signature (no need to redraw).
   const keySigPcs  = new Set(keyProfile.accidentals.map((a) => ACCIDENTAL_PC[a] ?? -1));
