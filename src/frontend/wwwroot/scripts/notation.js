@@ -146,14 +146,15 @@ function drawStaff(svg, bottomY, staffStartX, staffEndX) {
 // ── Clef glyphs ──────────────────────────────────────────────────────────────
 
 function drawTrebleClef(svg) {
-  // Baseline raised 8 px vs the natural descent position so the G-line curl
-  // visually aligns with the G4 staff line. Font-size 64 (down from 72) reduces
-  // the descending scroll depth, preventing overlap with the bass staff.
-  svg.appendChild(svgText(4, TREBLE_BOTTOM_Y + 6, "\u{1D11E}", 64, "#2f241d")); // 𝄞
+  // Baseline at G4_y + 0.55*fontSize aligns the G-curl with the G4 staff line (y≈62).
+  // staffStartX is set so the clef sits inside the staff lines.
+  svg.appendChild(svgText(4, 97, "\u{1D11E}", 64, "#2f241d")); // 𝄞
 }
 
 function drawBassClef(svg) {
-  svg.appendChild(svgText(6, BASS_TOP_Y + 18, "\u{1D122}", 38, "#2f241d")); // 𝄢
+  // Baseline at F3 staff line so the two dots straddle the F-line correctly.
+  // Font-size 44 gives the clef better visual weight to match the treble.
+  svg.appendChild(svgText(5, BASS_TOP_Y + 26, "\u{1D122}", 44, "#2f241d")); // 𝄢
 }
 
 // ── Key signature ────────────────────────────────────────────────────────────
@@ -293,7 +294,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
     ? `Previewing ${selLabel} on the grand staff.`
     : `Showing ${totalNotes} recent notes on the grand staff with ${selLabel} selected.`;
 
-  const staffStartX = 56;
+  const staffStartX = 8;  // Staff lines start near the left edge so clef glyphs sit inside them
   const staffEndX   = CANVAS_WIDTH - 16;
 
   const svg = svgEl("svg");
@@ -314,7 +315,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   drawBassClef(svg);
 
   // Key signature (on both staves)
-  const keySigStartX  = staffStartX + 8;
+  const keySigStartX  = 42;  // fixed: leaves room for clef glyph (~35px wide at font-size 64)
   let   noteAreaStart = drawKeySignature(svg, keySigStartX, keyProfile);
   noteAreaStart += 8; // padding after key signature before first note
 
