@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   normalizeMidi,
   midiToLabel,
+  midiToOctaveLabel,
   getNoteDescriptor,
   midiToFrequency,
   isBlackKey,
@@ -79,4 +80,35 @@ describe("isBlackKey", () => {
   it("returns false for C4 (MIDI 60)", () => expect(isBlackKey(60)).toBe(false));
   it("returns false for E4 (MIDI 64)", () => expect(isBlackKey(64)).toBe(false));
   it("returns false for B4 (MIDI 71)", () => expect(isBlackKey(71)).toBe(false));
+});
+
+// ── midiToOctaveLabel ─────────────────────────────────────────────────────────
+
+describe("midiToOctaveLabel", () => {
+  it("is identical to midiToLabel (same function reference)", () => {
+    expect(midiToOctaveLabel).toBe(midiToLabel);
+  });
+
+  it("returns 'C4' for MIDI 60 (middle C)", () => {
+    expect(midiToOctaveLabel(60)).toBe("C4");
+  });
+
+  it("returns 'G♯3' for MIDI 56", () => {
+    expect(midiToOctaveLabel(56)).toBe("G♯3");
+  });
+
+  it("returns 'A0' for MIDI 21 (lowest piano key)", () => {
+    expect(midiToOctaveLabel(21)).toBe("A0");
+  });
+
+  it("returns 'C8' for MIDI 108 (highest piano key)", () => {
+    expect(midiToOctaveLabel(108)).toBe("C8");
+  });
+
+  it("includes octave number for every note in range 48–72", () => {
+    for (let midi = 48; midi <= 72; midi++) {
+      const label = midiToOctaveLabel(midi);
+      expect(label).toMatch(/\d$/); // ends with a digit (the octave)
+    }
+  });
 });
