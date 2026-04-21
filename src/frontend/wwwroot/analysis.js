@@ -1,5 +1,20 @@
-import { request } from "./scripts/api.js";
+import { backendBaseUrl } from "./scripts/dom.js";
+import { getToken } from "./scripts/auth.js";
 import { renderAuthNav } from "./scripts/nav-auth.js";
+
+async function apiRequest(path, options = {}) {
+  const token = getToken();
+  const authHeader = token ? { "Authorization": `Bearer ${token}` } : {};
+  const response = await fetch(`${backendBaseUrl}${path}`, {
+    headers: { "Content-Type": "application/json", ...authHeader, ...(options.headers ?? {}) },
+    ...options,
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `Request failed with status ${response.status}`);
+  }
+  return response.json();
+}
 
 renderAuthNav("auth-nav");
 
@@ -83,7 +98,7 @@ form.addEventListener("submit", async (e) => {
   resultsPanel.hidden = true;
 
   try {
-    const data = await request("/api/analysis/chord-chart", {
+    const data = await apiRequest("/api/analysis/chord-chart", {
       method: "POST",
       body: JSON.stringify({ studentId, title, chordChart: chart }),
     });
