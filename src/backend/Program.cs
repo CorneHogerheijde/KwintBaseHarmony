@@ -1,4 +1,5 @@
 using System.Text;
+using AspNet.Security.OAuth.LinkedIn;
 using Dapr.Client;
 using KwintBaseHarmony.Api;
 using KwintBaseHarmony.Auth;
@@ -43,6 +44,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Auth:Google:ClientId"] ?? "";
+        options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"] ?? "";
+        options.CallbackPath = "/api/auth/oauth/google/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
+    })
+    .AddMicrosoftAccount(options =>
+    {
+        options.ClientId = builder.Configuration["Auth:Microsoft:ClientId"] ?? "";
+        options.ClientSecret = builder.Configuration["Auth:Microsoft:ClientSecret"] ?? "";
+        options.CallbackPath = "/api/auth/oauth/microsoft/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
+    })
+    .AddLinkedIn(options =>
+    {
+        options.ClientId = builder.Configuration["Auth:LinkedIn:ClientId"] ?? "";
+        options.ClientSecret = builder.Configuration["Auth:LinkedIn:ClientSecret"] ?? "";
+        options.CallbackPath = "/api/auth/oauth/linkedin/callback";
+        options.Events.OnTicketReceived = OAuthCallbackHandler.HandleTicketReceivedAsync;
     });
 builder.Services.AddAuthorization();
 

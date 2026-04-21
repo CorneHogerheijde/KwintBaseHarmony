@@ -10,6 +10,23 @@ const errorEl = document.getElementById("login-error");
 const params = new URLSearchParams(window.location.search);
 const redirect = params.get("redirect") || "/";
 
+// ── Handle OAuth callback ─────────────────────────────────────────────────────
+// After a social login the backend redirects here with token + user info in
+// the query string.  Store the auth data and navigate to the requested page.
+const oauthToken = params.get("token");
+const oauthError = params.get("error");
+
+if (oauthToken) {
+    const userId = params.get("userId") ?? "";
+    const email  = params.get("email")  ?? "";
+    const role   = params.get("role")   ?? "Student";
+    setAuth(oauthToken, { userId, email, role });
+    // Clean the URL so the token is not sitting in browser history, then redirect.
+    window.location.replace(redirect);
+} else if (oauthError) {
+    showError("Social login failed — please try again or use email/password.");
+}
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errorEl.classList.add("hidden");

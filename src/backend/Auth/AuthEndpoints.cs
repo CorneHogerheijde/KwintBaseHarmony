@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using KwintBaseHarmony.Data;
 using KwintBaseHarmony.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.EntityFrameworkCore;
 
 namespace KwintBaseHarmony.Auth;
@@ -54,7 +57,7 @@ public static class AuthEndpoints
             var email = request.Email.Trim().ToLowerInvariant();
 
             var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 return Results.Unauthorized();
 
             var token = JwtService.GenerateToken(user, configuration);
@@ -72,6 +75,30 @@ public static class AuthEndpoints
 
             return Results.Ok(new MeResponse(Guid.Parse(userId), email, role ?? "Student"));
         }).RequireAuthorization();
+
+        // ── OAuth / Social login ──────────────────────────────────────────────
+        // Initiates a social-login flow by issuing a Challenge for the requested
+        // scheme. The middleware then redirects the browser to the provider.
+        auth.MapGet("/oauth/{provider}", (string provider, HttpContext httpContext) =>
+        {
+            var scheme = provider.ToLowerInvariant() switch
+            {
+                "google"    => GoogleDefaults.AuthenticationScheme,
+                "microsoft" => MicrosoftAccountDefaults.AuthenticationScheme,
+                "linkedin"  => "LinkedIn",
+                _           => null
+            };
+
+            if (scheme is null)
+                return Results.BadRequest(new { error = $"Unknown provider '{provider}'." });
+
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = $"/api/auth/oauth/{provider}/callback"
+            };
+
+            return Results.Challenge(props, new[] { scheme });
+        }).AllowAnonymous();
 
         return app;
     }
