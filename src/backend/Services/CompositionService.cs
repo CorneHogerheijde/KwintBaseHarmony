@@ -19,7 +19,7 @@ public class CompositionService : ICompositionService
     /// <summary>
     /// Creates a new composition with empty 7 layers (Kwintessence structure).
     /// </summary>
-    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical", Guid? userId = null)
+    public async Task<Composition> CreateAsync(string studentId, string title, string difficulty, string style = "classical", Guid? userId = null, int rootMidi = 60)
     {
         var composition = new Composition
         {
@@ -28,6 +28,7 @@ public class CompositionService : ICompositionService
             Difficulty = difficulty.Trim(),
             Style = style.Trim(),
             UserId = userId,
+            RootMidi = rootMidi,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

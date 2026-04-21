@@ -43,6 +43,34 @@ export function getNoteDescriptor(midi) {
   };
 }
 
+/**
+ * Returns a note descriptor using spelling appropriate for the given key.
+ * Flat keys use flat note names (e.g. B♭4 instead of A♯4), which also corrects
+ * the diatonic staff position so notes appear on the right staff line.
+ *
+ * @param {number} midi
+ * @param {{ accidentalType?: string } | null} keyProfile
+ */
+export function getNoteDescriptorForKey(midi, keyProfile) {
+  const normalized = normalizeMidi(midi);
+  const pc         = normalized % 12;
+  const octave     = Math.floor(normalized / 12) - 1;
+  const useFlat    = keyProfile?.accidentalType === "flat";
+  const token      = useFlat ? flatNames[pc] : noteNames[pc];
+  const letter     = token[0];
+  const accidental = token.length > 1 ? token.slice(1) : "";
+
+  return {
+    midi: normalized,
+    token,
+    octave,
+    letter,
+    accidental,
+    label: `${token}${octave}`,
+    diatonicIndex: octave * 7 + diatonicSteps[letter]
+  };
+}
+
 export function midiToFrequency(midi) {
   return 440 * 2 ** ((normalizeMidi(midi) - 69) / 12);
 }

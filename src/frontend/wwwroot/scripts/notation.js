@@ -17,8 +17,14 @@
  */
 
 import { notationStaff, notationSummary } from "./dom.js";
-import { getNoteDescriptor } from "./music.js";
+import { getNoteDescriptorForKey } from "./music.js";
 import { getKeyProfile, KEY_SIG_DIATONIC } from "./key-profiles.js";
+
+// Pitch-class values for every possible key-signature accidental token.
+const ACCIDENTAL_PC = {
+  "F♯": 6, "C♯": 1, "G♯": 8, "D♯": 3, "A♯": 10, "E♯": 5, "B♯": 11,
+  "B♭": 10, "E♭": 3, "A♭": 8, "D♭": 1, "G♭": 6, "C♭": 11, "F♭": 4
+};
 
 
 // ── Grand-staff layout constants ────────────────────────────────────────────
@@ -33,8 +39,12 @@ const BASS_BOTTOM_LINE_D   = 18; // G2
 /** Y coordinate of the bottom staff line (treble). */
 const TREBLE_BOTTOM_Y = 78;
 
-/** Vertical gap between treble bottom line and bass top line (room for C4 ledger). */
-const STAFF_GAP = 26;
+/**
+ * Vertical gap between treble bottom line and bass top line.
+ * 32 px = 4 diatonic half-steps, which makes the note-spacing continuous across
+ * both staves and centres the middle-C ledger line exactly halfway between them.
+ */
+const STAFF_GAP = 32;
 
 const BASS_TOP_Y    = TREBLE_BOTTOM_Y + STAFF_GAP;            // 104
 const BASS_BOTTOM_Y = BASS_TOP_Y + 4 * 2 * NOTE_SPACING;     // 168
@@ -242,15 +252,16 @@ function drawStem(svg, x, y, isSelected) {
 }
 
 /** Renders a single beat (one or more simultaneous notes) at position x. */
-function renderBeat(svg, beat, x) {
+function renderBeat(svg, beat, x, keyProfile, keySigPcs) {
   for (const note of beat) {
-    const desc     = getNoteDescriptor(note.midi);
+    const desc     = getNoteDescriptorForKey(note.midi, keyProfile);
     const onTreble = isTreble(note.midi);
     const y        = noteY(desc.diatonicIndex, onTreble);
 
     drawLedgerLines(svg, x, desc.diatonicIndex, onTreble);
 
-    if (desc.accidental) {
+    // Only draw an accidental when it is NOT already implied by the key signature.
+    if (desc.accidental && !keySigPcs.has(note.midi % 12)) {
       const fill = note.isSelected ? "#126e5a" : "#2f241d";
       svg.appendChild(svgText(x - 12, y + 4, desc.accidental, 16, fill));
     }
@@ -261,7 +272,7 @@ function renderBeat(svg, beat, x) {
 
   // Label: prefer the selected note, fall back to last note in beat
   const labelNote = beat.find((n) => n.isSelected) ?? beat[beat.length - 1];
-  const labelDesc = getNoteDescriptor(labelNote.midi);
+  const labelDesc = getNoteDescriptorForKey(labelNote.midi, keyProfile);
   const labelEl   = svgText(x, BASS_BOTTOM_Y + LABEL_AREA_H - 4, labelDesc.label, 10,
     labelNote.isSelected ? "#126e5a" : "#6d5b4b", "middle");
   svg.appendChild(labelEl);
@@ -278,11 +289,15 @@ function renderBeat(svg, beat, x) {
  */
 export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   const beats      = getRecentNotationNotes(selectedPitch, composition, rootMidi);
+  const keyProfile = getKeyProfile(rootMidi);
+  // Set of pitch classes already covered by the key signature (no need to redraw).
+  const keySigPcs  = new Set(keyProfile.accidentals.map((a) => ACCIDENTAL_PC[a] ?? -1));
+
   const totalNotes = beats.reduce((acc, b) => acc + b.length, 0);
   const selNote    = beats.flatMap((b) => b).find((n) => n.isSelected);
   const selLabel   = selNote
-    ? getNoteDescriptor(selNote.midi).label
-    : getNoteDescriptor(selectedPitch).label;
+    ? getNoteDescriptorForKey(selNote.midi, keyProfile).label
+    : getNoteDescriptorForKey(selectedPitch, keyProfile).label;
 
   notationSummary.textContent = totalNotes === 1
     ? `Previewing ${selLabel} on the grand staff.`
@@ -309,7 +324,6 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
   drawBassClef(svg);
 
   // Key signature (on both staves)
-  const keyProfile    = getKeyProfile(rootMidi);
   const keySigStartX  = staffStartX + 8;
   let   noteAreaStart = drawKeySignature(svg, keySigStartX, keyProfile);
 
@@ -325,7 +339,7 @@ export function renderNotation(selectedPitch, composition, rootMidi = 60) {
     const x = beatCount > 1
       ? noteAreaStart + i * beatStep
       : (noteAreaStart + noteAreaEnd) / 2;
-    renderBeat(svg, beat, x);
+    renderBeat(svg, beat, x, keyProfile, keySigPcs);
   });
 
   notationStaff.replaceChildren(svg);
