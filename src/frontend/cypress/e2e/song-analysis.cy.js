@@ -1,3 +1,5 @@
+const API_BASE = "http://localhost:5000/api/analysis";
+
 describe("Song Analysis page — Milestone 5.6", () => {
   beforeEach(() => {
     cy.visit("/analysis.html");
@@ -38,12 +40,12 @@ describe("Song Analysis page — Milestone 5.6", () => {
       { symbol: "F",  root: "F", rootMidi: 65, quality: "major", isMinor: false },
     ];
 
-    cy.intercept("POST", "/api/analysis/chord-chart", {
+    cy.intercept("POST", `${API_BASE}/chord-chart`, {
       statusCode: 201,
       body: {
         composition: mockComposition,
         chords: mockChords,
-        explanation: "This is the popular I–V–vi–IV progression.",
+        explanation: "This is the popular I\u2013V\u2013vi\u2013IV progression.",
       },
     }).as("analyseChart");
 
@@ -71,7 +73,7 @@ describe("Song Analysis page — Milestone 5.6", () => {
   });
 
   it("shows an error message when the API returns 400", () => {
-    cy.intercept("POST", "/api/analysis/chord-chart", {
+    cy.intercept("POST", `${API_BASE}/chord-chart`, {
       statusCode: 400,
       body: JSON.stringify({ error: "No recognisable chords found in the chart." }),
     }).as("badRequest");
@@ -89,7 +91,7 @@ describe("Song Analysis page — Milestone 5.6", () => {
   });
 
   it("minor chord badges have a distinct CSS class", () => {
-    cy.intercept("POST", "/api/analysis/chord-chart", {
+    cy.intercept("POST", `${API_BASE}/chord-chart`, {
       statusCode: 201,
       body: {
         composition: { id: "test-id", layers: [] },
