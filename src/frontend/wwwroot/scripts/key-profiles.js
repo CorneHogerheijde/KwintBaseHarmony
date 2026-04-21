@@ -110,3 +110,59 @@ export const KEY_SIG_DIATONIC = {
 export function getKeyProfile(rootMidi) {
   return KEY_PROFILES.find((k) => k.rootMidi === rootMidi) ?? KEY_PROFILES[0];
 }
+
+/**
+ * Recommended key learning sequence for educator-guided progression.
+ * Starts at C (no accidentals), walks clockwise through sharp keys (G, D, A, E),
+ * then counter-clockwise through flat keys (F, B♭, E♭, A♭).
+ * These rootMidi values correspond to the order listed in KEY_PROFILES.
+ */
+export const KEY_JOURNEY = [60, 67, 62, 69, 64, 65, 70, 63, 68];
+
+/**
+ * Returns the rootMidi of the next key in the educator journey, or null if already at the end.
+ * @param {number} rootMidi
+ * @returns {number|null}
+ */
+export function getNextKey(rootMidi) {
+  const idx = KEY_JOURNEY.indexOf(rootMidi);
+  if (idx === -1 || idx === KEY_JOURNEY.length - 1) return null;
+  return KEY_JOURNEY[idx + 1];
+}
+
+/**
+ * Returns a plain-English theory explanation for the given key profile,
+ * describing its position on the circle of fifths and its accidentals.
+ * @param {number} rootMidi
+ * @returns {string}
+ */
+export function getKeyTheory(rootMidi) {
+  const profile = getKeyProfile(rootMidi);
+
+  if (profile.accidentalType === "none") {
+    return "C major is the tonal home of Western music — no sharps or flats, all white keys. Every other key is measured as a distance from C on the circle of fifths.";
+  }
+
+  const steps = profile.accidentals.length;
+  const stepsWord = steps === 1 ? "1 step" : `${steps} steps`;
+  const direction = profile.accidentalType === "sharp" ? "clockwise" : "counter-clockwise";
+  const accType = profile.accidentalType === "sharp" ? "sharp" : "flat";
+  const accList = profile.accidentals.join(", ");
+
+  let mnemonic;
+  if (profile.accidentalType === "sharp") {
+    const lastSharp = profile.accidentals[profile.accidentals.length - 1];
+    const keyName = profile.name.split(" ")[0];
+    mnemonic = `The last sharp (${lastSharp}) is one half-step below the key name (${keyName}).`;
+  } else if (steps >= 2) {
+    const penultimateFlatKey = profile.accidentals[steps - 2];
+    mnemonic = `The second-to-last flat (${penultimateFlatKey}) names the key.`;
+  } else {
+    mnemonic = "With only one flat (B♭), the key is F major — learnt by convention.";
+  }
+
+  return `${profile.name} is ${stepsWord} ${direction} from C on the circle of fifths. ` +
+    `It has ${steps} ${accType}${steps > 1 ? "s" : ""}: ${accList}. ` +
+    `${mnemonic} ` +
+    `When you see ${steps} ${accType}${steps > 1 ? "s" : ""} in a key signature, you are in ${profile.name}.`;
+}

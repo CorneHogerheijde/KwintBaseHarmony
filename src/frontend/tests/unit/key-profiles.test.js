@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { KEY_PROFILES, KEY_SIG_DIATONIC, getKeyProfile } from "../../wwwroot/scripts/key-profiles.js";
+import { KEY_PROFILES, KEY_SIG_DIATONIC, getKeyProfile, KEY_JOURNEY, getNextKey, getKeyTheory } from "../../wwwroot/scripts/key-profiles.js";
 
 // ── KEY_PROFILES structure ────────────────────────────────────────────────────
 
@@ -184,5 +184,105 @@ describe("key profile and transposition", () => {
     for (let i = 1; i < flatKeys.length; i++) {
       expect(flatKeys[i].accidentals.length).toBe(flatKeys[i - 1].accidentals.length + 1);
     }
+  });
+});
+
+// ── KEY_JOURNEY ───────────────────────────────────────────────────────────────
+
+describe("KEY_JOURNEY", () => {
+  it("contains 9 entries matching all supported keys", () => {
+    expect(KEY_JOURNEY).toHaveLength(9);
+  });
+
+  it("starts at C major (rootMidi 60)", () => {
+    expect(KEY_JOURNEY[0]).toBe(60);
+  });
+
+  it("follows circle-of-fifths order: C → G → D → A → E → F → Bb → Eb → Ab", () => {
+    expect(KEY_JOURNEY).toEqual([60, 67, 62, 69, 64, 65, 70, 63, 68]);
+  });
+
+  it("contains all rootMidi values from KEY_PROFILES", () => {
+    const profileMidis = new Set(KEY_PROFILES.map((k) => k.rootMidi));
+    for (const midi of KEY_JOURNEY) {
+      expect(profileMidis.has(midi)).toBe(true);
+    }
+  });
+});
+
+// ── getNextKey ────────────────────────────────────────────────────────────────
+
+describe("getNextKey", () => {
+  it("returns G major (67) as the next key after C major (60)", () => {
+    expect(getNextKey(60)).toBe(67);
+  });
+
+  it("returns D major (62) as the next key after G major (67)", () => {
+    expect(getNextKey(67)).toBe(62);
+  });
+
+  it("returns F major (65) as the next key after E major (64)", () => {
+    expect(getNextKey(64)).toBe(65);
+  });
+
+  it("returns null for the last key in the journey (Ab major, 68)", () => {
+    expect(getNextKey(68)).toBeNull();
+  });
+
+  it("returns null for an unrecognised rootMidi", () => {
+    expect(getNextKey(61)).toBeNull();
+    expect(getNextKey(99)).toBeNull();
+  });
+});
+
+// ── getKeyTheory ──────────────────────────────────────────────────────────────
+
+describe("getKeyTheory", () => {
+  it("returns a non-empty string for every key in KEY_JOURNEY", () => {
+    for (const midi of KEY_JOURNEY) {
+      const text = getKeyTheory(midi);
+      expect(typeof text).toBe("string");
+      expect(text.length).toBeGreaterThan(10);
+    }
+  });
+
+  it("mentions 'no sharps or flats' for C major", () => {
+    expect(getKeyTheory(60)).toMatch(/no sharps or flats/i);
+  });
+
+  it("mentions 'F\u266f' in G major theory", () => {
+    expect(getKeyTheory(67)).toContain("F\u266f");
+  });
+
+  it("mentions 'B\u266d' in F major theory", () => {
+    expect(getKeyTheory(65)).toContain("B\u266d");
+  });
+
+  it("sharp key theory mentions 'clockwise'", () => {
+    expect(getKeyTheory(67)).toMatch(/clockwise/i);
+    expect(getKeyTheory(62)).toMatch(/clockwise/i);
+  });
+
+  it("flat key theory mentions 'counter-clockwise'", () => {
+    expect(getKeyTheory(65)).toMatch(/counter-clockwise/i);
+    expect(getKeyTheory(70)).toMatch(/counter-clockwise/i);
+  });
+
+  it("sharp key theory includes the last-sharp mnemonic", () => {
+    const gMajorTheory = getKeyTheory(67);
+    // Last sharp (F#) is half-step below G
+    expect(gMajorTheory).toContain("F\u266f");
+    expect(gMajorTheory).toContain("G major");
+  });
+
+  it("flat key theory for Bb includes second-to-last flat mnemonic", () => {
+    const bbTheory = getKeyTheory(70);
+    // penultimate flat names the key: Bb is the penultimate in Bb major? No — B♭ is the 1st flat and E♭ is the 2nd.
+    // Second-to-last of [Bb, Eb] is Bb — which names the key Bb major
+    expect(bbTheory).toContain("B\u266d");
+  });
+
+  it("falls back to C major theory for an unrecognised rootMidi", () => {
+    expect(getKeyTheory(61)).toMatch(/no sharps or flats/i);
   });
 });

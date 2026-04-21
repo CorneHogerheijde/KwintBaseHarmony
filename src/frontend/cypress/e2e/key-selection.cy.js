@@ -129,3 +129,97 @@ describe("Puzzle page — key label", () => {
     cy.get("#layer-root-note").should("contain.text", "no accidentals");
   });
 });
+
+// ── Puzzle page — Key Theory panel ───────────────────────────────────────────
+
+describe("Puzzle page — Key Theory panel", () => {
+  function mountPuzzleWithRoot(rootMidi) {
+    const composition = buildComposition({
+      id: COMPOSITION_ID,
+      rootMidi,
+      difficulty: "intermediate",
+      style: "classical"
+    });
+
+    cy.intercept("GET", `${API_BASE}/${COMPOSITION_ID}`, { statusCode: 200, body: composition }).as("getComposition");
+    cy.visit(`/puzzle.html?id=${COMPOSITION_ID}`);
+    cy.wait("@getComposition");
+  }
+
+  it("renders the key theory panel element", () => {
+    mountPuzzleWithRoot(60);
+    cy.get("#key-theory-panel").should("exist");
+  });
+
+  it("theory panel summary is 'Key Theory'", () => {
+    mountPuzzleWithRoot(60);
+    cy.get("#key-theory-panel summary").should("contain.text", "Key Theory");
+  });
+
+  it("theory text for C major mentions 'no sharps or flats'", () => {
+    mountPuzzleWithRoot(60);
+    cy.get("#key-theory-panel").click();
+    cy.get("#key-theory-text").should("contain.text", "no sharps or flats");
+  });
+
+  it("theory text for G major mentions F\u266f", () => {
+    mountPuzzleWithRoot(67);
+    cy.get("#key-theory-panel").click();
+    cy.get("#key-theory-text").should("contain.text", "F\u266f");
+  });
+
+  it("theory text for B\u266d major mentions B\u266d", () => {
+    mountPuzzleWithRoot(70);
+    cy.get("#key-theory-panel").click();
+    cy.get("#key-theory-text").should("contain.text", "B\u266d");
+  });
+});
+
+// ── Home page — Key Journey guide ────────────────────────────────────────────
+
+describe("Home page — Key Journey guide", () => {
+  beforeEach(() => {
+    cy.visit("/");
+  });
+
+  it("renders the key journey guide container", () => {
+    cy.get("#key-journey-guide").should("exist");
+  });
+
+  it("renders 9 key journey chips", () => {
+    cy.get(".key-journey-chip").should("have.length", 9);
+  });
+
+  it("C chip is active by default", () => {
+    cy.get(".key-journey-chip--active").should("contain.text", "C");
+  });
+
+  it("clicking a chip updates the key dropdown", () => {
+    cy.get(".key-journey-chip").contains("G").click();
+    cy.get("#key-input").should("have.value", "67");
+  });
+
+  it("clicking a chip marks it as active", () => {
+    cy.get(".key-journey-chip").contains("G").click();
+    cy.get(".key-journey-chip--active").should("contain.text", "G");
+  });
+});
+
+// ── Home page — ?nextKey= pre-selection ──────────────────────────────────────
+
+describe("Home page — nextKey query param", () => {
+  it("pre-selects the key from ?nextKey= param", () => {
+    cy.visit("/?nextKey=67");
+    cy.get("#key-input").should("have.value", "67");
+  });
+
+  it("highlights the correct chip when pre-selected via ?nextKey=", () => {
+    cy.visit("/?nextKey=67");
+    cy.get(".key-journey-chip--active").should("contain.text", "G");
+  });
+
+  it("ignores an unrecognised ?nextKey= value and falls back to C major", () => {
+    cy.visit("/?nextKey=61");
+    cy.get("#key-input").should("have.value", "60");
+  });
+});
