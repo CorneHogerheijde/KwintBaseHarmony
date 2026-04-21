@@ -2,7 +2,7 @@ namespace KwintBaseHarmony.Api;
 
 // ── Inbound requests ──────────────────────────────────────────────────────────
 
-public sealed record CreateCompositionRequest(string StudentId, string Title, string? Difficulty, string? Style);
+public sealed record CreateCompositionRequest(string StudentId, string Title, string? Difficulty, string? Style, int? RootMidi);
 
 public sealed record UpdateCompositionRequest(string? Title, string? Difficulty);
 

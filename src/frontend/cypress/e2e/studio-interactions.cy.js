@@ -26,14 +26,11 @@ describe("KwintBaseHarmony studio interactions", () => {
     cy.get("#activity-log").should("contain", "Selected note from virtual piano");
   });
 
-  it("switches notation clefs without losing the selected note", () => {
+  it("shows grand staff with selected note label and SVG present", () => {
     cy.visit("/dashboard.html");
     cy.wait("@healthCheck");
 
-    cy.get("#notation-summary").should("contain", "treble clef");
-    cy.get("#notation-clef").select("Bass");
-
-    cy.get("#notation-summary").should("contain", "bass clef");
+    cy.get("#notation-summary").should("contain", "grand staff");
     cy.get("#selected-note-label").should("contain", "C4");
     cy.get("#notation-staff svg").should("exist");
   });

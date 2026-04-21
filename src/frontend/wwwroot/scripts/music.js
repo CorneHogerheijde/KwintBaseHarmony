@@ -17,12 +17,47 @@ export function midiToLabel(midi) {
   return `${noteNames[normalized % 12]}${octave}`;
 }
 
+/**
+ * Returns an octave-qualified note label for the given MIDI number (e.g. C4, G♯3).
+ * This is the canonical helper used by piano keys, grand-staff notation, and puzzle hints.
+ * Equivalent to midiToLabel — provided as a semantically explicit alias.
+ */
+export const midiToOctaveLabel = midiToLabel;
+
 export function getNoteDescriptor(midi) {
   const normalized = normalizeMidi(midi);
   const pc        = normalized % 12;
   const octave    = Math.floor(normalized / 12) - 1;
   const token     = noteNames[pc];
   const letter    = token[0];
+  const accidental = token.length > 1 ? token.slice(1) : "";
+
+  return {
+    midi: normalized,
+    token,
+    octave,
+    letter,
+    accidental,
+    label: `${token}${octave}`,
+    diatonicIndex: octave * 7 + diatonicSteps[letter]
+  };
+}
+
+/**
+ * Returns a note descriptor using spelling appropriate for the given key.
+ * Flat keys use flat note names (e.g. B♭4 instead of A♯4), which also corrects
+ * the diatonic staff position so notes appear on the right staff line.
+ *
+ * @param {number} midi
+ * @param {{ accidentalType?: string } | null} keyProfile
+ */
+export function getNoteDescriptorForKey(midi, keyProfile) {
+  const normalized = normalizeMidi(midi);
+  const pc         = normalized % 12;
+  const octave     = Math.floor(normalized / 12) - 1;
+  const useFlat    = keyProfile?.accidentalType === "flat";
+  const token      = useFlat ? flatNames[pc] : noteNames[pc];
+  const letter     = token[0];
   const accidental = token.length > 1 ? token.slice(1) : "";
 
   return {

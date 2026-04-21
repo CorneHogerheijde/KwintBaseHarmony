@@ -32,7 +32,8 @@ public static class CompositionEndpoints
                     request.Title,
                     request.Difficulty ?? "beginner",
                     request.Style ?? "classical",
-                    userId);
+                    userId,
+                    request.RootMidi ?? 60);
 
                 logger.LogInformation(
                     "Created composition {CompositionId} for student {StudentId}",

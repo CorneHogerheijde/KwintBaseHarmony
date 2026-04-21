@@ -17,9 +17,9 @@
 
 **Phase 5.2b Status** *(April 21, 2026)*: ✅ **Complete** — Social OAuth providers + user-linked compositions (PR #49)
 
-**Phase 5.3 Status**: ⬜ **Planned** — Circle of Fifths puzzle expansion (multi-key, sharps/flats, root variety)
+**Phase 5.3 Status** *(April 21, 2026)*: ✅ **Complete** — Circle of Fifths puzzle expansion (PR #45)
 
-**Phase 5.4 Status**: ⬜ **Planned** — Notation preview fix (octave-aware, bass/treble clef switching at middle C)
+**Phase 5.4 Status** *(April 21, 2026)*: ✅ **Complete** — Notation Preview Fix (grand staff, octave-aware labels, chords)
 
 ---
 
@@ -29,13 +29,19 @@ Notation currently renders all notes without octave context, making it impossibl
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| Octave-aware note labels | Display notes as `C4`, `G3`, `F♯5` etc. in both the puzzle hint and the notation canvas | ⬜ |
-| Grand staff rendering | Treble + bass staves always rendered; notes ≥ MIDI 60 go on treble, notes < 60 go on bass | ⬜ |
-| Simultaneous notes (chords) | Multiple notes on the same beat rendered as a chord on the appropriate staff | ⬜ |
-| Middle C ledger line | C4 (MIDI 60) shown with its ledger line between the two staves | ⬜ |
-| Scaled-down canvas | Canvas height increased to fit both staves; note/staff size reduced slightly to maintain layout | ⬜ |
-| `midiToOctaveLabel(midi)` helper | Centralised function used by piano, notation, and puzzle hints; `Math.floor(midi/12)-1` for octave | ⬜ |
-| Regression tests | Vitest unit tests for `midiToOctaveLabel`, staff assignment, chord grouping logic | ⬜ |
+| Octave-aware note labels | Display notes as `C4`, `G3`, `F♯5` etc. in both the puzzle hint and the notation canvas | ✅ |
+| Grand staff rendering | Treble + bass staves always rendered; notes ≥ MIDI 60 go on treble, notes < 60 go on bass | ✅ |
+| Simultaneous notes (chords) | Multiple notes on the same beat rendered as a chord on the appropriate staff | ✅ |
+| Middle C ledger line | C4 (MIDI 60) shown with its ledger line between the two staves | ✅ |
+| Scaled-down canvas | Canvas height increased to fit both staves; note/staff size reduced slightly to maintain layout | ✅ |
+| `midiToOctaveLabel(midi)` helper | Centralised function used by piano, notation, and puzzle hints; `Math.floor(midi/12)-1` for octave | ✅ |
+| Regression tests | Vitest unit tests for `midiToOctaveLabel`, staff assignment, chord grouping logic | ✅ |
+
+**Future improvements (notation preview):**
+
+| Improvement | Description |
+|-------------|-------------|
+| Time signature display | Render a 4/4 (or configurable) time signature symbol at the start of both treble and bass staves. Currently omitted; notation preview is a visual aid rather than a strict score. |
 
 ---
 

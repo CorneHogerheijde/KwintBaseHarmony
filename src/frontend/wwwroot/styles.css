@@ -159,10 +159,6 @@ h1 {
   margin-bottom: 18px;
 }
 
-.clef-picker {
-  width: min(180px, 100%);
-}
-
 .status-pill {
   display: inline-flex;
   margin-top: 18px;
