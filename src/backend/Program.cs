@@ -25,6 +25,7 @@ builder.Services.AddDbContext<CompositionContext>(options =>
 // Register application services
 builder.Services.AddScoped<ICompositionService, CompositionService>();
 builder.Services.AddScoped<IMidiExportService, MidiExportService>();
+builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
 // Add JWT authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "test-only-secret-key-not-for-production!!!";
@@ -104,7 +105,8 @@ app
     .MapLayerEndpoints()
     .MapAnalyticsEndpoints()
     .MapExportEndpoints()
-    .MapMovementEndpoints();
+    .MapMovementEndpoints()
+    .MapAnalysisEndpoints();
 
 app.Run();
 

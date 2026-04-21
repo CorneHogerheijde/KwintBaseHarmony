@@ -1110,3 +1110,63 @@ button:hover,
 .progress-nav-link:hover {
   text-decoration: underline;
 }
+
+/* ── Song Analysis page ───────────────────────────────────────── */
+
+.chord-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.chord-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  min-width: 3.5rem;
+  border: 1px solid var(--border);
+}
+
+.chord-badge--major {
+  background: var(--surface);
+}
+
+.chord-badge--minor {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: var(--accent);
+}
+
+.chord-badge__symbol {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chord-badge__quality {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.analysis-explanation {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.input-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.home-cta-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
