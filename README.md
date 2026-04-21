@@ -35,42 +35,46 @@ Every harmonic decision is experienced across three simultaneous channels:
 - 🎹 **Kinesthetic**: Play it on an interactive piano keyboard
 - 🎼 **Visual**: See it in real-time musical notation
 
+## Getting Started
+
+The full local development guide — including prerequisites, Dapr setup, and alternative run modes — is in [RUNNING_LOCALLY.md](RUNNING_LOCALLY.md).
+
+### Quick Setup
+
+```powershell
+# 1. Start PostgreSQL
+docker-compose up -d postgres
+
+# 2. Start frontend + backend with Dapr (Windows)
+pwsh ./scripts/start-dapr-local.ps1
+```
+
+**Access points after startup:**
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5051 |
+| API | http://localhost:5000 |
+| Swagger | http://localhost:5000/swagger |
+| Backend Dapr HTTP | http://localhost:3500 |
+
+> **Linux/macOS**: use `dapr run -f .` instead of the PowerShell script.
+
 ## Project Status
 
-**Phase**: Active Development  
-**Last Updated**: April 16, 2026
+See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the full project status, completed milestones, and roadmap.
 
-### Completed
-- ✅ Creative brainstorming session (3 techniques)
-- ✅ 9 core ideas organized by theme
-- ✅ Design principles defined
-- ✅ Phase 1 action plans created
-- ✅ REST API (composition CRUD, MIDI export)
-- ✅ .NET 10 backend with EF Core + PostgreSQL
-- ✅ Vanilla JS frontend (ASP.NET Core static files)
-- ✅ Dapr integration (state store, local sidecar)
-- ✅ Azure Container Apps infrastructure (AVM Bicep, 14 resources)
-- ✅ GitHub Actions CI/CD pipeline (build → test → deploy)
-- ✅ Bicep snapshot tests (native `bicep snapshot` CLI)
-- ✅ Phase 2: Puzzle-based composition UI with interactive piano, notation, audio playback
-- ✅ Phase 3A: `LAYER_COUNT` constant, Unicode accidentals, Vitest unit test suite (48 tests)
-- ✅ Phase 3B: Root-note transposition — 7 root options, full puzzle layer shift
-- ✅ Phase 3C: Chord puzzle type — multi-note layers, chord hint highlighting
-- ✅ Phase 3D: Correct accidental placement, time signature, chord notation rendering
-- ✅ Phase 3E: Harmonic Understanding panel — collapsible explanation for all 28 puzzle layers
-- ✅ Phase 3F: Expanded circle-of-fifths widget with inner minor chord ring
-
-### Upcoming
-- 📋 Phase 4: Branching composition paths and genre/style selection
-- 📋 Phase 5: AI-powered harmonic analysis of existing songs
-- 📋 Real-world testing with musicians and music educators
+**Current phase**: Phase 5 — Authentication & Circle of Fifths Puzzles  
+**Upcoming**: Milestones 5.3 (key-aware puzzles) and 5.4 (notation preview fix)
 
 ## Project Structure
 
 ```
 KwintBaseHarmony/
 ├── README.md                          # This file
-├── DEVELOPMENT_PLAN.md                # Phase 1 action plans
+├── PROJECT_STATUS.md                  # Phase history & roadmap
+├── DEVELOPMENT_PLAN.md                # Detailed phase deliverables
+├── CONTRIBUTING.md                    # Development workflow & standards
 ├── RUNNING_LOCALLY.md                 # Local dev guide
 ├── LICENSE
 ├── .gitignore
@@ -97,14 +101,20 @@ KwintBaseHarmony/
 │   │       ├── index.html             # Dashboard: start/resume composition
 │   │       ├── puzzle.html            # Puzzle page: interactive harmony learning
 │   │       ├── studio.html            # Studio: free composition editor
+│   │       ├── login.html             # Authentication: login
+│   │       ├── register.html          # Authentication: register
+│   │       ├── progress.html          # Analytics dashboard
 │   │       ├── styles.css             # Shared styles
 │   │       ├── app.js                 # Dashboard JS
 │   │       ├── puzzle.js              # Puzzle page logic
 │   │       └── scripts/
 │   │           ├── audio.js           # Web Audio API note preview
+│   │           ├── auth.js            # JWT helpers (getToken, requireAuth, etc.)
+│   │           ├── api.js             # Fetch wrapper with Authorization header
 │   │           ├── circle-of-fifths.js # SVG circle of fifths (major + minor rings)
 │   │           ├── midi.js            # Web MIDI input
 │   │           ├── music.js           # MIDI/interval utilities, LAYER_COUNT
+│   │           ├── nav-auth.js        # Login/logout nav widget (injected on all pages)
 │   │           ├── notation.js        # ABC.js notation rendering
 │   │           ├── piano.js           # 88-key interactive piano with zoom
 │   │           ├── playback.js        # Arpeggio and layer playback
@@ -114,8 +124,10 @@ KwintBaseHarmony/
 │       ├── Program.cs
 │       ├── KwintBaseHarmony.csproj
 │       ├── appsettings.json
-│       ├── Models/                    # Composition, Layer, Note
-│       ├── Services/                  # CompositionService, MidiExportService
+│       ├── Models/                    # Composition, Layer, Note, User
+│       ├── Services/                  # CompositionService, MidiExportService, JwtService
+│       ├── Auth/                      # AuthDtos, AuthEndpoints
+│       ├── Api/                       # Endpoint groups (composition, layer, analytics, export)
 │       ├── Data/                      # EF Core DbContext
 │       ├── Migrations/
 │       └── components/                # Dapr component YAML files
@@ -124,6 +136,7 @@ KwintBaseHarmony/
 │   ├── CompositionEndpointsTests.cs
 │   ├── CompositionServiceTests.cs
 │   ├── MidiExportServiceTests.cs
+│   ├── AuthEndpointsTests.cs
 │   └── KwintBaseHarmony.Tests.csproj
 │
 ├── scripts/
@@ -148,106 +161,34 @@ KwintBaseHarmony/
 - **Sonic Tension as Teacher**: Hearing dissonance teaches more than visuals
 - **Omnipresent Piano Keyboard**: Always available for free exploration
 
-### Content (Phase 2+)
-- **Branching Composition**: Student choice in genre/style
-- **Modular Pieces**: Combine small pieces into larger compositions
-- **AI-Powered Analysis**: Analyze existing songs to show harmony concepts in real music
+### Content (Phases 4+)
+- **Branching Composition**: Student choice in genre/style (classical, jazz, blues)
+- **Modular Pieces**: Combine movements into larger compositions
+- **AI-Powered Analysis**: Analyze existing songs to show harmony concepts in real music (planned)
 
 ## Contributing & Development Workflow
 
 **All development must follow a pull request (PR) workflow.** Direct commits to `main` are not permitted.
 
-### PR Workflow
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full coding standards, PR template, and review process.
+
+### PR Workflow (Summary)
 
 1. **Create a feature branch** from `main`:
    ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/ws1-1-4-rest-api  # Use descriptive branch names
+   git checkout main && git pull origin main
+   git checkout -b feature/your-feature-name
    ```
 
-2. **Work on your feature**, committing regularly:
-   ```bash
-   git add .
-   git commit -m "Clear, descriptive commit message"
-   ```
+2. **Work on your feature**, committing regularly, then push and create a Pull Request on GitHub.
 
-3. **Push your branch** to remote:
-   ```bash
-   git push origin feature/ws1-1-4-rest-api
-   ```
-
-4. **Create a Pull Request** on GitHub:
-   - Provide clear description of changes
-   - Link related spec documents or issues
-   - Specify which workstream/story this implements
-   - Note any breaking changes or dependencies
-
-5. **Code Review**:
-   - At least one reviewer must approve before merge
-   - Address feedback, push corrections to same branch
-   - Keep commits clean and logical
-
-6. **Merge to main**:
-   - Use "Squash and merge" for feature branches (keeps history clean)
-   - Delete branch after merge
-   - Build/tests must pass before merge
+3. **Merge to main** after review and passing CI. Use "Squash and merge" and delete the branch.
 
 ### Branch Naming Conventions
 
-Use descriptive branch names following this pattern:
-- `feature/ws{X}-{Y}-{Z}-{slug}` — New feature (e.g., `feature/ws1-1-4-rest-api`)
-- `bugfix/brief-description` — Bug fix (e.g., `bugfix/midi-export-timing`)
-- `docs/update-readme` — Documentation (e.g., `docs/add-pr-workflow`)
-- `refactor/service-simplification` — Code refactoring
-
-### Commit Message Guidelines
-
-Write clear, actionable commit messages:
-```
-[WS1-1.4] Add composition CRUD endpoints
-
-- POST /api/compositions (create new)
-- GET /api/compositions/:id (retrieve)
-- PUT /api/compositions/:id (update)
-- DELETE /api/compositions/:id
-- Tested with xUnit integration tests
-
-Closes #15
-```
-
-### Status Before PR Merge
-
-Before submitting a PR, ensure:
-- ✅ Code compiles (`dotnet build`)
-- ✅ Unit tests pass (`dotnet test`)
-- ✅ GitHub Actions CI passes (`.github/workflows/pipelines.yaml`)
-- ✅ No console warnings (address or document)
-- ✅ Code follows project conventions
-- ✅ Commits are logically organized
-- ✅ Branch is up-to-date with `main`
-
-### Workstream Tags
-
-Tag commits and PRs with workstream labels:
-- `WS1` — Learning Architecture
-- `WS2` — Multi-Modal Interaction
-- `WS3` — Integration & Testing
-
-Example: `[WS1-1.3] Complete data model with EF persistence`
-
----
-
-## Getting Started (Development)
-
-See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementation roadmap.
-
-**Quick Start Requirements:**
-- Music theory consultant (validate pedagogy)
-- Full-stack developer (frontend + backend)
-- UX designer (calm, intuitive interface)
-
----
+- `feature/brief-description` — New feature
+- `bugfix/brief-description` — Bug fix
+- `docs/brief-description` — Documentation
 
 ## Architecture: Vanilla JS Frontend + .NET Dapr Backend
 
@@ -273,74 +214,6 @@ See [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) for detailed Phase 1 implementa
 - ⚙️ **GitHub Actions** — CI/CD pipeline (test → build → deploy)
 - 🎯 **Dapr CLI** — Local development environment
 - 📊 **BMAD** — Project methodology and brainstorming framework
-
----
-
-## Quick Setup
-
-### Prerequisites
-
-- **.NET 10 SDK** (frontend and backend)
-- **Dapr CLI** (installed and initialized)
-- **Docker** (for Dapr containers)
-- **Git**
-
-### 1. Clone & Initial Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/CorneHogerheijde/KwintBaseHarmony.git
-cd KwintBaseHarmony
-
-# Initialize Dapr
-dapr init
-```
-
-For Windows, use the local launcher in `scripts/start-dapr-local.ps1` instead of `dapr run -f .`.
-
-### 2. Frontend + Backend with Dapr
-
-#### Windows
-
-```powershell
-pwsh ./scripts/start-dapr-local.ps1
-```
-
-#### Linux/macOS
-
-```bash
-dapr run -f .
-```
-
-Access points:
-- Frontend: `http://localhost:5051`
-- API: `http://localhost:5000`
-- Swagger: `http://localhost:5000/swagger`
-- Backend Dapr HTTP: `http://localhost:3500`
-- Frontend Dapr HTTP: `http://localhost:3510`
-
-### 3. Direct .NET Alternative
-
-```bash
-cd src/backend
-
-# Restore dependencies
-dotnet restore
-
-# Start without Dapr for testing
-dotnet run
-```
-
-The backend will be available at `http://localhost:5000`
-
-### 4. Testing Together
-
-Once both are running:
-
-1. Open frontend at `http://localhost:5051`
-2. The frontend will connect to the backend API
-3. Create or load a composition from the dashboard
-4. Export JSON or MIDI from the loaded composition
 
 ---
 
@@ -438,20 +311,6 @@ This project uses **BMAD** for structured ideation and development planning:
 
 ---
 
-## Resources
-
-- **Kwintessence Book Reference**: Layer-by-layer harmonic pedagogy
-- **Brainstorming Session**: `_outputs/brainstorming/brainstorming-session-2026-04-14.md`
-- **Development Plan**: [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)
-- **Running Locally**: [RUNNING_LOCALLY.md](./RUNNING_LOCALLY.md)
-- **Dapr Documentation**: https://docs.dapr.io
-- **Azure Container Apps**: https://learn.microsoft.com/azure/container-apps/
-- **Azure Verified Modules**: https://azure.github.io/Azure-Verified-Modules/
-- **Bicep snapshot CLI**: https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-snapshot
-
-
----
-
 ## Contributing
 
 This project is in active development. For now, this is a personal/team project. Future contributions welcome once structure stabilizes.
@@ -471,3 +330,27 @@ Copyright © 2026 Corné Hogerheijde
 **Marc Duiker** ([@marcduiker](https://github.com/marcduiker), [Diagrid](https://www.diagrid.io/)) — the Dapr Workflow architecture drew inspiration from Marc's session and the [dapr-workflow-concerto](https://github.com/diagrid-labs/dapr-workflow-concerto/) project, which demonstrated how Dapr Workflows can orchestrate creative, multi-step processes in an elegant and scalable way.
 
 ---
+
+## References
+
+### Project Documentation
+
+| Document | Description |
+|----------|-------------|
+| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Current phase, completed milestones, and roadmap |
+| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | Detailed deliverables tables per phase and milestone |
+| [RUNNING_LOCALLY.md](RUNNING_LOCALLY.md) | Local development setup (Dapr, Docker, .NET) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | PR workflow, code standards, and review process |
+| [infra/README.md](infra/README.md) | Azure infrastructure (Bicep, ACA, snapshot tests) |
+| [src/backend/README.md](src/backend/README.md) | Backend API, EF Core, Dapr integration |
+| [src/frontend/README.md](src/frontend/README.md) | Frontend architecture, JS modules, Vitest/Cypress |
+| [_outputs/planning-artifacts/phase-5-plan.md](_outputs/planning-artifacts/phase-5-plan.md) | Phase 5 milestone specs (auth, circle of fifths, notation) |
+| [_outputs/implementation-artifacts/](_outputs/implementation-artifacts/) | Spec documents for individual milestones |
+| [_outputs/brainstorming/](_outputs/brainstorming/) | Original ideation session outputs |
+
+### External Resources
+
+- [Dapr Documentation](https://docs.dapr.io)
+- [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/)
+- [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/)
+- [Bicep snapshot CLI](https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-snapshot)
